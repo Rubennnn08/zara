@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recomendaciones</title>
+
+  <link rel="stylesheet" href="menu.css" />
+
+  <style>
+    :root{
+      --bg:#fff; --text:#111; --muted:#666;
+      --hair:rgba(17,17,17,.18);
+      --shadow:0 18px 60px rgba(0,0,0,.18);
+      --letter:.14em;
+      --cardMaxH:520px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      padding-top:130px;
+      background:var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:980px;margin:0 auto;padding:18px 14px 64px;}
+    @media (min-width: 720px){ .container{padding:22px 18px 70px;} }
+
+    /* Navbar (mismo) */
+    .navbar1{
+      position:fixed; top:0; left:0; right:0;
+      height:130px;
+      background:#fff;
+      border-bottom:1px solid var(--hair);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      z-index:50;
+    }
+    .navbar1 #menu{ width:28px; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+    .navbar1 .bar{ height:2px; background:#111; width:100%; display:block; }
+    .navbar1 .logo img{ height:54px; display:block; }
+    .navbar1 .searchbar input{
+      width:min(420px, 42vw);
+      border:none;
+      border-bottom:1px solid var(--hair);
+      outline:none;
+      padding:10px 8px;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+    .navbar1 .help{
+      display:flex;
+      gap:14px;
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    @media (max-width: 900px){
+      .navbar1 .help{ display:none; }
+      .navbar1 .searchbar input{ width:min(360px, 55vw); }
+    }
+
+    .head{
+      display:flex; align-items:baseline; justify-content:space-between;
+      gap:12px; margin:10px 0 12px; flex-wrap:wrap;
+    }
+    .head h1{
+      margin:0; font-size:18px; font-weight:600;
+      letter-spacing:var(--letter); text-transform:uppercase;
+    }
+    .head p{
+      margin:0; font-size:11px; color:var(--muted);
+      letter-spacing:var(--letter); text-transform:uppercase;
+    }
+    @media (min-width: 720px){
+      .head h1{ font-size:20px; }
+      .head p{ font-size:12px; }
+    }
+
+    .strip{
+      border-top:1px solid var(--hair);
+      padding-top:12px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    @media (min-width: 720px){
+      .strip{ grid-template-columns:repeat(3, 1fr); gap:12px; }
+    }
+    .pill{
+      border:1px solid var(--hair);
+      padding:10px 12px;
+      font-size:12px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      background:#fff;
+    }
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:14px;
+    }
+    @media (max-width: 520px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      cursor:pointer;
+      user-select:none;
+      background:#fff;
+    }
+
+    .media{
+      position:relative;
+      aspect-ratio:3/4;
+      overflow:hidden;
+      background:#000;
+      max-height: var(--cardMaxH);
+      border:1px solid var(--hair);
+    }
+
+    /* Video loop sin controles */
+    .media video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      background:#000;
+      pointer-events:none; /* evita pausar */
+    }
+
+    .overlay{
+      position:absolute; left:10px; right:10px; bottom:10px;
+      display:flex; align-items:center; justify-content:center;
+      pointer-events:none;
+    }
+    .overlay span{
+      background:rgba(255,255,255,.88);
+      border:1px solid rgba(0,0,0,.15);
+      padding:8px 10px;
+      font-size:11px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:#111;
+    }
+
+    /* ✅ Título bajo el vídeo */
+    .title-under{
+      margin-top:10px;
+      font-size:12px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:#111;
+      border-bottom:1px solid var(--hair);
+      padding-bottom:10px;
+    }
+    .meta{
+      margin-top:8px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+
+    .pager{
+      border-top:1px solid var(--hair);
+      padding-top:10px;
+      margin-top:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .pager .count{
+      font-size:10px;
+      color:var(--muted);
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .pager .nav{ display:flex; gap:10px; }
+    .pager button{
+      border:1px solid var(--hair);
+      background:#fff;
+      color:#111;
+      height:40px;
+      width:44px;
+      cursor:pointer;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .pager button:disabled{ opacity:.35; cursor:default; }
+
+    .note{
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px solid var(--hair);
+      color:var(--muted);
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      text-align:center;
+    }
+
+    /* Modal galería */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(255,255,255,.96);
+      display:none;
+      z-index:80;
+    }
+    .modal.open{ display:block; }
+    .modal-top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 16px; border-bottom:1px solid var(--hair);
+      background:#fff; position:sticky; top:0;
+    }
+    .modal-title{
+      flex:1; text-align:center;
+      font-size:14px; letter-spacing:var(--letter);
+      text-transform:uppercase; font-weight:600;
+    }
+    .btn{
+      border:1px solid var(--hair);
+      background:#fff;
+      color:#111;
+      padding:10px 12px;
+      font-size:12px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .close{
+      width:40px; height:40px;
+      border:1px solid transparent;
+      background:transparent;
+      cursor:pointer;
+      position:relative;
+    }
+    .close::before,.close::after{
+      content:""; position:absolute; top:50%; left:50%;
+      width:18px; height:1px; background:#111;
+    }
+    .close::before{ transform:translate(-50%,-50%) rotate(45deg); }
+    .close::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+
+    .modal-content{
+      max-width:980px;
+      margin:0 auto;
+      padding:16px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    @media (min-width: 860px){
+      .modal-content{ grid-template-columns:1.2fr .8fr; gap:22px; padding:18px; }
+    }
+    .gallery{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .gallery-main{
+      width:100%;
+      height:auto;
+      display:block;
+      box-shadow:var(--shadow);
+      background:#fff;
+      cursor:pointer; /* pincha para volver */
+    }
+    .thumbs{
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      padding-bottom:6px;
+    }
+    .thumbs button{
+      border:1px solid var(--hair);
+      background:#fff;
+      padding:0;
+      cursor:pointer;
+      flex:0 0 auto;
+      width:92px;
+      height:120px;
+      overflow:hidden;
+    }
+    .thumbs img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .panel-right h2{
+      margin:0 0 8px;
+      font-size:16px;
+      font-weight:600;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .panel-right .ref{
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    .panel-right .p{
+      font-size:13px;
+      line-height:1.55;
+      color:#222;
+      max-width:42ch;
+      margin:0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR (mismo) -->
+  <div class="navbar1">
+    <div id="menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+    <div class="logo"><a href="./RP.html"><img src="logo.png" alt="Logo"></a></div>
+    <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
+    <div class="help">
+      <a href="./login.html">INICIAR SESIÓN</a>
+      <a href="./help.html">AYUDA</a>
+      <a href="./help.html">CESTA [0]</a>
+      <a href="./MYPLNAER.html">MY PLANER</a>
+      <a href="./Agenda.html">AGENDA</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="head">
+      <h1>MY PLANNER</h1>
+    </div>
+    <br>
+    <section class="grid" id="grid"></section>
+
+    <div class="pager">
+      <div class="count" id="pageInfo">1 / 1</div>
+      <div class="nav">
+        <button id="prevBtn" type="button">←</button>
+        <button id="nextBtn" type="button">→</button>
+      </div>
+    </div>
+
+    <div class="note">PINCHA UN VIDEO PARA VER LAS IMÁGENES RELACIONADAS</div>
+  </div>
+
+  <!-- MODAL -->
+  <section class="modal" id="modal" aria-hidden="true" role="dialog">
+    <div class="modal-top">
+      <button class="btn" id="backBtn" type="button">VOLVER ATRÁS</button>
+      <div class="modal-title" id="modalTitle">IMÁGENES</div>
+      <button class="close" id="closeBtn" type="button" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="modal-content">
+      <div class="gallery">
+        <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal" title="Pincha para volver atrás">
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <aside class="panel-right">
+        <h2 id="modalName">—</h2>
+        <div class="ref" id="modalTag">—</div>
+        <p class="p" id="modalDesc">—</p>
+      </aside>
+    </div>
+  </section>
+
+<script>
+  /* === Config rutas === */
+  function imgPath(base){ return `img/${base}.jpg`; }
+  function videoPath(base){ return `video/${base}.mp4`; }
+
+  /* === Datos demo (puedes ampliarlo) === */
+  const LOOKS = [
+    { name:"CENA FAMILIAR", tag:"SUGERENCIA", video:videoPath("cena"), images:[imgPath("relojarena1"), imgPath("relojarena2")], desc:"Recomendación para una cena." },
+    { name:"CENA FAMILIAR", tag:"SUGERENCIA", video:videoPath("cena1"), images:[imgPath("relojarena2"), imgPath("relojarena1")], desc:"Recomendación para una cena." },
+    { name:"TRIÁNGULO INVERTIDO 1", tag:"SUGERENCIA", video:videoPath("trianguloinvertido1"), images:[imgPath("trianguloinvertido1"), imgPath("trianguloinvertido2")], desc:"Recomendación para triángulo invertido." },
+    { name:"TRIÁNGULO INVERTIDO 2", tag:"SUGERENCIA", video:videoPath("trianguloinvertido2"), images:[imgPath("trianguloinvertido2"), imgPath("trianguloinvertido1")], desc:"Otra recomendación." },
+    { name:"REDONDO 1", tag:"SUGERENCIA", video:videoPath("redondo1"), images:[imgPath("redondo1"), imgPath("redondo2")], desc:"Recomendación para redondo." },
+    { name:"REDONDO 2", tag:"SUGERENCIA", video:videoPath("redondo2"), images:[imgPath("redondo2"), imgPath("redondo1")], desc:"Otra recomendación." },
+  ];
+
+  const els = {
+    grid: document.getElementById("grid"),
+    pageInfo: document.getElementById("pageInfo"),
+    prevBtn: document.getElementById("prevBtn"),
+    nextBtn: document.getElementById("nextBtn"),
+
+    modal: document.getElementById("modal"),
+    backBtn: document.getElementById("backBtn"),
+    closeBtn: document.getElementById("closeBtn"),
+    modalTitle: document.getElementById("modalTitle"),
+    modalName: document.getElementById("modalName"),
+    modalTag: document.getElementById("modalTag"),
+    modalDesc: document.getElementById("modalDesc"),
+    galleryMain: document.getElementById("galleryMain"),
+    thumbs: document.getElementById("thumbs"),
+  };
+
+  const state = { items: LOOKS, page: 0, perPage: (window.innerWidth <= 520 ? 1 : 2) };
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function computePerPage(){
+    state.perPage = (window.innerWidth <= 520 ? 1 : 2);
+  }
+
+  function render(){
+    computePerPage();
+
+    const start = state.page * state.perPage;
+    const end = start + state.perPage;
+    const slice = state.items.slice(start, end);
+
+    els.grid.innerHTML = slice.map(item => {
+      const imagesPacked = (item.images || []).join("|");
+      const poster = item.images?.[0] || "";
+      return `
+        <article class="card" tabindex="0"
+          data-name="${escapeHtml(item.name)}"
+          data-tag="${escapeHtml(item.tag)}"
+          data-desc="${escapeHtml(item.desc)}"
+          data-images="${escapeHtml(imagesPacked)}">
+          <div class="media">
+            <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+              <source src="${item.video}" type="video/mp4">
+            </video>
+            <div class="overlay"><span>VER IMÁGENES</span></div>
+          </div>
+          <div class="title-under">${escapeHtml(item.name)}</div>
+          <div class="meta">
+            <span>${escapeHtml(item.tag)}</span>
+            <span>VIDEO</span>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    const totalPages = Math.max(1, Math.ceil(state.items.length / state.perPage));
+    els.pageInfo.textContent = `${state.page + 1} / ${totalPages}`;
+    els.prevBtn.disabled = state.page <= 0;
+    els.nextBtn.disabled = state.page >= totalPages - 1;
+  }
+
+  function openModal({name, tag, desc, images}){
+    els.modal.classList.add("open");
+    els.modal.setAttribute("aria-hidden","false");
+    els.modalTitle.textContent = name;
+    els.modalName.textContent = name;
+    els.modalTag.textContent = tag;
+    els.modalDesc.textContent = desc;
+
+    const safe = Array.isArray(images) ? images : [];
+    const first = safe[0] || "";
+    els.galleryMain.src = first;
+
+    els.thumbs.innerHTML = safe.map((src, idx) => `
+      <button type="button" data-src="${escapeHtml(src)}" aria-label="Imagen ${idx+1}">
+        <img src="${src}" alt="Miniatura ${idx+1}">
+      </button>
+    `).join("");
+
+    els.thumbs.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        els.galleryMain.src = btn.dataset.src;
+      });
+    });
+
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(){
+    els.modal.classList.remove("open");
+    els.modal.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+  }
+
+  els.grid.addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if(!card) return;
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  });
+
+  els.grid.addEventListener("keydown", (e) => {
+    if(e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target.closest(".card");
+    if(!card) return;
+    e.preventDefault();
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  });
+
+  els.prevBtn.addEventListener("click", () => {
+    state.page = Math.max(0, state.page - 1);
+    render();
+  });
+  els.nextBtn.addEventListener("click", () => {
+    const totalPages = Math.max(1, Math.ceil(state.items.length / state.perPage));
+    state.page = Math.min(totalPages - 1, state.page + 1);
+    render();
+  });
+
+  els.backBtn.addEventListener("click", closeModal);
+  els.closeBtn.addEventListener("click", closeModal);
+  els.galleryMain.addEventListener("click", closeModal);
+  els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeModal(); });
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal(); });
+
+  window.addEventListener("resize", () => {
+    state.page = 0;
+    render();
+  });
+
+  render();
+</script>
+
+</body>
+</html>

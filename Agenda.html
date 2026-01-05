@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda</title>
+
+  <!-- Si ya tienes menu.css, puedes dejarlo -->
+  <link rel="stylesheet" href="menu.css" />
+
+  <style>
+    :root{
+      --bg:#fff;
+      --text:#111;
+      --muted:#666;
+      --hair:rgba(17,17,17,.18);
+      --line:rgba(17,17,17,.55);
+      --shadow:0 18px 60px rgba(0,0,0,.18);
+      --letter:.14em;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding-top:130px;
+      background:var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color:inherit; text-decoration:none; }
+
+    /* ===== Navbar (igual que el tuyo) ===== */
+    .navbar1{
+      position:fixed;
+      top:0; left:0; right:0;
+      height:130px;
+      background:#fff;
+      border-bottom:1px solid var(--hair);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      z-index:50;
+    }
+    .navbar1 #menu{ width:28px; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+    .navbar1 .bar{ height:2px; background:#111; width:100%; display:block; }
+    .navbar1 .logo img{ height:54px; display:block; }
+    .navbar1 .searchbar input{
+      width:min(420px, 42vw);
+      border:none;
+      border-bottom:1px solid var(--hair);
+      outline:none;
+      padding:10px 8px;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+    .navbar1 .help{
+      display:flex;
+      gap:14px;
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    @media (max-width: 900px){
+      .navbar1 .help{ display:none; }
+      .navbar1 .searchbar input{ width:min(360px, 55vw); }
+    }
+
+    /* ===== Layout ===== */
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:18px 14px 64px;
+    }
+    .title{
+      text-align:center;
+      margin:10px 0 8px;
+      font-weight:600;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      font-size:16px;
+      line-height:1.25;
+    }
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      margin:0 auto 16px;
+      max-width:60ch;
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      line-height:1.6;
+    }
+
+    /* ===== Zara buttons (monocromo) ===== */
+    .zara-btn{
+      background:#fff;
+      color:#111;
+      border:1px solid rgba(17,17,17,.25);
+      padding:12px 14px;
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      cursor:pointer;
+    }
+    .zara-btn:hover{ border-color: rgba(17,17,17,.45); }
+    .zara-btn.primary{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+    .zara-btn-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    /* ===== Calendar header ===== */
+    .cal-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-top:1px solid var(--hair);
+      padding-top:14px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .cal-head .month{
+      font-size:14px;
+      font-weight:600;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .cal-head .left, .cal-head .right{ display:flex; gap:10px; }
+
+    /* ===== Weekdays ===== */
+    .weekdays{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:10px;
+      color:var(--muted);
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .weekdays div{
+      padding:10px 8px;
+      border-bottom:1px solid var(--hair);
+    }
+
+    /* ===== Days grid ===== */
+    .grid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:10px;
+    }
+    .day{
+      min-height:92px;
+      border:1px solid var(--hair);
+      background:#fff;
+      padding:10px 10px 12px;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      position:relative;
+    }
+    .day.disabled{
+      opacity:.35;
+      cursor:default;
+      background:#fafafa;
+    }
+    .day .num{
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:#111;
+    }
+    .day .dot{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#111;
+      display:none;
+    }
+    .day.has-note .dot{ display:block; }
+    .day .preview{
+      font-size:10px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      line-height:1.4;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      min-height: 40px;
+    }
+    .day.today{
+      outline:1px solid rgba(17,17,17,.55);
+      outline-offset:1px;
+    }
+
+    @media (max-width: 700px){
+      .grid{ gap:8px; }
+      .day{ min-height:78px; }
+      .weekdays{ gap:8px; }
+    }
+
+    /* ===== Modal ===== */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(255,255,255,.96);
+      display:none;
+      z-index:80;
+    }
+    .modal.open{ display:block; }
+
+    .modal-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--hair);
+      background:#fff;
+      position:sticky;
+      top:0;
+    }
+    .modal-title{
+      flex:1;
+      text-align:center;
+      font-size:14px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      font-weight:600;
+    }
+    .close{
+      width:40px;
+      height:40px;
+      border:1px solid transparent;
+      background:transparent;
+      cursor:pointer;
+      position:relative;
+    }
+    .close::before,.close::after{
+      content:"";
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:18px;
+      height:1px;
+      background:#111;
+    }
+    .close::before{ transform:translate(-50%,-50%) rotate(45deg); }
+    .close::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+
+    .modal-content{
+      max-width:980px;
+      margin:0 auto;
+      padding:16px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    @media (min-width: 860px){
+      .modal-content{
+        grid-template-columns:1.2fr .8fr;
+        gap:22px;
+        padding:18px;
+      }
+    }
+
+    .panel{
+      border:1px solid var(--hair);
+      background:#fff;
+      padding:14px;
+    }
+    .label{
+      display:block;
+      font-size:11px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    textarea{
+      width:100%;
+      min-height:220px;
+      border:1px solid var(--hair);
+      padding:12px 10px;
+      outline:none;
+      font-size:13px;
+      background:#fff;
+      resize:vertical;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    /* Notificaciones */
+    .notify-wrap{
+      border-top:1px solid var(--hair);
+      padding-top:12px;
+      margin-top:12px;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .row input[type="email"], .row input[type="number"], .row select{
+      border:1px solid var(--hair);
+      padding:12px 10px;
+      font-size:13px;
+      background:#fff;
+      outline:none;
+    }
+    .row input[type="email"]{ width:min(380px, 100%); flex:1; }
+    .row input[type="number"]{ width:120px; }
+    .row select{ width:160px; }
+
+    .chk{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#111;
+    }
+
+    /* Footer buttons inside modal */
+    .modal-actions{
+      margin-top:12px;
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR (mismo) -->
+  <div class="navbar1">
+    <div id="menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+    <div class="logo"><a href="./RP.html"><img src="logo.png" alt="Logo"></a></div>
+    <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
+    <div class="help">
+      <a href="./login.html">INICIAR SESIÓN</a>
+      <a href="./help.html">AYUDA</a>
+      <a href="./help.html">CESTA [0]</a>
+      <a href="./MYPLNAER.html">MY PLANER</a>
+      <a href="./Agenda.html">AGENDA</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="title">MY PLANNER</div>
+    <p class="subtitle">Selecciona un día para guardar una nota</p>
+
+    <div class="cal-head">
+      <div class="left">
+        <button class="zara-btn" id="prevMonth">←</button>
+        <button class="zara-btn" id="todayBtn">Hoy</button>
+      </div>
+
+      <div class="month" id="monthLabel">—</div>
+
+      <div class="right">
+        <button class="zara-btn" id="nextMonth">→</button>
+      </div>
+    </div>
+
+    <div class="weekdays">
+      <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+    </div>
+
+    <div class="grid" id="calendarGrid"></div>
+
+    <div class="hint" style="border-top:1px solid rgba(17,17,17,.18);padding-top:12px;margin-top:14px;text-align:center;">
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <section class="modal" id="modal" aria-hidden="true" role="dialog" aria-label="Nota del día">
+    <div class="modal-top">
+      <button class="zara-btn" type="button" id="backBtn">VOLVER ATRÁS</button>
+      <div class="modal-title" id="modalTitle">DÍA</div>
+      <button class="close" type="button" aria-label="Cerrar" id="closeBtn"></button>
+    </div>
+
+    <div class="modal-content">
+      <div class="panel">
+        <label class="label" for="noteText">Nota</label>
+        <textarea id="noteText" placeholder="Escribe tu nota..."></textarea>
+
+        <div class="notify-wrap">
+          <label class="label">Notificaciones</label>
+
+          <label class="chk">
+            <input type="checkbox" id="notifyEnabled">
+            Notificar por email (descargar recordatorio)
+          </label>
+
+          <div id="notifyFields" style="display:none; margin-top:10px;">
+            <div class="row">
+              <input type="email" id="notifyEmail" placeholder="tu@email.com" />
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <input type="number" id="notifyBeforeValue" min="1" value="1" />
+              <select id="notifyBeforeUnit">
+                <option value="days">Días antes</option>
+                <option value="hours">Horas antes</option>
+                <option value="meses">Meses antes</option>
+              </select>
+
+              <button class="zara-btn" type="button" id="downloadIcsBtn">Descargar recordatorio</button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="zara-btn primary" id="saveBtn" type="button">GUARDAR</button>
+          <button class="zara-btn" id="closeBtn2" type="button">CERRAR</button>
+          <button class="zara-btn" id="deleteBtn" type="button">ELIMINAR NOTA</button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="label">Resumen</div>
+        <div class="hint" id="summaryText">—</div>
+
+        <div class="hint" style="margin-top:12px;">
+          Consejo: guarda una nota corta para verla en el calendario.
+        </div>
+      </aside>
+    </div>
+  </section>
+
+<script>
+  // ========= Storage helpers =========
+  const STORAGE_KEY = "agenda_notes_v1";
+
+  function loadNotes(){
+    try{
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    }catch{
+      return {};
+    }
+  }
+
+  function saveNotes(obj){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  }
+
+  function ymd(date){
+    const y = date.getFullYear();
+    const m = String(date.getMonth()+1).padStart(2,"0");
+    const d = String(date.getDate()).padStart(2,"0");
+    return `${y}-${m}-${d}`;
+  }
+
+  // ========= Calendar state =========
+  const els = {
+    grid: document.getElementById("calendarGrid"),
+    monthLabel: document.getElementById("monthLabel"),
+    prevMonth: document.getElementById("prevMonth"),
+    nextMonth: document.getElementById("nextMonth"),
+    todayBtn: document.getElementById("todayBtn"),
+
+    modal: document.getElementById("modal"),
+    modalTitle: document.getElementById("modalTitle"),
+    noteText: document.getElementById("noteText"),
+    summaryText: document.getElementById("summaryText"),
+
+    backBtn: document.getElementById("backBtn"),
+    closeBtn: document.getElementById("closeBtn"),
+    closeBtn2: document.getElementById("closeBtn2"),
+    saveBtn: document.getElementById("saveBtn"),
+    deleteBtn: document.getElementById("deleteBtn"),
+
+    notifyEnabled: document.getElementById("notifyEnabled"),
+    notifyFields: document.getElementById("notifyFields"),
+    notifyEmail: document.getElementById("notifyEmail"),
+    notifyBeforeValue: document.getElementById("notifyBeforeValue"),
+    notifyBeforeUnit: document.getElementById("notifyBeforeUnit"),
+    downloadIcsBtn: document.getElementById("downloadIcsBtn"),
+  };
+
+  let viewDate = new Date();              // mes que se muestra
+  let selectedISO = null;                 // día seleccionado YYYY-MM-DD
+
+  const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+  function toggleModal(open){
+    els.modal.classList.toggle("open", open);
+    els.modal.setAttribute("aria-hidden", open ? "false" : "true");
+    document.body.style.overflow = open ? "hidden" : "";
+  }
+
+  function setMonthLabel(d){
+    els.monthLabel.textContent = `${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`.toUpperCase();
+  }
+
+  function mondayIndex(jsDay){
+    // jsDay: 0=Dom..6=Sáb -> queremos 0=Lun..6=Dom
+    return (jsDay + 6) % 7;
+  }
+
+  function renderCalendar(){
+    setMonthLabel(viewDate);
+    const notes = loadNotes();
+
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+
+    const first = new Date(year, month, 1);
+    const last = new Date(year, month + 1, 0);
+    const daysInMonth = last.getDate();
+
+    const startOffset = mondayIndex(first.getDay()); // 0..6
+    const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+
+    const todayISO = ymd(new Date());
+
+    els.grid.innerHTML = "";
+    for(let i=0;i<totalCells;i++){
+      const cell = document.createElement("div");
+      cell.className = "day disabled";
+
+      const dayNum = i - startOffset + 1;
+      if(dayNum >= 1 && dayNum <= daysInMonth){
+        cell.className = "day";
+        const dateObj = new Date(year, month, dayNum);
+        const iso = ymd(dateObj);
+
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        cell.appendChild(dot);
+
+        const num = document.createElement("div");
+        num.className = "num";
+        num.textContent = dayNum;
+        cell.appendChild(num);
+
+        const preview = document.createElement("div");
+        preview.className = "preview";
+        const entry = notes[iso];
+        const text = entry?.text || "";
+        preview.textContent = text ? text : "—";
+        cell.appendChild(preview);
+
+        if(iso === todayISO) cell.classList.add("today");
+        if(text) cell.classList.add("has-note");
+
+        cell.addEventListener("click", () => openDay(iso));
+      }
+
+      els.grid.appendChild(cell);
+    }
+  }
+
+  function openDay(iso){
+    selectedISO = iso;
+    const notes = loadNotes();
+    const entry = notes[iso] || { text:"", notify: { enabled:false, email:"", value:1, unit:"days" } };
+
+    els.modalTitle.textContent = iso;
+    els.noteText.value = entry.text || "";
+    els.summaryText.textContent = entry.text ? entry.text : "Sin nota";
+
+    // Notificaciones (UI)
+    const n = entry.notify || { enabled:false, email:"", value:1, unit:"days" };
+    els.notifyEnabled.checked = !!n.enabled;
+    els.notifyFields.style.display = els.notifyEnabled.checked ? "block" : "none";
+    els.notifyEmail.value = n.email || "";
+    els.notifyBeforeValue.value = (n.value ?? 1);
+    els.notifyBeforeUnit.value = n.unit || "days";
+
+    toggleModal(true);
+  }
+
+  function getNotifyConfig(){
+    const enabled = els.notifyEnabled.checked;
+    const email = (els.notifyEmail.value || "").trim();
+    const value = Number(els.notifyBeforeValue.value || 0);
+    const unit = els.notifyBeforeUnit.value || "days";
+    return { enabled, email, value, unit };
+  }
+
+  function saveDay(){
+    if(!selectedISO) return;
+    const notes = loadNotes();
+
+    const text = (els.noteText.value || "").trim();
+    const notify = getNotifyConfig();
+
+    // Si activa notificación pero no mete email, lo dejamos igualmente (porque .ics no lo usa)
+    notes[selectedISO] = { text, notify };
+    saveNotes(notes);
+
+    toggleModal(false);
+    renderCalendar();
+  }
+
+  function deleteDay(){
+    if(!selectedISO) return;
+    const notes = loadNotes();
+    delete notes[selectedISO];
+    saveNotes(notes);
+
+    toggleModal(false);
+    renderCalendar();
+  }
+
+  // ===== .ics (recordatorio sin backend) =====
+  function minutesBeforeFromModal(){
+    const value = Number(els.notifyBeforeValue.value || 1);
+    const unit = els.notifyBeforeUnit.value || "days";
+    if(unit === "hours") return Math.max(1, value * 60);
+    return Math.max(1, value * 24 * 60);
+  }
+
+  function downloadICS({ dateISO, title, description, minutesBefore }){
+    // Evento a las 09:00-09:30 (puedes cambiarlo)
+    const dtStart = dateISO.replaceAll("-","") + "T090000";
+    const dtEnd   = dateISO.replaceAll("-","") + "T093000";
+    const uid = `${Date.now()}@agenda`;
+
+    const dtstamp = new Date().toISOString()
+      .replace(/[-:]/g,"")
+      .split(".")[0] + "Z";
+
+    const safeTitle = (title || "Nota en Agenda").replace(/\n/g," ").trim();
+    const safeDesc  = (description || "").replace(/\n/g," ").trim();
+
+    const ics =
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Agenda//ZaraStyle//ES
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${dtstamp}
+DTSTART:${dtStart}
+DTEND:${dtEnd}
+SUMMARY:${safeTitle}
+DESCRIPTION:${safeDesc}
+BEGIN:VALARM
+TRIGGER:-PT${Math.max(1, minutesBefore)}M
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "recordatorio.ics";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ========= Events =========
+  els.prevMonth.addEventListener("click", () => {
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth()-1, 1);
+    renderCalendar();
+  });
+
+  els.nextMonth.addEventListener("click", () => {
+    viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth()+1, 1);
+    renderCalendar();
+  });
+
+  els.todayBtn.addEventListener("click", () => {
+    viewDate = new Date();
+    renderCalendar();
+  });
+
+  els.notifyEnabled.addEventListener("change", () => {
+    els.notifyFields.style.display = els.notifyEnabled.checked ? "block" : "none";
+  });
+
+  els.saveBtn.addEventListener("click", saveDay);
+  els.deleteBtn.addEventListener("click", deleteDay);
+
+  function closeModal(){
+    toggleModal(false);
+  }
+
+  els.closeBtn.addEventListener("click", closeModal);
+  els.closeBtn2.addEventListener("click", closeModal);
+  els.backBtn.addEventListener("click", closeModal);
+
+  els.modal.addEventListener("click", (e) => {
+    if(e.target === els.modal) closeModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
+  });
+
+  els.downloadIcsBtn.addEventListener("click", () => {
+    if(!selectedISO) return;
+    const note = (els.noteText.value || "").trim();
+    downloadICS({
+      dateISO: selectedISO,
+      title: "Nota en Agenda",
+      description: note ? note : "Recordatorio",
+      minutesBefore: minutesBeforeFromModal()
+    });
+  });
+
+  // init
+  renderCalendar();
+</script>
+
+</body>
+</html>
