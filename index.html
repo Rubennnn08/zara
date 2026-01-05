@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="menu.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif|Sulphur+Point&display=swap">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+   * {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 300; /* Más ligero */ letter-spacing: 0.5px; /* Ligero tracking como ZARA */ box-sizing: border-box; }
+    html{
+        width: 95%;
+    }
+    ul{
+    list-style: none;
+    }
+    a{
+    text-decoration: none;
+    }
+    
+body { font-family: 'Arial', sans-serif; margin: 0; background: #ffffff; color: #111; }
+    .mainboss{
+        width: 80%;
+    }
+    
+    #menu{
+            width: 35px;
+            height: 30px;
+            margin: 30px 0px 20px 20px;
+            cursor: pointer;
+        }
+        .bar{
+            height: 5px;
+            width: 100%;
+            background-color: black;
+            display: block;
+            border-radius: 5px;
+            transition: 0.3s ease;
+        }
+        #bar1{
+            transform: translateY(-4px);
+        }
+        #bar3{
+            transform: translateY(4px);
+        }
+        .nav li a {
+            color: black;
+            text-decoration: none;
+        }
+        .nav li a:hover{
+            border: 1px solid white;
+        }
+        .nav li{
+            list-style: none;
+        }
+        .nav{
+            margin: 0 20px;
+            padding: 0;
+            display: none;
+            /* display: flex; */
+            /* justify-content: space-evenly; */
+            transition: 1s ease;
+            
+        }
+        .boss{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 100px;
+            
+        }
+        #women{
+            margin-left: 0px;
+        }
+        #men{
+            margin-left: 29px;
+        }
+        #kids{
+            margin-left: 26px;
+        }
+        #beauty{
+            margin-left: 10px;
+        }
+        .mendrop{
+            display: none;
+        }
+        .kiddrop{
+            display: none;
+        }
+        .beautydrop{
+            display: none;
+        }
+        .icon .bar{
+            background-color: #fff;
+        }
+        .icon #bar1{
+            transform: translateY(4px) rotate(-45deg);
+        }
+        .icon #bar3{
+            transform: translateY(-6px) rotate(45deg);
+        }
+        .icon #bar2{
+            opacity: 0;
+        }
+        .change{
+            background-color: #fff;
+            height: 100vh;
+            margin: 0;
+            position: absolute;
+            font-size: 20px;
+            top: 0;
+            z-index: -100;
+            width: 33%;
+            display: flex;
+            /* flex-direction: column; */
+            /* align-items: center; */
+            /* flex-direction: row; */
+            justify-content: center;
+        }
+        .dropdown ul{
+            list-style: none;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            float: left;
+        }
+        .dropdown li{
+            /* float: left; */
+            position: relative;
+            width: auto;
+
+        }
+        .dropdown a{
+            display: block;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 15px 10px;
+            transition: all 0.55s ease;
+        }
+        .dropdown li:hover{
+            background-color: white;
+        }
+        .ulclass{
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 35px;
+            visibility: hidden;
+            z-index: 1;
+        }
+        li:hover ul.ulclass{
+            opacity: 1;
+            top: 80px;
+            visibility: visible;
+        }
+        .ulclass li{
+            float: none;
+            width: 100%;
+        }
+        .ulclass a:hover{
+            background: rgb(239, 241, 244);
+        }
+        .ulclass a{
+            background-color: white;
+        }
+    .navbar1{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    position: fixed;
+    margin-bottom: 50px;
+    top: 0;
+    background-color: white;
+    }
+    #home a{
+        color: black;
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    }
+    
+    .help{
+        width: 20%;
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .help a{
+        color: black;
+    }
+    .searchbar{
+        margin-left: 580px;
+        display: flex;
+    }
+    #search{
+        height: 21px;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid black;
+    }
+    .oneimg{
+        margin-top: 120px;
+        display: flex;
+    }
+    .oneimg img{
+        width: 34.8%;
+    }
+    #one{
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+    }
+    #two{
+        margin-top: 100px;
+        display: flex;
+        justify-content: center;
+    }
+    #one img{
+        width: 31%;
+    }
+    #two img{
+        width: 31%;
+    }
+    #middleimg img{
+        margin-top: 70px;
+        width: 104.5%;
+    }
+    #downimg img{
+        margin-top: 70px;
+        width: 104.5%;
+    }
+    #middle>div{
+        width: 100%;
+        /* border: 2px solid red; */
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    }
+    #middle{
+        margin-top: 70px;
+        text-align: center;
+       margin-left: 30px;
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px 20px;
+    }
+    #middle img{
+        width: 100%;
+    }
+    #mdown>div{
+        width: 100%;
+        /* border: 2px solid red; */
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    }
+    
+    #mdown{
+        margin-top: 70px;
+        text-align: center;
+       margin-left: 30px;
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px 20px;
+    }
+    #mdown img{
+        width: 100%;
+    }
+    #bdown>div{
+        width: 100%;
+        /* border: 2px solid red; */
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;    }
+    #bdown{
+        margin-top: 70px;
+        text-align: center;
+       margin-left: 30px;
+        display: grid;
+        width: 100%;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px 20px;
+    }
+    #bdown img{
+        width: 100%;
+    }
+    .footer{
+            margin-top: 400px;
+        width: 50%;
+    }
+    #mail{
+        width: 60%;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid black;
+    }
+    .footer p{
+        /* margin-top: 20px; */
+        font-size: 10px;
+    }
+    .footer h4{
+        font-size: 20px;
+    }
+    .foot{
+        margin-top: 80px;
+    }
+    .social{
+        width: 60%;
+        margin-top: 150px;
+        display: flex;
+        justify-content: space-around;
+    }
+    .last{
+        margin-top: 150px;
+        display: flex;
+    }
+    .last p{
+        font-size: 8px;
+    }
+    .last>div{
+        display: block;
+        margin: auto;
+    }
+    #grid{
+        margin-left: 60px;
+        text-align: center;
+        margin-top: 50px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px 20px;
+    }
+    #grid >div{
+/* border: 1px solid red; */
+box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    }
+    #grid img{
+        width: 100%;
+    }
+    #grid button{
+        outline: 0;
+        border: 0;
+        background-color: white;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+        color: gray;
+    }
+    #bdown button{
+
+        outline: 0;
+        border: 0;
+        background-color: white;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+        color: gray;
+    
+    }
+    #mdown button{
+        outline: 0;
+        border: 0;
+        background-color: white;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+        color: gray;
+    }
+    #middle button{
+        outline: 0;
+        border: 0;
+        background-color: white;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+        color: gray;
+    }
+    #middle p{
+font-size: 13px;
+    }
+    #mdown p{
+        font-size: 13px;
+
+    }
+    #bdown p{
+        font-size: 13px;
+
+    }
+    #grid p{
+        font-size: 13px;
+
+    }
+    @media only screen and (min-width: 500px) and (max-width: 1200px) {
+            .oneimg{
+                display: none;
+                
+            }
+            #one{
+               display: none;
+            }
+            #two{
+               display: none;
+            }
+            .searchbar{
+                display: none;
+            }
+            #middle{
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+            }
+            
+            #grid{
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        /* mobile Screen */
+        @media only screen and (max-width: 500px){
+            .oneimg{
+                display: none;
+                
+            }
+            #one{
+                display: none;
+            }
+            #two{
+                display: none   ;
+            }
+            .searchbar{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="navbar1">
+    <div id="menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+    <div class="logo"><a href="./RP.html"><img src="logo.png" alt="Logo"></a></div>
+    <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
+    <div class="help">
+        <a href="./login.html">INICIAR SESIÓN</a>
+        <a href="./help.html">AYUDA</a>
+        <a href="./help.html">CESTA [0]</a>
+        <a href="./Agenda.html">AGENDA</a>
+    </div>
+</div>
+
+
+    <div class="oneimg">
+        <img src="https://static.zara.net/photos///2023/V/M/1/p/0000/002/000/2/w/632/0000002000_1_1_1.jpg?ts=1676457845947" alt="">
+        <img src="https://static.zara.net/photos///2023/V/M/1/p/0000/002/001/2/w/632/0000002001_1_1_1.jpg?ts=1676457846320" alt="error">
+        <img src="https://static.zara.net/photos///2023/V/M/1/p/0000/002/002/2/w/632/0000002002_1_1_1.jpg?ts=1676457845445" alt="">
+    </div>
+   <div id="one">
+    <img src="https://static.zara.net/photos///2023/V/M/1/p/0000/001/876/2/w/607/0000001876_1_1_1.jpg?ts=1676282546102" alt="">
+   </div>
+   <div id="two">
+    <img src="https://static.zara.net/photos///2023/V/M/1/p/0000/001/586/2/w/607/0000001586_1_1_1.jpg?ts=1675428342516" alt="">
+   </div>
+
+   <div id="middle">
+
+   </div>
+
+   <div id="middleimg">
+    <img src="https://static.zara.net/photos///2023/V/T/1/p/2414/050/250/2/w/1920/2414050250_9_1_1.jpg?ts=1674648860019" alt="error">
+   </div>
+
+   <div id="mdown">
+
+   </div>
+
+   <div id="downimg">
+    <img src="https://static.zara.net/photos///2023/V/T/1/p/2413/033/321/2/w/1922/2413033321_15_2_1.jpg?ts=1674060890772" alt="erro">
+   </div>
+
+   <div id="bdown">
+
+   </div>
+
+   <div id="grid">
+
+   </div>
+
+
+
+   <div class="footer">
+    <h4>JOIN OUR NEWSLETTER</h4>
+    <div class="foot">
+        <input type="email" placeholder="ENTER YOUR EMAIL ADDRESS HERE" id="mail">
+    </div>
+    <div class="social">
+        <p>INSTAGRAM</p>
+        <p>FACEBOOK</p>
+        <p>TWITTER</p>
+        <p>PINTREST</p>
+        <p>YOUTUBE</p>
+        <p>SPOTIFY</p>
+    </div>
+    </div>
+
+    <div class="last">
+    <div>
+        <h6>HELP</h6>
+        <p>MY ZARA ACCOUNT</p>
+        <p>ITEMS SIZES</p>
+        <p>GIFT OPTIONS</p>
+        <p>SHIPPING</p>
+        <p>PAYMENT AND INVOICES</p>
+        <p>MY PURCHASES</p>
+        <p>EXCHANGE, RETURN</p>
+        <p>ZARA EXPERIENCE</p>
+    </div>
+    <div>
+        <h6>FOLLOW US</h6>
+        <p>NEWSLETTER</p>
+        <p>INSTAGRAM</p>
+        <p>FACEBOOK</p>
+        <p>TWITTER</p>
+        <p>PINTREST</p>
+        <p>YOUTUBE</p>
+    </div>
+    <div>
+        <h6>COMPANY</h6>
+        <p>ABUT US</p>
+        <p>JOIN LIFE</p>
+        <p>OFFICES</p>
+        <p>STORES</p>
+        <p>WORK WITH US</p>
+    </div>
+    <div>
+        <h6>POLICES</h6>
+        <p>PRIVACY POLICIES</p>
+        <p>PURCHASE CONDITION</p>
+        <p>GIFT CARD OPTIONS</p>
+        <p>COOKIE SETTINGS</p>
+    </div>
+    </div>
+</body>
+
+<script>
+    function onclickmenu(){
+
+document.getElementById('menu').classList.toggle('icon');
+document.getElementById('nav').classList.toggle('change');
+}
+
+let mid = document.getElementById('middle')
+
+let midapi = `https://mocki.io/v1/7a06068f-d7de-4e87-89e0-e84f1d9884c8`
+
+let down = document.getElementById('mdown')
+
+let downapi = `https://mocki.io/v1/3a1fca4f-14fd-406d-9033-410185ce58c2`
+
+let bapi = `https://mocki.io/v1/85b3c199-9745-48bc-8493-e0736c576d71`
+
+let bdown = document.getElementById('bdown')
+
+let incart1 = JSON.parse(localStorage.getItem('incart1'))
+  if(incart1 == null){
+    incart1 = []
+  }
+
+datafetch()
+  async function datafetch(){
+
+    try{
+
+        let res = await fetch(midapi)
+        let data = await res.json()
+        display(data)
+        // console.log(data)
+        
+    }
+
+    catch(error){
+        console.log(error)
+    }
+  }
+
+
+
+function display(data){
+
+
+data.forEach((ele)=>{
+  ele.img
+    let parent = document.createElement('div')
+
+    let img = document.createElement('img')
+    img.setAttribute('src', ele.img)
+
+    let name = document.createElement('h6')
+    name.innerText = ele.name
+
+    let des = document.createElement('p')
+    des.innerText = ele.desc
+
+    let price = document.createElement('p')
+    price.innerText = '$ '+ ele.price
+
+    // let mat = document.createElement('p')
+    // mat.innerText = ele.material
+
+    let btn = document.createElement('button')
+    btn.innerText = '+'
+
+    btn.addEventListener('click', ()=>{
+       
+        if(check(ele)){
+            Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'PRODUCT ALREADY IN CART',
+
+})
+    }
+    else{
+        incart1.push({ ...ele, quantity: 1 });
+        localStorage.setItem("incart1", JSON.stringify(incart1));
+        Swal.fire({
+//   position: 'top-end',
+  icon: 'success',
+  title: 'PRODUCT ADDED TO CART',
+  showConfirmButton: false,
+  timer: 2000
+})
+    }
+
+    })
+    
+   
+    parent.append(img,name,des,price,btn)
+    
+    mid.append(parent)
+     })
+}
+
+
+datafetch2()
+  async function datafetch2(){
+
+    try{
+
+        let res2 = await fetch(downapi)
+        let data2 = await res2.json()
+        display2(data2)
+        console.log(data2)
+       
+    }
+
+    catch(error){
+        console.log(error)
+    }
+  }
+  function display2(data){
+
+
+data.forEach((ele)=>{
+  ele.img
+    let parent = document.createElement('div')
+
+    let img = document.createElement('img')
+    img.setAttribute('src', ele.img)
+
+    let name = document.createElement('h6')
+    name.innerText = ele.name
+
+    // let des = document.createElement('p')
+    // des.innerText = ele.desc
+
+    let price = document.createElement('p')
+    price.innerText = '$ '+ ele.price
+
+    // let mat = document.createElement('p')
+    // mat.innerText = ele.material
+
+    let btn = document.createElement('button')
+    btn.innerText = '+'
+
+    btn.addEventListener('click', ()=>{
+       
+    if(check(ele)){
+        Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'PRODUCT ALREADY IN CART',
+
+})
+    }
+    else{
+        incart1.push({ ...ele, quantity: 1 });
+        localStorage.setItem("incart1", JSON.stringify(incart1));
+        Swal.fire({
+//   position: 'top-end',
+  icon: 'success',
+  title: 'PRODUCT ADDED TO CART',
+  showConfirmButton: false,
+  timer: 2000
+})
+    }
+
+    })
+   
+
+    parent.append(img,name,price, btn)
+    
+    down.append(parent)
+     })
+}
+
+datafetch3()
+  async function datafetch3(){
+
+    try{
+
+        let res3 = await fetch(bapi)
+        let data3 = await res3.json()
+        display3(data3)
+        console.log(data3)
+        
+    }
+
+    catch(error){
+        console.log(error)
+    }
+  }
+
+  function display3(data){
+
+
+data.forEach((ele)=>{
+  ele.img
+    let parent = document.createElement('div')
+
+    let img = document.createElement('img')
+    img.setAttribute('src', ele.img)
+
+    let name = document.createElement('h6')
+    name.innerText = ele.name
+
+    // let des = document.createElement('p')
+    // des.innerText = ele.desc
+
+    let price = document.createElement('p')
+    price.innerText = '$ '+ ele.price
+
+    // let mat = document.createElement('p')
+    // mat.innerText = ele.material
+
+    let btn = document.createElement('button')
+    btn.innerText = '+'
+
+    btn.addEventListener('click', ()=>{
+       
+    if(check(ele)){
+        Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'PRODUCT ALREADY IN CART',
+
+})
+    }
+    else{
+        incart1.push({ ...ele, quantity: 1 });
+        localStorage.setItem("incart1", JSON.stringify(incart1));
+        Swal.fire({
+//   position: 'top-end',
+  icon: 'success',
+  title: 'PRODUCT ADDED TO CART',
+  showConfirmButton: false,
+  timer: 2000
+})
+    }
+
+    })
+
+
+    parent.append(img,name,price, btn)
+    
+    bdown.append(parent)
+     })
+}
+
+
+let grid = document.getElementById('grid');
+
+let gridapi = `https://mocki.io/v1/7bcde3ff-6026-4a38-ac17-beef8627c505`
+
+
+datafetch4()
+  async function datafetch4(){
+
+    try{
+
+        let res4 = await fetch(gridapi)
+        let data4 = await res4.json()
+        display4(data4)
+        console.log(data4)
+        
+    }
+
+    catch(error){
+        console.log(error)
+    }
+  }
+
+  function display4(data){
+
+
+data.forEach((ele)=>{
+  ele.img
+    let parent = document.createElement('div')
+
+    let img = document.createElement('img')
+    img.setAttribute('src', ele.img)
+
+    let name = document.createElement('h6')
+    name.innerText = ele.name
+
+    // let des = document.createElement('p')
+    // des.innerText = ele.desc
+
+    let price = document.createElement('p')
+    price.innerText = '$ '+ ele.price
+
+    // let mat = document.createElement('p')
+    // mat.innerText = ele.material
+
+    let btn = document.createElement('button')
+    btn.innerText = '+'
+
+    btn.addEventListener('click', ()=>{
+       
+    if(check(ele)){
+        Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'PRODUCT ALREADY IN CART',
+
+})
+    }
+    else{
+        incart1.push({ ...ele, quantity: 1 });
+        localStorage.setItem("incart1", JSON.stringify(incart1));
+        Swal.fire({
+//   position: 'top-end',
+  icon: 'success',
+  title: 'PRODUCT ADDED TO CART',
+  showConfirmButton: false,
+  timer: 2000
+})
+    }
+
+    })
+
+
+    parent.append(img,name,price, btn)
+    
+    grid.append(parent)
+     })
+}
+
+
+function check(ele){
+    for (let i = 0; i < incart1.length; i++) {
+        if (Number(incart1[i].bid) == Number(ele.bid)) {
+          return true;
+        }
+      }
+      return false;
+}
+
+
+let logpage = JSON.parse(localStorage.getItem('logp'))
+
+let username = document.getElementById('username')
+
+for(let i=0; i<logpage.length; i++){
+            username.innerText = logpage[i]
+        }
+</script>
+</html>
