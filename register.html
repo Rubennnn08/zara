@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Crear cuenta</title>
+
+  <!-- Mantengo SweetAlert2 como en tu código -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- TU CSS del navbar -->
+  <link rel="stylesheet" href="menu.css">
+
+  <style>
+    :root{
+      --bg:#fff;
+      --text:#111;
+      --muted:#666;
+      --hair:rgba(17,17,17,.18);
+      --letter:.14em;
+      --max:1180px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      padding-top:130px; /* igual que tus otras páginas */
+      font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    ul{ list-style:none; padding:0; margin:0; }
+
+    /* =========================
+       FORMATO ZARA (contenido)
+       ========================= */
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px 14px 64px;
+    }
+
+    .section-title{
+      border-top:1px solid var(--hair);
+      padding-top:14px;
+      margin-top:10px;
+    }
+    .section-title h5{
+      margin:0;
+      font-size:14px;
+      font-weight:600;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+
+    .formholder{
+      margin-top:14px;
+      max-width: 820px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    @media (min-width: 900px){
+      .formholder{ grid-template-columns: 1fr 1fr; gap: 26px; }
+    }
+
+    .rightside{
+      border-top:1px solid var(--hair);
+      padding-top:14px;
+    }
+
+    form{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"]{
+      width:100%;
+      border:none;
+      outline:none;
+      border-bottom:1px solid #111;
+      padding:10px 2px 8px;
+      background:#fff;
+      font-size:12px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+
+    /* Teléfono +34 */
+    #phone1{
+      display:flex;
+      align-items:flex-end;
+      gap:10px;
+    }
+    #phone1 span{
+      font-size:12px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      padding-bottom:8px;
+      white-space:nowrap;
+    }
+    #phone{
+      width:100%;
+    }
+
+    /* Checkboxes */
+    .checks{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top: 8px;
+      border-top:1px solid var(--hair);
+      padding-top:12px;
+    }
+    .checkline{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .checkline input{ margin-top: 2px; }
+    .checkline span{
+      font-size:11px;
+      color:#222;
+      letter-spacing:.04em;
+      line-height:1.4;
+    }
+
+    /* Botones (Zara minimal) */
+    .btn{
+      width:100%;
+      height:42px;
+      border:1px solid #111;
+      background:#fff;
+      color:#111;
+      cursor:pointer;
+      font-size:12px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .btn.primary{
+      background:#111;
+      color:#fff;
+    }
+
+    /* Loader SweetAlert (limpio) */
+    .custom-loader {
+      width: 50px;
+      height: 50px;
+      position: relative;
+      margin: 20px auto 0;
+    }
+    .custom-loader::before,
+    .custom-loader::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid transparent;
+      border-top-color: #000;
+      animation: spin 1s linear infinite;
+    }
+    .custom-loader::after {
+      border-top-color: #555;
+      animation-delay: 0.15s;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .swal2-title {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: var(--letter);
+      text-transform: uppercase;
+    }
+
+    /* Columna derecha vacía en desktop para “aire” */
+    .ghost{
+      display:none;
+      border-top:1px solid var(--hair);
+      padding-top:14px;
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      line-height:1.6;
+    }
+    @media (min-width: 900px){
+      .ghost{ display:block; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ✅ NAVBAR EXACTO (copiado tal cual de tu HTML anterior) -->
+  <div class="navbar1">
+      <div id="menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+      </div>
+      <div class="logo"><a href="./RP.html"><img src="logo.png" alt="Logo"></a></div>
+      <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
+      <div class="help">
+          <a href="./login.html">INICIAR SESIÓN</a>
+          <a href="./help.html">AYUDA</a>
+          <a href="./help.html">CESTA [0]</a>
+          <a href="./MYPLNAER.html">MY PLANER</a>
+          <a href="./Agenda.html">AGENDA</a>
+      </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <main class="wrap">
+    <div class="section-title">
+      <h5>Datos personales</h5>
+    </div>
+
+    <div class="formholder">
+      <section class="rightside">
+        <form id="form1">
+          <input type="email" placeholder="E-mail" id="mail" required>
+          <input type="password" placeholder="Contraseña" id="pass" required>
+          <input type="text" placeholder="Nombre" id="name" required>
+          <input type="text" placeholder="Apellidos" id="add">
+
+          <div id="phone1">
+            <span>+34</span>
+            <input type="text" placeholder="Teléfono" id="phone" inputmode="numeric">
+          </div>
+
+          <!-- Botón estilo Zara: si quieres que sea link, lo dejo como button normal -->
+          <button class="btn" type="button" onclick="window.location.href='./RP.html'">
+            Crear experiencia personalizada
+          </button>
+
+          <div class="checks">
+            <label class="checkline">
+              <input type="checkbox" id="checkbox1">
+              <span>Quiero recibir comunicaciones comerciales personalizadas de ZARA a través del email.</span>
+            </label>
+
+            <label class="checkline">
+              <input type="checkbox" id="checkbox2" required>
+              <span>He podido leer y entiendo la Política de Privacidad y Cookies.</span>
+            </label>
+          </div>
+
+          <button class="btn primary" type="submit" id="submit">Crear cuenta</button>
+        </form>
+      </section>
+
+      <aside class="ghost">
+        Completa tu cuenta para una experiencia más personalizada.
+      </aside>
+    </div>
+  </main>
+
+<script>
+  // Registro simple (igual lógica que tu código)
+  let loginData = JSON.parse(localStorage.getItem('regdata'));
+  if (loginData == null) loginData = [];
+
+  const logform = document.getElementById('form1');
+  const logmail  = document.getElementById('mail');
+  const logpass = document.getElementById('pass');
+  const logname = document.getElementById('name');
+
+  logform.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // Validación checkbox privacidad
+    const privacy = document.getElementById("checkbox2");
+    if(!privacy.checked){
+      alert("Debes aceptar la Política de Privacidad.");
+      return;
+    }
+
+    const loginform = {
+      mail: logmail.value,
+      password: logpass.value,
+      name: logname.value
+    };
+
+    loginData.push(loginform);
+    localStorage.setItem('regdata', JSON.stringify(loginData));
+
+    Swal.fire({
+      title: 'Comenzando...',
+      html: `<div class="custom-loader"></div>`,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    });
+
+    setTimeout(() => {
+      window.location.href = './RP.html';
+    }, 1800);
+  });
+</script>
+
+</body>
+</html>

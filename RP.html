@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Perfil + Recomendaciones</title>
+
+<link rel="stylesheet" href="menu.css" />
+
+<style>
+  :root{
+    --bg:#fff; --text:#111; --muted:#666;
+    --hair:rgba(17,17,17,.18);
+    --line:rgba(17,17,17,.55);
+    --shadow:0 18px 60px rgba(0,0,0,.18);
+    --letter:.14em;
+    --cardMaxH:520px; /* videos grandes */
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding-top:130px;
+    background:var(--bg);
+    color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+  .hidden{display:none}
+
+  .container{max-width:980px;margin:0 auto;padding:18px 14px 64px;}
+  @media (min-width: 720px){ .container{padding:22px 18px 70px;} }
+
+  .title{
+    text-align:center;margin:10px 0 8px;font-weight:600;
+    letter-spacing:var(--letter);text-transform:uppercase;font-size:16px;line-height:1.25;
+  }
+  @media (min-width: 720px){ .title{font-size:18px;} }
+  .subtitle{
+    text-align:center;color:var(--muted);margin:0 auto 16px;max-width:60ch;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;line-height:1.6;
+  }
+  @media (min-width: 720px){ .subtitle{font-size:12px;margin-bottom:18px;} }
+
+  .panel{border-top:1px solid var(--hair);padding-top:16px;margin-top:12px;}
+
+  .button{
+    width:100%;
+    padding:13px 12px;
+    border:1px solid #111;
+    background:#111;
+    color:#fff;
+    cursor:pointer;
+    font-size:12px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    transition:transform .12s ease;
+    touch-action:manipulation;
+  }
+  .button:active{transform:scale(.99)}
+  .button.secondary{background:#fff;color:#111;border:1px solid var(--hair);}
+  .button.exit{background:#111;color:#fff;border:1px solid #111;}
+  .btn-row{display:grid;gap:10px;max-width:420px;margin:0 auto;}
+
+  .form-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:12px;}
+  @media (min-width: 860px){ .form-grid{grid-template-columns:1fr 1fr;gap:22px;} }
+
+  .inputs{border-top:1px solid var(--hair);padding-top:14px;}
+  .input-group{margin-bottom:14px;border-bottom:1px solid var(--hair);padding-bottom:12px;}
+  label{
+    display:block;font-size:11px;letter-spacing:var(--letter);
+    text-transform:uppercase;margin-bottom:8px;
+  }
+  input[type="number"], input[type="range"], select{width:100%}
+  input[type="number"], select{
+    border:1px solid var(--hair);
+    padding:12px 10px;
+    outline:none;
+    font-size:13px;
+    background:#fff;
+  }
+  input[type="range"]{accent-color:#111}
+  .value{display:block;margin-top:8px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;line-height:1.4;}
+  .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+  @media (min-width: 520px){ .actions{grid-template-columns:1fr 1fr;} }
+
+  .side{border-top:1px solid var(--hair);padding-top:14px;}
+  .avatar-wrap{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:flex-start;}
+  .avatar{width:min(320px, 90vw);height:auto;opacity:.95;transition:transform .25s ease;will-change:transform;}
+  .pill{
+    width:100%;max-width:360px;border:1px solid var(--hair);
+    padding:10px 12px;font-size:12px;letter-spacing:var(--letter);
+    text-transform:uppercase;background:#fff;
+  }
+
+  /* Pantalla tipo cuerpo */
+  #body-screen{max-width:980px;margin:0 auto;padding:18px 14px 64px;}
+  .body-card{max-width:520px;margin:0 auto;border-top:1px solid var(--hair);padding-top:16px;text-align:center;}
+  .body-img{width:100%;border:1px solid var(--hair);border-radius:10px;background:#fafafa;overflow:hidden;margin-top:10px;}
+  .body-img img{width:100%;height:auto;display:block;}
+  .body-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
+  @media (min-width: 520px){ .body-actions{grid-template-columns:1fr 1fr;} }
+
+  /* Reco (videos grandes) */
+  #reco-screen{height: calc(100vh - 130px);overflow:hidden;display:flex;flex-direction:column;}
+  .rec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:10px 0 12px;flex-wrap:wrap;}
+  .rec-head h1{margin:0;font-size:18px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
+  .rec-head p{margin:0;font-size:11px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;}
+  @media (min-width: 720px){ .rec-head h1{font-size:20px;} .rec-head p{font-size:12px;} }
+
+  .strip{border-top:1px solid var(--hair);padding-top:12px;display:grid;grid-template-columns:1fr;gap:10px;}
+  @media (min-width: 720px){ .strip{grid-template-columns:repeat(3, 1fr);gap:12px;} }
+
+  .grid{
+    flex:1;overflow:hidden;margin-top:12px;display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px;
+    min-height:120px;
+  }
+  @media (max-width: 520px){ .grid{grid-template-columns:1fr;} }
+
+  .card{cursor:pointer;user-select:none;background:#fff;}
+  .media{
+    position:relative;
+    aspect-ratio:3/4;
+    overflow:hidden;
+    background:#000;
+    max-height: var(--cardMaxH);
+    border:1px solid var(--hair);
+  }
+  /* Video en loop sin controles + sin clicks */
+  .media video{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    background:#000;
+    pointer-events:none;
+  }
+  .overlay{
+    position:absolute;left:10px;right:10px;bottom:10px;
+    display:flex;align-items:center;justify-content:center;
+    pointer-events:none;
+  }
+  .overlay span{
+    background:rgba(255,255,255,.88);
+    border:1px solid rgba(0,0,0,.15);
+    padding:8px 10px;
+    font-size:11px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+  }
+  .meta{padding:8px 2px 2px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;}
+
+  .pager{border-top:1px solid var(--hair);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .pager .count{font-size:10px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;}
+  .pager .nav{display:flex;gap:10px;}
+  .pager button{border:1px solid var(--hair);background:#fff;color:#111;height:40px;width:44px;cursor:pointer;letter-spacing:var(--letter);text-transform:uppercase;}
+  .pager button:disabled{opacity:.35;cursor:default;}
+
+  .note{margin-top:10px;padding-top:10px;border-top:1px solid var(--hair);color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;text-align:center;}
+  .reco-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:12px auto 0;}
+  @media (max-width: 420px){ .reco-actions{grid-template-columns:1fr;} }
+
+  #reco-screen.is-empty .grid{flex:0;min-height:0;margin-top:10px;}
+  #reco-screen.is-empty .pager{display:none;}
+  .empty-state{border-top:1px solid var(--hair);padding-top:14px;margin-top:10px;text-align:left;}
+  .empty-state .t{font-size:12px;letter-spacing:var(--letter);text-transform:uppercase;margin:0 0 6px;color:#111;}
+  .empty-state .s{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted);}
+
+  /* Modal galería */
+  .modal{position:fixed;inset:0;background:rgba(255,255,255,.96);display:none;z-index:80;}
+  .modal.open{display:block;}
+  .modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hair);background:#fff;position:sticky;top:0;}
+  .modal-title{flex:1;text-align:center;font-size:14px;letter-spacing:var(--letter);text-transform:uppercase;font-weight:600;}
+  .close{width:40px;height:40px;border:1px solid transparent;background:transparent;cursor:pointer;position:relative;}
+  .close::before,.close::after{content:"";position:absolute;top:50%;left:50%;width:18px;height:1px;background:#111;}
+  .close::before{transform:translate(-50%,-50%) rotate(45deg)}
+  .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
+
+  .modal-content{max-width:980px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr;gap:16px;}
+  @media (min-width: 860px){ .modal-content{grid-template-columns:1.2fr .8fr;gap:22px;padding:18px;} }
+
+  .gallery{display:flex;flex-direction:column;gap:10px;}
+  .gallery-main{width:100%;height:auto;display:block;box-shadow:var(--shadow);background:#fff;cursor:pointer;}
+  .thumbs{display:flex;gap:10px;overflow:auto;padding-bottom:6px;}
+  .thumbs button{border:1px solid var(--hair);background:#fff;padding:0;cursor:pointer;flex:0 0 auto;width:92px;height:120px;overflow:hidden;}
+  .thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
+  .below-back{display:flex;gap:10px;}
+  .below-back .button{width:auto}
+
+  .panel-right h2{margin:0 0 8px;font-size:16px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
+  .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
+  .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar1">
+  <div id="menu">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="logo"><a href="./RP.html"><img src="logo.png" alt="Logo"></a></div>
+  <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
+  <div class="help">
+    <a href="./login.html">INICIAR SESIÓN</a>
+    <a href="./help.html">AYUDA</a>
+    <a href="./help.html">CESTA [0]</a>
+    <a href="./MYPLNAER.html">MY PLANER</a>
+    <a href="./Agenda.html">AGENDA</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Pantalla 1 -->
+  <section id="start-screen">
+    <div class="title">CREA TU PERFIL<br>PARA UNA EXPERIENCIA PERSONALIZADA</div>
+    <p class="subtitle">Adaptamos las prendas a tu tipo de cuerpo para ayudarte a elegir mejor.</p>
+    <div class="panel">
+      <div class="btn-row">
+        <button class="button" onclick="selectGender('hombre')">Hombre</button>
+        <button class="button" onclick="selectGender('mujer')">Mujer</button>
+        <button class="button secondary" onclick="selectGender('neutro')">Género no definido</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla 2 -->
+  <section id="profile-form" class="hidden">
+    <div class="title">COMPLETA TU PERFIL</div>
+    <p class="subtitle">Introduce las medidas. El tipo se calcula con espalda, cintura y cadera.</p>
+
+    <div class="form-grid">
+      <div class="inputs">
+        <div class="input-group">
+          <label for="height">Altura</label>
+          <input type="range" id="height" min="140" max="220" value="170" />
+          <span id="height-value" class="value">170 cm</span>
+        </div>
+
+        <div class="input-group">
+          <label for="weight">Peso (opcional)</label>
+          <input type="number" id="weight" placeholder="kg" inputmode="numeric">
+        </div>
+
+        <!-- ✅ NUEVO: PELO -->
+        <div class="input-group">
+          <label for="hair">Tipo de pelo</label>
+          <select id="hair">
+            <option value="rubia">Rubia</option>
+            <option value="morena">Morena</option>
+          </select>
+          <span class="value">Se usará para la imagen del tipo de cuerpo</span>
+        </div>
+
+        <div class="input-group">
+          <label for="back">Espalda</label>
+          <input type="number" id="back" placeholder="cm" inputmode="numeric">
+        </div>
+
+        <div class="input-group">
+          <label for="waist">Cintura</label>
+          <input type="number" id="waist" placeholder="cm" inputmode="numeric">
+        </div>
+
+        <div class="input-group">
+          <label for="hips">Cadera</label>
+          <input type="number" id="hips" placeholder="cm" inputmode="numeric">
+          <span id="hips-hint" class="value">Introduce espalda, cintura y cadera para calcular el tipo</span>
+        </div>
+
+        <div class="input-group">
+          <label for="shoes">Talla calzado</label>
+          <input type="number" id="shoes" placeholder="Número" inputmode="numeric">
+        </div>
+
+        <div class="actions">
+          <button class="button" onclick="processProfile()">Continuar</button>
+          <button class="button secondary" type="button" onclick="backToStart()">Volver</button>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="avatar-wrap">
+          <img id="avatar" class="avatar" src="mujer.png" alt="Avatar">
+          <div class="pill" id="pill-body">TIPO DE CUERPO: —</div>
+          <div class="pill" style="max-width:360px;">
+            Sugerencia: se calcula con espalda, cintura y cadera.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Pantalla 3 -->
+  <section id="body-screen" class="hidden">
+    <div class="title">TU TIPO DE CUERPO</div>
+    <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
+
+    <div class="body-card">
+      <div class="pill" id="body-pill">TIPO: —</div>
+
+      <div class="body-img">
+        <img id="body-image-final" src="" alt="Tipo de cuerpo">
+      </div>
+
+      <div class="body-actions">
+        <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
+        <button class="button secondary" type="button" onclick="backToForm()">Editar medidas</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla 4 -->
+  <section id="reco-screen" class="hidden">
+    <div class="rec-head">
+      <h1>RECOMENDACIONES</h1>
+      <p id="reco-sub">BASADO EN TU PERFIL</p>
+    </div>
+
+    <div class="strip">
+      <div class="pill" id="pill-gender">GÉNERO: —</div>
+      <div class="pill" id="pill-hips">CADERA: —</div>
+      <div class="pill" id="pill-type">TIPO: —</div>
+    </div>
+
+    <section class="grid" id="grid" aria-label="Recomendaciones"></section>
+
+    <div id="emptyState" class="empty-state hidden">
+      <p class="t">NO HAY RECOMENDACIONES DISPONIBLES</p>
+      <p class="s">PRUEBA A EDITAR EL PERFIL O CAMBIAR MEDIDAS</p>
+    </div>
+
+    <div class="pager">
+      <div class="count" id="pageInfo">1 / 1</div>
+      <div class="nav">
+        <button type="button" id="prevBtn" aria-label="Anterior">←</button>
+        <button type="button" id="nextBtn" aria-label="Siguiente">→</button>
+      </div>
+    </div>
+
+    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES</div>
+
+    <div class="reco-actions">
+      <button class="button secondary" type="button" onclick="restart()">EDITAR PERFIL</button>
+      <button class="button exit" type="button" onclick="exitApp()">SALIR</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- Modal (galería) -->
+<section class="modal" id="modal" aria-hidden="true" role="dialog" aria-label="Imágenes relacionadas">
+  <div class="modal-top">
+    <button class="button secondary" type="button" id="backModalBtn" style="width:auto;padding:10px 12px;">
+      VOLVER ATRÁS
+    </button>
+    <div class="modal-title" id="modalTitle">IMÁGENES</div>
+    <button class="close" type="button" aria-label="Cerrar" id="closeModal"></button>
+  </div>
+
+  <div class="modal-content">
+    <div class="gallery">
+      <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal" title="Pincha para volver atrás">
+      <div class="below-back">
+        <button class="button secondary" type="button" id="backBelowBtn">VOLVER ATRÁS</button>
+      </div>
+      <div id="thumbs" class="thumbs" aria-label="Miniaturas"></div>
+    </div>
+
+    <aside class="panel-right">
+      <h2 id="modalName">—</h2>
+      <div class="ref" id="modalTag">—</div>
+      <p class="p" id="modalDesc">—</p>
+    </aside>
+  </div>
+</section>
+
+<script>
+/* ===== RUTAS ===== */
+function imgPath(base){ return `img/${base}.jpg`; }
+function videoPath(base){ return `video/${base}.mp4`; } // vídeos en img/
+
+/* ===== ITEMS: videos + imágenes relacionadas ===== */
+const LOOKS = [
+  // TRIÁNGULO INVERTIDO
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
+    video: videoPath('triangulo1'),
+    images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).' },
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
+    video: videoPath('triangulo2'),
+    images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).' },
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
+    video: videoPath('triangulo3'),
+    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37') ],
+    desc:'Video + imágenes relacionadas (triángulo invertido).' },
+
+
+  // RELOJ DE ARENA
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
+    video: videoPath('relojarena1'),
+    images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
+    desc:'Video + imágenes relacionadas (reloj de arena).' },
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
+    video: videoPath('relojarena2'),
+    images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25'),],
+    desc:'Video + imágenes relacionadas (reloj de arena).' },
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
+    video: videoPath('relojarena3'),
+    images:[imgPath('relojarena3'), imgPath('relojarena31'), imgPath('relojarena32'), imgPath('relojarena33')],
+    desc:'Video + imágenes relacionadas (reloj de arena).' },
+
+
+  // REDONDO
+  { gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
+    video: videoPath('redondo1'),
+    images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13') , imgPath('redondo14'), imgPath('redondo15')],
+    desc:'Video + imágenes relacionadas (redondo).' },
+  { gender:'mujer', bodyType:'redondo', name:'REDONDO 2', tag:'SUGERENCIA',
+    video: videoPath('redondo2'),
+    images:[imgPath('redondo2'), imgPath('redondo21'), imgPath('redondo22'), imgPath('redondo23'), imgPath('redondo24'), imgPath('redondo25'), imgPath('redondo26'), imgPath('redondo27')],
+    desc:'Video + imágenes relacionadas (redondo).' },
+
+  // GENÉRICO (NO DEFINIDO)
+  { gender:'mujer', bodyType:'generico', name:'GENÉRICO 1', tag:'GENÉRICO',
+    video: videoPath('generico1'),
+    images:[imgPath('generico1'), imgPath('generico2')],
+    desc:'Genérico cuando no encaja en un tipo.' },
+  { gender:'mujer', bodyType:'generico', name:'GENÉRICO 2', tag:'GENÉRICO',
+    video: videoPath('generico2'),
+    images:[imgPath('generico2'), imgPath('generico1')],
+    desc:'Genérico cuando no encaja en un tipo.' },
+];
+
+const MIN_SCALE = 0.7, MAX_SCALE = 1.35;
+let selectedGender = localStorage.getItem("gender") || "mujer";
+let lastBodyType = null;
+
+const els = {
+  start: document.getElementById("start-screen"),
+  form: document.getElementById("profile-form"),
+  body: document.getElementById("body-screen"),
+  reco: document.getElementById("reco-screen"),
+
+  height: document.getElementById("height"),
+  heightValue: document.getElementById("height-value"),
+  weight: document.getElementById("weight"),
+
+  hair: document.getElementById("hair"), // ✅ NUEVO
+
+  back: document.getElementById("back"),
+  waist: document.getElementById("waist"),
+  hips: document.getElementById("hips"),
+  shoes: document.getElementById("shoes"),
+  hipsHint: document.getElementById("hips-hint"),
+
+  avatar: document.getElementById("avatar"),
+  pillBody: document.getElementById("pill-body"),
+
+  bodyPill: document.getElementById("body-pill"),
+  bodyFinalImg: document.getElementById("body-image-final"),
+
+  pillGender: document.getElementById("pill-gender"),
+  pillHips: document.getElementById("pill-hips"),
+  pillType: document.getElementById("pill-type"),
+  recoSub: document.getElementById("reco-sub"),
+  grid: document.getElementById("grid"),
+  emptyState: document.getElementById("emptyState"),
+
+  prevBtn: document.getElementById("prevBtn"),
+  nextBtn: document.getElementById("nextBtn"),
+  pageInfo: document.getElementById("pageInfo"),
+
+  modal: document.getElementById("modal"),
+  closeModal: document.getElementById("closeModal"),
+  backModalBtn: document.getElementById("backModalBtn"),
+  backBelowBtn: document.getElementById("backBelowBtn"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalName: document.getElementById("modalName"),
+  modalTag: document.getElementById("modalTag"),
+  modalDesc: document.getElementById("modalDesc"),
+  galleryMain: document.getElementById("galleryMain"),
+  thumbs: document.getElementById("thumbs"),
+};
+
+function toggle(el, show){ el.classList.toggle("hidden", !show); }
+
+function selectGender(gender){
+  selectedGender = gender;
+  localStorage.setItem("gender", gender);
+  els.avatar.src = `${gender}.png`;
+  toggle(els.start, false);
+  toggle(els.form, true);
+  updateHeightAvatar();
+  updatePillFromMeasures();
+}
+function backToStart(){ toggle(els.form,false); toggle(els.start,true); }
+function backToForm(){ toggle(els.body,false); toggle(els.form,true); }
+function restart(){ toggle(els.reco,false); toggle(els.form,true); }
+
+function updateHeightAvatar(){
+  const h = Number(els.height.value);
+  els.heightValue.textContent = `${h} cm`;
+  const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, h / 200));
+  els.avatar.style.transform = `scale(${scale})`;
+}
+
+function isValidNumber(v){ return v && !isNaN(v) && v > 0; }
+
+function displayBodyTypeLabel(type){
+  if(type === "triangulo_invertido") return "TRIÁNGULO INVERTIDO";
+  if(type === "reloj_arena") return "RELOJ DE ARENA";
+  if(type === "redondo") return "REDONDO";
+  return "NO DEFINIDO";
+}
+
+/* SOLO 3 TIPOS, SI NO -> no_definido */
+function getBodyTypeFromMeasures() {
+  const backValue = Number(els.back.value);
+  const waistValue = Number(els.waist.value);
+  const hipsValue = Number(els.hips.value);
+
+  if (backValue >= 90 && backValue <= 100 && waistValue >= 50 && waistValue <= 70 && hipsValue >= 70 && hipsValue <= 89)
+    return "triangulo_invertido";
+
+  if (backValue >= 80 && backValue <= 95 && waistValue >= 50 && waistValue <= 65 && hipsValue >= 80 && hipsValue <= 95)
+    return "reloj_arena";
+
+  if (backValue >= 80 && backValue <= 100 && waistValue >= 105 && waistValue <= 110 && hipsValue >= 80 && hipsValue <= 100)
+    return "redondo";
+
+  return "no_definido";
+}
+
+/* ✅ IMAGEN TIPO CUERPO SEGÚN (PELO + TIPO)
+   - morenarelojarena.jpg / rubiarelojarena.jpg
+   - morena + redondo -> morenaredondo.jpg
+   - etc
+   - no definido -> morena_generico.jpg o rubia_generico.jpg (si no existe, fallback)
+*/
+function bodyImageForType(type, hair){
+  const h = (hair === "morena") ? "morena" : "rubia";
+
+  let base;
+  if(type === "triangulo_invertido") base = "trianguloinvertido";
+  else if(type === "reloj_arena") base = "relojarena";
+  else if(type === "redondo") base = "redondo";
+  else base = "generico";
+
+  // 1) intentamos img/morenarelojarena.jpg, etc
+  if(base !== "generico") return `img/${h}${base}.jpg`;
+
+  // 2) si es generico, intentamos img/morena_generico.jpg o img/rubia_generico.jpg
+  return `img/${h}_generico.jpg`;
+}
+
+/* ✅ Setter robusto: si no existe la imagen, cae a img/generico1.jpg */
+function setTypeImageRobust(type, hair){
+  const candidate = bodyImageForType(type, hair);
+  els.bodyFinalImg.onerror = () => {
+    els.bodyFinalImg.onerror = null;
+    els.bodyFinalImg.src = "img/generico1.jpg";
+  };
+  els.bodyFinalImg.src = candidate;
+}
+
+/* FIX: recalcular pill */
+let rafId = 0;
+function scheduleMeasuresHint(){
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(updatePillFromMeasures);
+}
+
+function updatePillFromMeasures(){
+  const backValue = Number(els.back.value);
+  const waistValue = Number(els.waist.value);
+  const hipsValue = Number(els.hips.value);
+
+  if(!isValidNumber(backValue) || !isValidNumber(waistValue) || !isValidNumber(hipsValue)){
+    els.hipsHint.textContent = "Introduce espalda, cintura y cadera para calcular el tipo";
+    els.pillBody.textContent = "TIPO DE CUERPO: —";
+    return;
+  }
+
+  const type = getBodyTypeFromMeasures();
+  els.pillBody.textContent = `TIPO DE CUERPO: ${displayBodyTypeLabel(type)}`;
+
+  els.hipsHint.textContent = (type === "no_definido")
+    ? `NO DEFINIDO: se mostrarán recomendaciones genéricas`
+    : `ESPALDA ${backValue} · CINTURA ${waistValue} · CADERA ${hipsValue} → ${displayBodyTypeLabel(type)}`;
+}
+
+function processProfile(){
+  const backValue = Number(els.back.value);
+  const waistValue = Number(els.waist.value);
+  const hipsValue = Number(els.hips.value);
+
+  if(!isValidNumber(backValue) || !isValidNumber(waistValue) || !isValidNumber(hipsValue)){
+    alert("Introduce ESPALDA, CINTURA y CADERA.");
+    return;
+  }
+
+  lastBodyType = getBodyTypeFromMeasures();
+  localStorage.setItem("bodyType", lastBodyType);
+
+  const profile = {
+    gender: selectedGender,
+    hair: els.hair.value, // ✅ NUEVO
+    height: Number(els.height.value),
+    weight: Number(els.weight.value) || null,
+    back: backValue,
+    waist: waistValue,
+    hips: hipsValue,
+    shoes: Number(els.shoes.value) || null
+  };
+  localStorage.setItem("profile", JSON.stringify(profile));
+
+  els.bodyPill.textContent = `TIPO: ${displayBodyTypeLabel(lastBodyType)}`;
+  setTypeImageRobust(lastBodyType, profile.hair); // ✅ IMAGEN POR PELO+TIPO con fallback
+
+  toggle(els.form, false);
+  toggle(els.body, true);
+}
+
+function goToReco(){
+  const profile = JSON.parse(localStorage.getItem("profile") || "null");
+  const bodyType = localStorage.getItem("bodyType") || lastBodyType;
+  if(!profile || !bodyType){
+    alert("Falta información del perfil.");
+    return;
+  }
+  renderRecommendations(profile, bodyType);
+}
+
+/* ===== Reco sin scroll + paginación ===== */
+const recoState = { items: [], page: 0, perPage: 2 };
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function renderRecommendations(profile, bodyType){
+  const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
+
+  els.pillGender.textContent = `GÉNERO: ${String(profile.gender).toUpperCase()}`;
+  els.pillHips.textContent = `CADERA: ${profile.hips} CM`;
+  els.pillType.textContent = `TIPO: ${displayBodyTypeLabel(bodyType)}`;
+
+  els.recoSub.textContent = (bodyType === "no_definido")
+    ? `RECOMENDACIONES GENÉRICAS (MEDIDAS NO CLASIFICADAS)`
+    : `PERSONAS CON TIPO SIMILAR (${displayBodyTypeLabel(bodyType)})`;
+
+  let matches = LOOKS.filter(x => x.bodyType === effectiveType && x.gender === profile.gender);
+  if(matches.length === 0) matches = LOOKS.filter(x => x.bodyType === effectiveType && x.gender === "neutro");
+  if(matches.length === 0) matches = [];
+
+  recoState.items = matches;
+  recoState.page = 0;
+
+  els.reco.classList.remove("is-empty");
+  toggle(els.body, false);
+  toggle(els.reco, true);
+
+  requestAnimationFrame(() => {
+    computeRecoLayout();
+    renderRecoPage();
+  });
+}
+
+function computeRecoLayout(){
+  if(els.reco.classList.contains("hidden")) return;
+
+  if(recoState.items.length === 0){
+    document.documentElement.style.setProperty("--cardMaxH", `520px`);
+    return;
+  }
+
+  const cols = window.innerWidth <= 520 ? 1 : 2;
+  const rows = 1;
+
+  const head = els.reco.querySelector(".rec-head");
+  const strip = els.reco.querySelector(".strip");
+  const pager = els.reco.querySelector(".pager");
+  const note = els.reco.querySelector(".note");
+  const actions = els.reco.querySelector(".reco-actions");
+
+  const used =
+    (head?.offsetHeight || 0) +
+    (strip?.offsetHeight || 0) +
+    (pager?.offsetHeight || 0) +
+    (note?.offsetHeight || 0) +
+    (actions?.offsetHeight || 0) +
+    24;
+
+  const totalH = els.reco.clientHeight;
+  const availableForGrid = Math.max(240, totalH - used);
+
+  const gap = 14;
+  const cardMaxH = Math.floor((availableForGrid - gap * (rows - 1)) / rows);
+
+  document.documentElement.style.setProperty("--cardMaxH", `${cardMaxH}px`);
+
+  recoState.perPage = cols * rows;
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  recoState.page = Math.min(recoState.page, totalPages - 1);
+}
+
+function renderRecoPage(){
+  const isEmpty = recoState.items.length === 0;
+
+  els.reco.classList.toggle("is-empty", isEmpty);
+  els.emptyState.classList.toggle("hidden", !isEmpty);
+
+  if(isEmpty){
+    els.grid.innerHTML = "";
+    els.pageInfo.textContent = "1 / 1";
+    els.prevBtn.disabled = true;
+    els.nextBtn.disabled = true;
+    return;
+  }
+
+  const start = recoState.page * recoState.perPage;
+  const end = start + recoState.perPage;
+  const slice = recoState.items.slice(start, end);
+
+  els.grid.innerHTML = slice.map(item => {
+    const imagesPacked = (item.images || []).join("|");
+    const poster = item.images?.[0] || "";
+    return `
+      <article class="card" tabindex="0"
+        data-name="${escapeHtml(item.name)}"
+        data-tag="${escapeHtml(item.tag)}"
+        data-desc="${escapeHtml(item.desc)}"
+        data-images="${escapeHtml(imagesPacked)}">
+        <div class="media">
+          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+            <source src="${item.video}" type="video/mp4">
+          </video>
+          <div class="overlay"><span>VER IMÁGENES</span></div>
+        </div>
+        <div class="meta">
+          <span>${escapeHtml(item.tag)}</span>
+          <span>VIDEO</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  els.pageInfo.textContent = `${recoState.page + 1} / ${totalPages}`;
+  els.prevBtn.disabled = recoState.page <= 0;
+  els.nextBtn.disabled = recoState.page >= totalPages - 1;
+}
+
+els.prevBtn.addEventListener("click", () => {
+  recoState.page = Math.max(0, recoState.page - 1);
+  renderRecoPage();
+});
+els.nextBtn.addEventListener("click", () => {
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  recoState.page = Math.min(totalPages - 1, recoState.page + 1);
+  renderRecoPage();
+});
+
+/* Click abre galería */
+els.grid.addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+  if(!card) return;
+
+  const images = (card.dataset.images || "").split("|").filter(Boolean);
+  openModal({
+    name: card.dataset.name,
+    tag: card.dataset.tag,
+    desc: card.dataset.desc,
+    images
+  });
+});
+els.grid.addEventListener("keydown", (e) => {
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const card = e.target.closest(".card");
+  if(!card) return;
+  e.preventDefault();
+
+  const images = (card.dataset.images || "").split("|").filter(Boolean);
+  openModal({
+    name: card.dataset.name,
+    tag: card.dataset.tag,
+    desc: card.dataset.desc,
+    images
+  });
+});
+
+window.addEventListener("resize", () => {
+  requestAnimationFrame(() => {
+    computeRecoLayout();
+    renderRecoPage();
+  });
+});
+
+/* SALIR */
+function exitApp(){
+  closeModal();
+  toggle(els.reco, false);
+  toggle(els.start, true);
+}
+
+/* Modal galería */
+function openModal({name, tag, desc, images}){
+  els.modal.classList.add("open");
+  els.modal.setAttribute("aria-hidden","false");
+  els.modalTitle.textContent = String(name).toUpperCase();
+  els.modalName.textContent = String(name).toUpperCase();
+  els.modalTag.textContent = String(tag).toUpperCase();
+  els.modalDesc.textContent = desc;
+
+  const safeImages = Array.isArray(images) ? images : [];
+  const first = safeImages[0] || "";
+
+  els.galleryMain.src = first;
+  els.galleryMain.alt = name;
+
+  els.thumbs.innerHTML = safeImages.map((src, idx) => `
+    <button type="button" data-src="${escapeHtml(src)}" aria-label="Imagen ${idx+1}">
+      <img src="${src}" alt="Miniatura ${idx+1}">
+    </button>
+  `).join("");
+
+  els.thumbs.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      els.galleryMain.src = btn.dataset.src;
+    });
+  });
+
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+  els.modal.classList.remove("open");
+  els.modal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+
+els.closeModal.addEventListener("click", closeModal);
+els.backModalBtn.addEventListener("click", closeModal);
+els.backBelowBtn.addEventListener("click", closeModal);
+els.galleryMain.addEventListener("click", closeModal);
+
+els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeModal(); });
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
+});
+
+/* Eventos */
+els.height.addEventListener("input", updateHeightAvatar);
+els.back.addEventListener("input", scheduleMeasuresHint);
+els.waist.addEventListener("input", scheduleMeasuresHint);
+els.hips.addEventListener("input", scheduleMeasuresHint);
+
+/* ✅ si cambia pelo, recalcula pill (y se usará al continuar) */
+els.hair.addEventListener("change", () => {
+  updatePillFromMeasures();
+});
+
+(function init(){
+  // si ya había perfil guardado, precargar pelo
+  const saved = JSON.parse(localStorage.getItem("profile") || "null");
+  if(saved?.hair && els.hair){
+    els.hair.value = saved.hair;
+  }
+  els.avatar.src = `${selectedGender}.png`;
+  updateHeightAvatar();
+})();
+</script>
+
+</body>
+</html>
