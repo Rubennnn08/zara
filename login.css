@@ -1,147 +1,177 @@
 /* Reset y básicos */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
-body, html {
-    height: 100%;
+html, body {
+  height: 100%;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 /* Contenedor principal */
 .container {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  min-height: 100vh;
 }
 
 /* Parte izquierda: Formulario */
 .left {
-    flex: 1;
-    padding: 250px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  flex: 1;
+  padding: clamp(20px, 6vw, 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .logo img {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
+  max-width: 140px;
+  height: auto;
+  display: block;
 }
 
 .left h2 {
-    font-weight: 400;
-    margin-bottom: 20px;
+  font-weight: 400;
+  margin-bottom: 20px;
 }
 
+/* Formulario */
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 input {
-    padding: 12px;
-    border: none;
-    border-bottom: 1px solid #ccc;
-    font-size: 14px;
-    outline: none;
+  padding: 12px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
 }
 
 .forgot {
-    font-size: 12px;
-    color: #555;
-    text-decoration: none;
-    margin-bottom: 10px;
+  font-size: 12px;
+  color: #555;
+  text-decoration: none;
+  margin-bottom: 10px;
 }
 
+/* Botones */
 .btn {
-    padding: 12px 25px; /* padding horizontal y vertical */
-    font-size: 14px;
-    cursor: pointer;
-    border: none;
-    transition: 0.3s;
-    width: 400px; /* Ajusta al contenido */
-    display: inline-block; /* Asegura que el padding funcione bien */
-    text-align: center;
+  padding: 12px 25px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+  width: 100%;
+  max-width: 400px;
+  display: inline-block;
+  text-align: center;
 }
+
 .login-btn {
-    background-color: #000;
-    color: #fff;
+  background-color: #000;
+  color: #fff;
 }
 
 .login-btn:hover {
-    background-color: #333;
+  background-color: #333;
 }
 
 .register-btn {
-    background-color: transparent;
-    color: #000;
-    border: 1px solid #000;
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .register-btn:hover {
-    background-color: #000;
-    color: #fff;
+  background-color: #000;
+  color: #fff;
 }
 
 /* Social login */
 .social-login {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .social-login p {
-    font-size: 12px;
-    color: #555;
+  font-size: 12px;
+  color: #555;
 }
 
 .social {
-    border: 1px solid #ccc;
-    background: white;
-    color: #000;
+  border: 1px solid #ccc;
+  background: white;
+  color: #000;
 }
 
 .social.google::before {
-    content: "G ";
+  content: "G ";
 }
 
 .social.apple::before {
-    content: " ";
+  content: " ";
 }
 
 /* Política de privacidad */
 .privacy {
-    font-size: 10px;
-    color: #888;
-    margin-top: 15px;
+  font-size: 10px;
+  color: #888;
+  margin-top: 15px;
+  line-height: 1.4;
 }
 
 .privacy a {
-    text-decoration: underline;
-    color: #888;
+  text-decoration: underline;
+  color: #888;
 }
 
 /* Parte derecha: Imagen */
 .right {
-    flex: 20;
-    overflow: hidden;
+  flex: 1;
+  overflow: hidden;
+  min-height: 100vh;
 }
 
 .right img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-/* Responsive */
-@media(max-width: 900px) {
-    .container {
-        flex-direction: column;
-    }
-    .right {
-        height: 40vh;
-    }
+/* ===== Responsive ===== */
+
+/* Ocultar imagen solo en móvil vertical */
+@media (max-width: 900px) and (orientation: portrait) {
+  .right {
+    display: none;
+  }
+
+  .left {
+    padding: 24px 18px;
+    max-width: 100%;
+  }
+
+  input {
+    font-size: 16px; /* evita zoom iOS */
+  }
+
+  .btn {
+    max-width: 100%;
+  }
 }
