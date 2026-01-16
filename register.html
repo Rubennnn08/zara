@@ -7,10 +7,8 @@
 
   <title>Crear cuenta</title>
 
-  <!-- Mantengo SweetAlert2 como en tu código -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- TU CSS del navbar -->
   <link rel="stylesheet" href="menu.css">
 
   <style>
@@ -29,7 +27,7 @@
       margin:0;
       background:var(--bg);
       color:var(--text);
-      padding-top:130px; /* igual que tus otras páginas */
+      padding-top:130px; /* desktop */
       font-family: ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
@@ -135,7 +133,7 @@
       line-height:1.4;
     }
 
-    /* Botones (Zara minimal) */
+    /* Botones */
     .btn{
       width:100%;
       height:42px;
@@ -152,7 +150,7 @@
       color:#fff;
     }
 
-    /* Loader SweetAlert (limpio) */
+    /* Loader SweetAlert */
     .custom-loader {
       width: 50px;
       height: 50px;
@@ -185,7 +183,7 @@
       text-transform: uppercase;
     }
 
-    /* Columna derecha vacía en desktop para “aire” */
+    /* Columna derecha */
     .ghost{
       display:none;
       border-top:1px solid var(--hair);
@@ -199,12 +197,89 @@
     @media (min-width: 900px){
       .ghost{ display:block; }
     }
+
+    /* =========================
+       NAVBAR (base)
+       ========================= */
+    .navbar1{
+      position:fixed; top:0; left:0; right:0;
+      height:130px;
+      background:#fff;
+      border-bottom:1px solid var(--hair);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      z-index:50;
+    }
+    .navbar1 #menu{ width:28px; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+    .navbar1 .bar{ height:2px; background:#111; width:100%; display:block; }
+    .navbar1 .logo img{ height:54px; display:block; }
+    .navbar1 .searchbar input{
+      width:min(420px, 42vw);
+      border:none;
+      border-bottom:1px solid var(--hair);
+      outline:none;
+      padding:10px 8px;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+    .navbar1 .help{
+      display:flex;
+      gap:14px;
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    /* ✅ NAVBAR COMPLETO EN MÓVIL (2 FILAS) */
+    @media (max-width: 900px){
+      body{ padding-top:160px; } /* espacio extra porque el navbar crece */
+
+      .navbar1{
+        height:auto;              /* deja crecer */
+        padding:10px 14px;
+        flex-wrap:wrap;           /* permite 2 filas */
+        gap:10px;
+      }
+
+      /* 1ª fila: menú + logo + buscador */
+      .navbar1 #menu{ order:1; }
+      .navbar1 .logo{ order:2; }
+      .navbar1 .searchbar{
+        order:3;
+        flex:1 1 100%;
+      }
+      .navbar1 .searchbar input{
+        width:100%;
+        max-width:none;
+      }
+
+      /* 2ª fila: enlaces visibles (scroll horizontal) */
+      .navbar1 .help{
+        order:4;
+        display:flex !important;
+        width:100%;
+        gap:16px;
+        overflow-x:auto;
+        padding-bottom:6px;
+        -webkit-overflow-scrolling:touch;
+      }
+      .navbar1 .help a{ flex:0 0 auto; }
+    }
+
+    @media (max-width: 420px){
+      .navbar1 .logo img{ height:46px; }
+      .navbar1 .help{ font-size:10px; gap:12px; }
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- ✅ NAVBAR EXACTO (copiado tal cual de tu HTML anterior) -->
+  <!-- NAVBAR -->
   <div class="navbar1">
       <div id="menu">
           <span class="bar"></span>
@@ -241,7 +316,6 @@
             <input type="text" placeholder="Teléfono" id="phone" inputmode="numeric">
           </div>
 
-          <!-- Botón estilo Zara: si quieres que sea link, lo dejo como button normal -->
           <button class="btn" type="button" onclick="window.location.href='./RP.html'">
             Crear experiencia personalizada
           </button>
@@ -269,7 +343,6 @@
   </main>
 
 <script>
-  // Registro simple (igual lógica que tu código)
   let loginData = JSON.parse(localStorage.getItem('regdata'));
   if (loginData == null) loginData = [];
 
@@ -281,7 +354,6 @@
   logform.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Validación checkbox privacidad
     const privacy = document.getElementById("checkbox2");
     if(!privacy.checked){
       alert("Debes aceptar la Política de Privacidad.");
