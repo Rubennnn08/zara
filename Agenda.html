@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Agenda</title>
 
-  <!-- Si ya tienes menu.css, puedes dejarlo -->
   <link rel="stylesheet" href="menu.css" />
 
   <style>
@@ -21,7 +20,7 @@
     *{ box-sizing:border-box; }
     body{
       margin:0;
-      padding-top:130px;
+      padding-top:130px; /* desktop */
       background:var(--bg);
       color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -64,9 +63,46 @@
       text-transform:uppercase;
       white-space:nowrap;
     }
+
+    /* ✅ NAVBAR COMPLETO EN MÓVIL (2 filas) */
     @media (max-width: 900px){
-      .navbar1 .help{ display:none; }
-      .navbar1 .searchbar input{ width:min(360px, 55vw); }
+      body{ padding-top:160px; } /* navbar crece en altura */
+
+      .navbar1{
+        height:auto;
+        padding:10px 14px;
+        flex-wrap:wrap;
+        gap:10px;
+      }
+
+      /* 1ª fila: menú + logo + buscador */
+      .navbar1 #menu{ order:1; }
+      .navbar1 .logo{ order:2; }
+      .navbar1 .searchbar{
+        order:3;
+        flex:1 1 100%;
+      }
+      .navbar1 .searchbar input{
+        width:100%;
+        max-width:none;
+      }
+
+      /* 2ª fila: enlaces visibles (scroll horizontal) */
+      .navbar1 .help{
+        order:4;
+        display:flex !important; /* por si menu.css lo oculta */
+        width:100%;
+        gap:16px;
+        overflow-x:auto;
+        padding-bottom:6px;
+        -webkit-overflow-scrolling:touch;
+      }
+      .navbar1 .help a{ flex:0 0 auto; }
+    }
+
+    @media (max-width: 420px){
+      .navbar1 .logo img{ height:46px; }
+      .navbar1 .help{ font-size:10px; gap:12px; }
     }
 
     /* ===== Layout ===== */
@@ -347,7 +383,6 @@
       color:#111;
     }
 
-    /* Footer buttons inside modal */
     .modal-actions{
       margin-top:12px;
       display:flex;
@@ -464,20 +499,13 @@
   </section>
 
 <script>
-  // ========= Storage helpers =========
   const STORAGE_KEY = "agenda_notes_v1";
 
   function loadNotes(){
-    try{
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    }catch{
-      return {};
-    }
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch{ return {}; }
   }
-
-  function saveNotes(obj){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-  }
+  function saveNotes(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
 
   function ymd(date){
     const y = date.getFullYear();
@@ -486,7 +514,6 @@
     return `${y}-${m}-${d}`;
   }
 
-  // ========= Calendar state =========
   const els = {
     grid: document.getElementById("calendarGrid"),
     monthLabel: document.getElementById("monthLabel"),
@@ -513,8 +540,8 @@
     downloadIcsBtn: document.getElementById("downloadIcsBtn"),
   };
 
-  let viewDate = new Date();              // mes que se muestra
-  let selectedISO = null;                 // día seleccionado YYYY-MM-DD
+  let viewDate = new Date();
+  let selectedISO = null;
 
   const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
@@ -528,10 +555,7 @@
     els.monthLabel.textContent = `${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`.toUpperCase();
   }
 
-  function mondayIndex(jsDay){
-    // jsDay: 0=Dom..6=Sáb -> queremos 0=Lun..6=Dom
-    return (jsDay + 6) % 7;
-  }
+  function mondayIndex(jsDay){ return (jsDay + 6) % 7; }
 
   function renderCalendar(){
     setMonthLabel(viewDate);
@@ -544,7 +568,7 @@
     const last = new Date(year, month + 1, 0);
     const daysInMonth = last.getDate();
 
-    const startOffset = mondayIndex(first.getDay()); // 0..6
+    const startOffset = mondayIndex(first.getDay());
     const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
 
     const todayISO = ymd(new Date());
@@ -595,7 +619,6 @@
     els.noteText.value = entry.text || "";
     els.summaryText.textContent = entry.text ? entry.text : "Sin nota";
 
-    // Notificaciones (UI)
     const n = entry.notify || { enabled:false, email:"", value:1, unit:"days" };
     els.notifyEnabled.checked = !!n.enabled;
     els.notifyFields.style.display = els.notifyEnabled.checked ? "block" : "none";
@@ -617,14 +640,10 @@
   function saveDay(){
     if(!selectedISO) return;
     const notes = loadNotes();
-
     const text = (els.noteText.value || "").trim();
     const notify = getNotifyConfig();
-
-    // Si activa notificación pero no mete email, lo dejamos igualmente (porque .ics no lo usa)
     notes[selectedISO] = { text, notify };
     saveNotes(notes);
-
     toggleModal(false);
     renderCalendar();
   }
@@ -634,12 +653,10 @@
     const notes = loadNotes();
     delete notes[selectedISO];
     saveNotes(notes);
-
     toggleModal(false);
     renderCalendar();
   }
 
-  // ===== .ics (recordatorio sin backend) =====
   function minutesBeforeFromModal(){
     const value = Number(els.notifyBeforeValue.value || 1);
     const unit = els.notifyBeforeUnit.value || "days";
@@ -648,7 +665,6 @@
   }
 
   function downloadICS({ dateISO, title, description, minutesBefore }){
-    // Evento a las 09:00-09:30 (puedes cambiarlo)
     const dtStart = dateISO.replaceAll("-","") + "T090000";
     const dtEnd   = dateISO.replaceAll("-","") + "T093000";
     const uid = `${Date.now()}@agenda`;
@@ -691,7 +707,6 @@ END:VCALENDAR`;
     URL.revokeObjectURL(url);
   }
 
-  // ========= Events =========
   els.prevMonth.addEventListener("click", () => {
     viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth()-1, 1);
     renderCalendar();
@@ -714,17 +729,13 @@ END:VCALENDAR`;
   els.saveBtn.addEventListener("click", saveDay);
   els.deleteBtn.addEventListener("click", deleteDay);
 
-  function closeModal(){
-    toggleModal(false);
-  }
+  function closeModal(){ toggleModal(false); }
 
   els.closeBtn.addEventListener("click", closeModal);
   els.closeBtn2.addEventListener("click", closeModal);
   els.backBtn.addEventListener("click", closeModal);
 
-  els.modal.addEventListener("click", (e) => {
-    if(e.target === els.modal) closeModal();
-  });
+  els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeModal(); });
 
   document.addEventListener("keydown", (e) => {
     if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
@@ -741,9 +752,9 @@ END:VCALENDAR`;
     });
   });
 
-  // init
   renderCalendar();
 </script>
 
 </body>
 </html>
+
