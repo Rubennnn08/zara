@@ -130,7 +130,6 @@
     max-height: var(--cardMaxH);
     border:1px solid var(--hair);
   }
-  /* Video en loop sin controles + sin clicks */
   .media video{
     width:100%;height:100%;
     object-fit:cover;
@@ -170,7 +169,74 @@
   .empty-state .t{font-size:12px;letter-spacing:var(--letter);text-transform:uppercase;margin:0 0 6px;color:#111;}
   .empty-state .s{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted);}
 
-  /* Modal galería */
+  /* ===================== NAVBAR (TU MISMO) ===================== */
+  .navbar1{
+    position:fixed; top:0; left:0; right:0;
+    height:130px;
+    background:#fff;
+    border-bottom:1px solid var(--hair);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    z-index:50;
+  }
+  .navbar1 #menu{ width:28px; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+  .navbar1 .bar{ height:2px; background:#111; width:100%; display:block; }
+  .navbar1 .logo img{ height:54px; display:block; }
+  .navbar1 .searchbar input{
+    width:min(420px, 42vw);
+    border:none;
+    border-bottom:1px solid var(--hair);
+    outline:none;
+    padding:10px 8px;
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .navbar1 .help{
+    display:flex;
+    gap:14px;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  /* ✅ NAVBAR COMPLETO EN MOVIL (2 filas) */
+  @media (max-width: 900px){
+    body{ padding-top:160px; }
+    #reco-screen{ height: calc(100vh - 160px); }
+
+    .navbar1{
+      height:auto;
+      flex-wrap:wrap;
+      gap:10px;
+      padding:10px 14px;
+    }
+
+    .navbar1 #menu{ order:1; }
+    .navbar1 .logo{ order:2; }
+    .navbar1 .searchbar{ order:3; flex:1 1 100%; }
+    .navbar1 .searchbar input{ width:100%; max-width:none; }
+
+    .navbar1 .help{
+      order:4;
+      display:flex !important;
+      width:100%;
+      gap:16px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .navbar1 .help a{ flex:0 0 auto; }
+  }
+  @media (max-width: 420px){
+    .navbar1 .logo img{ height:46px; }
+    .navbar1 .help{ font-size:10px; gap:12px; }
+  }
+
+  /* ===================== MODAL GALERIA (MEJORADO) ===================== */
   .modal{position:fixed;inset:0;background:rgba(255,255,255,.96);display:none;z-index:80;}
   .modal.open{display:block;}
   .modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hair);background:#fff;position:sticky;top:0;}
@@ -180,14 +246,57 @@
   .close::before{transform:translate(-50%,-50%) rotate(45deg)}
   .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
 
-  .modal-content{max-width:980px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr;gap:16px;}
+  /* ✅ evita que la imagen empuje las miniaturas fuera de pantalla */
+  .modal-content{
+    max-width:980px;margin:0 auto;padding:16px;
+    display:grid;grid-template-columns:1fr;gap:16px;
+    max-height:calc(100vh - 70px);
+    overflow-y:auto;
+  }
   @media (min-width: 860px){ .modal-content{grid-template-columns:1.2fr .8fr;gap:22px;padding:18px;} }
 
-  .gallery{display:flex;flex-direction:column;gap:10px;}
-  .gallery-main{width:100%;height:auto;display:block;box-shadow:var(--shadow);background:#fff;cursor:pointer;}
-  .thumbs{display:flex;gap:10px;overflow:auto;padding-bottom:6px;}
-  .thumbs button{border:1px solid var(--hair);background:#fff;padding:0;cursor:pointer;flex:0 0 auto;width:92px;height:120px;overflow:hidden;}
+  .gallery{
+    display:flex;flex-direction:column;gap:10px;
+    max-height: calc(100vh - 140px);
+    overflow:hidden;
+  }
+
+  .gallery-main{
+    width:100%;
+    max-height:60vh;
+    object-fit:contain;
+    display:block;
+    box-shadow:var(--shadow);
+    background:#fff;
+    touch-action:pan-y;
+    transition:opacity .18s ease;
+  }
+  .gallery-main.is-fading{ opacity:0; }
+
+  .thumbs{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:6px;
+    max-height:120px;
+  }
+  .thumbs button{
+    border:1px solid var(--hair);
+    background:#fff;
+    padding:0;
+    cursor:pointer;
+    flex:0 0 auto;
+    width:92px;
+    height:120px;
+    overflow:hidden;
+  }
+  .thumbs button.active{
+    border-color:#111;
+    box-shadow: inset 0 0 0 1px #111;
+  }
   .thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
+
   .below-back{display:flex;gap:10px;}
   .below-back .button{width:auto}
 
@@ -250,7 +359,7 @@
           <input type="number" id="weight" placeholder="kg" inputmode="numeric">
         </div>
 
-        <!-- ✅ NUEVO: PELO -->
+        <!-- ✅ PELO -->
         <div class="input-group">
           <label for="hair">Tipo de pelo</label>
           <select id="hair">
@@ -368,7 +477,7 @@
 
   <div class="modal-content">
     <div class="gallery">
-      <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal" title="Pincha para volver atrás">
+      <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal">
       <div class="below-back">
         <button class="button secondary" type="button" id="backBelowBtn">VOLVER ATRÁS</button>
       </div>
@@ -386,11 +495,10 @@
 <script>
 /* ===== RUTAS ===== */
 function imgPath(base){ return `img/${base}.jpg`; }
-function videoPath(base){ return `video/${base}.mp4`; } // vídeos en img/
+function videoPath(base){ return `video/${base}.mp4`; }
 
-/* ===== ITEMS: videos + imágenes relacionadas ===== */
+/* ===== ITEMS ===== */
 const LOOKS = [
-  // TRIÁNGULO INVERTIDO
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
     video: videoPath('triangulo1'),
     images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
@@ -404,23 +512,19 @@ const LOOKS = [
     images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37') ],
     desc:'Video + imágenes relacionadas (triángulo invertido).' },
 
-
-  // RELOJ DE ARENA
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
     video: videoPath('relojarena1'),
     images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
     desc:'Video + imágenes relacionadas (reloj de arena).' },
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
     video: videoPath('relojarena2'),
-    images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25'),],
+    images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
     desc:'Video + imágenes relacionadas (reloj de arena).' },
-  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 3', tag:'SUGERENCIA',
     video: videoPath('relojarena3'),
     images:[imgPath('relojarena3'), imgPath('relojarena31'), imgPath('relojarena32'), imgPath('relojarena33')],
     desc:'Video + imágenes relacionadas (reloj de arena).' },
 
-
-  // REDONDO
   { gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
     video: videoPath('redondo1'),
     images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13') , imgPath('redondo14'), imgPath('redondo15')],
@@ -430,7 +534,6 @@ const LOOKS = [
     images:[imgPath('redondo2'), imgPath('redondo21'), imgPath('redondo22'), imgPath('redondo23'), imgPath('redondo24'), imgPath('redondo25'), imgPath('redondo26'), imgPath('redondo27')],
     desc:'Video + imágenes relacionadas (redondo).' },
 
-  // GENÉRICO (NO DEFINIDO)
   { gender:'mujer', bodyType:'generico', name:'GENÉRICO 1', tag:'GENÉRICO',
     video: videoPath('generico1'),
     images:[imgPath('generico1'), imgPath('generico2')],
@@ -455,7 +558,7 @@ const els = {
   heightValue: document.getElementById("height-value"),
   weight: document.getElementById("weight"),
 
-  hair: document.getElementById("hair"), // ✅ NUEVO
+  hair: document.getElementById("hair"),
 
   back: document.getElementById("back"),
   waist: document.getElementById("waist"),
@@ -523,7 +626,6 @@ function displayBodyTypeLabel(type){
   return "NO DEFINIDO";
 }
 
-/* SOLO 3 TIPOS, SI NO -> no_definido */
 function getBodyTypeFromMeasures() {
   const backValue = Number(els.back.value);
   const waistValue = Number(els.waist.value);
@@ -541,29 +643,18 @@ function getBodyTypeFromMeasures() {
   return "no_definido";
 }
 
-/* ✅ IMAGEN TIPO CUERPO SEGÚN (PELO + TIPO)
-   - morenarelojarena.jpg / rubiarelojarena.jpg
-   - morena + redondo -> morenaredondo.jpg
-   - etc
-   - no definido -> morena_generico.jpg o rubia_generico.jpg (si no existe, fallback)
-*/
 function bodyImageForType(type, hair){
   const h = (hair === "morena") ? "morena" : "rubia";
-
   let base;
   if(type === "triangulo_invertido") base = "trianguloinvertido";
   else if(type === "reloj_arena") base = "relojarena";
   else if(type === "redondo") base = "redondo";
   else base = "generico";
 
-  // 1) intentamos img/morenarelojarena.jpg, etc
   if(base !== "generico") return `img/${h}${base}.jpg`;
-
-  // 2) si es generico, intentamos img/morena_generico.jpg o img/rubia_generico.jpg
   return `img/${h}_generico.jpg`;
 }
 
-/* ✅ Setter robusto: si no existe la imagen, cae a img/generico1.jpg */
 function setTypeImageRobust(type, hair){
   const candidate = bodyImageForType(type, hair);
   els.bodyFinalImg.onerror = () => {
@@ -573,7 +664,6 @@ function setTypeImageRobust(type, hair){
   els.bodyFinalImg.src = candidate;
 }
 
-/* FIX: recalcular pill */
 let rafId = 0;
 function scheduleMeasuresHint(){
   cancelAnimationFrame(rafId);
@@ -614,7 +704,7 @@ function processProfile(){
 
   const profile = {
     gender: selectedGender,
-    hair: els.hair.value, // ✅ NUEVO
+    hair: els.hair.value,
     height: Number(els.height.value),
     weight: Number(els.weight.value) || null,
     back: backValue,
@@ -625,7 +715,7 @@ function processProfile(){
   localStorage.setItem("profile", JSON.stringify(profile));
 
   els.bodyPill.textContent = `TIPO: ${displayBodyTypeLabel(lastBodyType)}`;
-  setTypeImageRobust(lastBodyType, profile.hair); // ✅ IMAGEN POR PELO+TIPO con fallback
+  setTypeImageRobust(lastBodyType, profile.hair);
 
   toggle(els.form, false);
   toggle(els.body, true);
@@ -641,7 +731,7 @@ function goToReco(){
   renderRecommendations(profile, bodyType);
 }
 
-/* ===== Reco sin scroll + paginación ===== */
+/* ===== Reco + paginación ===== */
 const recoState = { items: [], page: 0, perPage: 2 };
 
 function escapeHtml(str){
@@ -780,28 +870,16 @@ els.nextBtn.addEventListener("click", () => {
 els.grid.addEventListener("click", (e) => {
   const card = e.target.closest(".card");
   if(!card) return;
-
   const images = (card.dataset.images || "").split("|").filter(Boolean);
-  openModal({
-    name: card.dataset.name,
-    tag: card.dataset.tag,
-    desc: card.dataset.desc,
-    images
-  });
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
 });
 els.grid.addEventListener("keydown", (e) => {
   if(e.key !== "Enter" && e.key !== " ") return;
   const card = e.target.closest(".card");
   if(!card) return;
   e.preventDefault();
-
   const images = (card.dataset.images || "").split("|").filter(Boolean);
-  openModal({
-    name: card.dataset.name,
-    tag: card.dataset.tag,
-    desc: card.dataset.desc,
-    images
-  });
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
 });
 
 window.addEventListener("resize", () => {
@@ -818,7 +896,31 @@ function exitApp(){
   toggle(els.start, true);
 }
 
-/* Modal galería */
+/* ===================== MODAL: ACTIVO + FADE + SWIPE ===================== */
+const modalState = { images: [], idx: 0 };
+
+function setActiveThumb(){
+  const buttons = els.thumbs.querySelectorAll("button");
+  buttons.forEach((b, i) => b.classList.toggle("active", i === modalState.idx));
+  const active = buttons[modalState.idx];
+  if(active) active.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+}
+
+function setMainImage(index){
+  const total = modalState.images.length;
+  if(!total) return;
+
+  modalState.idx = (index + total) % total;
+
+  els.galleryMain.classList.add("is-fading");
+  const nextSrc = modalState.images[modalState.idx];
+
+  setTimeout(() => { els.galleryMain.src = nextSrc; }, 120);
+  els.galleryMain.onload = () => els.galleryMain.classList.remove("is-fading");
+
+  setActiveThumb();
+}
+
 function openModal({name, tag, desc, images}){
   els.modal.classList.add("open");
   els.modal.setAttribute("aria-hidden","false");
@@ -827,23 +929,21 @@ function openModal({name, tag, desc, images}){
   els.modalTag.textContent = String(tag).toUpperCase();
   els.modalDesc.textContent = desc;
 
-  const safeImages = Array.isArray(images) ? images : [];
-  const first = safeImages[0] || "";
+  modalState.images = Array.isArray(images) ? images : [];
+  modalState.idx = 0;
 
-  els.galleryMain.src = first;
-  els.galleryMain.alt = name;
-
-  els.thumbs.innerHTML = safeImages.map((src, idx) => `
-    <button type="button" data-src="${escapeHtml(src)}" aria-label="Imagen ${idx+1}">
+  els.thumbs.innerHTML = modalState.images.map((src, idx) => `
+    <button type="button" data-idx="${idx}" aria-label="Imagen ${idx+1}">
       <img src="${src}" alt="Miniatura ${idx+1}">
     </button>
   `).join("");
 
   els.thumbs.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      els.galleryMain.src = btn.dataset.src;
-    });
+    btn.addEventListener("click", () => setMainImage(Number(btn.dataset.idx)));
   });
+
+  els.galleryMain.src = modalState.images[0] || "";
+  setActiveThumb();
 
   document.body.style.overflow = "hidden";
 }
@@ -857,30 +957,46 @@ function closeModal(){
 els.closeModal.addEventListener("click", closeModal);
 els.backModalBtn.addEventListener("click", closeModal);
 els.backBelowBtn.addEventListener("click", closeModal);
-els.galleryMain.addEventListener("click", closeModal);
-
 els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeModal(); });
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
+
+/* Swipe móvil (izq/der) */
+let startX = 0, startY = 0, touching = false;
+
+els.galleryMain.addEventListener("touchstart", (e) => {
+  if(!els.modal.classList.contains("open")) return;
+  const t = e.touches[0];
+  startX = t.clientX;
+  startY = t.clientY;
+  touching = true;
+}, {passive:true});
+
+els.galleryMain.addEventListener("touchend", (e) => {
+  if(!touching) return;
+  touching = false;
+
+  const t = e.changedTouches[0];
+  const dx = t.clientX - startX;
+  const dy = t.clientY - startY;
+
+  if(Math.abs(dy) > 60) return;
+
+  if(dx < -50) setMainImage(modalState.idx + 1);
+  if(dx > 50)  setMainImage(modalState.idx - 1);
+}, {passive:true});
 
 /* Eventos */
 els.height.addEventListener("input", updateHeightAvatar);
 els.back.addEventListener("input", scheduleMeasuresHint);
 els.waist.addEventListener("input", scheduleMeasuresHint);
 els.hips.addEventListener("input", scheduleMeasuresHint);
-
-/* ✅ si cambia pelo, recalcula pill (y se usará al continuar) */
-els.hair.addEventListener("change", () => {
-  updatePillFromMeasures();
-});
+els.hair.addEventListener("change", updatePillFromMeasures);
 
 (function init(){
-  // si ya había perfil guardado, precargar pelo
   const saved = JSON.parse(localStorage.getItem("profile") || "null");
-  if(saved?.hair && els.hair){
-    els.hair.value = saved.hair;
-  }
+  if(saved?.hair && els.hair) els.hair.value = saved.hair;
   els.avatar.src = `${selectedGender}.png`;
   updateHeightAvatar();
 })();
@@ -888,3 +1004,4 @@ els.hair.addEventListener("change", () => {
 
 </body>
 </html>
+
