@@ -614,65 +614,97 @@
       return false;
     }
 
-    /* ===== CHAT ASSISTANT JS ===== */
-    const button = document.getElementById("assistant-button");
-    const chat = document.getElementById("assistant-chat");
-    const close = document.getElementById("close-chat");
-    const input = document.getElementById("chat-input");
-    const messages = document.getElementById("chat-messages");
+/* ===== CHAT ASSISTANT JS (CON MEMORIA) ===== */
+const button = document.getElementById("assistant-button");
+const chat = document.getElementById("assistant-chat");
+const close = document.getElementById("close-chat");
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("chat-messages");
 
-    const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
+const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
 
-    function addMsg(type, text){
-      const div = document.createElement("div");
-      div.className = type === "user" ? "msg-user" : "msg-bot";
-      div.innerHTML = type === "user"
-        ? `<strong>Tú:</strong> ${text}`
-        : `<strong>Asistente:</strong> ${text}`;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
+function addMsg(type, text) {
+  const div = document.createElement("div");
+  div.className = type === "user" ? "msg-user" : "msg-bot";
+  div.innerHTML =
+    type === "user"
+      ? <strong>Tú:</strong> ${text}
+      : <strong>Asistente:</strong> ${text};
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+   
+button.onclick = () => {
+  chat.classList.toggle("hidden");
+  if (!chat.classList.contains("hidden")) setTimeout(() => input.focus(), 50);
+};
+
+close.onclick = () => chat.classList.add("hidden");
+
+// ✅ HISTORIAL PARA QUE NO PREGUNTE EN BUCLE
+let chatHistory = [];
+
+function resetHistory() {
+  chatHistory = [];
+  messages.innerHTML = "";
+}
+
+input.addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
+
+  const userText = input.value.trim();
+  if (!userText) return;
+
+  // Comando opcional para reiniciar
+  if (userText.toLowerCase() === "/reset") {
+    input.value = "";
+    resetHistory();
+    addMsg("bot", "Chat reiniciado ✅");
+    return;
+  }
+
+  input.value = "";
+  addMsg("user", userText);
+
+  // Guardar lo que dice el usuario
+  chatHistory.push({ role: "user", content: userText });
+
+  // “escribiendo…”
+  const typing = document.createElement("div");
+  typing.className = "msg-bot";
+  typing.innerHTML = <strong>Asistente:</strong> …;
+  messages.appendChild(typing);
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // ✅ ENVIAMOS TODO EL HISTORIAL
+      body: JSON.stringify({ messages: chatHistory }),
+    });
+
+// quitar “...”
+    typing.remove();
+
+    if (!response.ok) {
+      addMsg("bot", "Ahora mismo no puedo responder. Revisa Vercel / API.");
+      return;
     }
 
-    button.onclick = () => {
-      chat.classList.toggle("hidden");
-      if(!chat.classList.contains("hidden")) setTimeout(()=>input.focus(), 50);
-    };
+    const data = await response.json();
+    const reply = data.reply || "No he recibido respuesta.";
 
-    close.onclick = () => chat.classList.add("hidden");
+    addMsg("bot", reply);
 
-    input.addEventListener("keydown", async (e) => {
-      if (e.key !== "Enter") return;
+    // Guardar respuesta del asistente
+    chatHistory.push({ role: "assistant", content: reply });
+  } catch (err) {
+    typing.remove();
+    addMsg("bot", "Error de conexión. ¿Tu API de Vercel está desplegada?");
+  }
+});
 
-      const userText = input.value.trim();
-      if(!userText) return;
-
-      input.value = "";
-      addMsg("user", userText);
-      addMsg("bot", "…");
-
-      try{
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userText })
-        });
-
-        // quitar el "…" anterior
-        messages.lastChild.remove();
-
-        if(!response.ok){
-          addMsg("bot", "Ahora mismo no puedo responder. Revisa Vercel / API.");
-          return;
-        }
-
-        const data = await response.json();
-        addMsg("bot", data.reply || "No he recibido respuesta.");
-      } catch(err){
-        // quitar el "…"
-        messages.lastChild.remove();
-        addMsg("bot", "Error de conexión. ¿Tu API de Vercel está desplegada?");
-      }
-    });
   </script>
 </body>
 </html>
