@@ -348,6 +348,34 @@
       text-transform:uppercase;
       color:var(--muted);
       line-height:1.6;
+      white-space:pre-wrap;
+    }
+
+    /* ✅ NUEVO: Estilo + Clima (Zara) */
+    .event-extra{
+      border-top:1px solid var(--hair);
+      padding-top:12px;
+      margin-top:12px;
+      display:grid;
+      gap:12px;
+    }
+    .event-extra .field label{
+      display:block;
+      font-size:11px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      margin-bottom:8px;
+      color:#111;
+    }
+    .event-extra select{
+      width:100%;
+      border:1px solid var(--hair);
+      padding:12px 10px;
+      font-size:13px;
+      background:#fff;
+      outline:none;
+      text-transform:uppercase;
+      letter-spacing:.10em;
     }
 
     /* Notificaciones */
@@ -406,8 +434,8 @@
     <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
     <div class="help">
       <a href="./index.html">INICIAR SESIÓN</a>
-      <a >AYUDA</a>
-      <a >CESTA [0]</a>
+      <a>AYUDA</a>
+      <a>CESTA [0]</a>
       <a href="./MYPLNAER.html">MY PLANER</a>
       <a href="./Agenda.html">AGENDA</a>
     </div>
@@ -452,6 +480,34 @@
       <div class="panel">
         <label class="label" for="noteText">Nota</label>
         <textarea id="noteText" placeholder="Escribe tu nota..."></textarea>
+
+        <!-- ✅ NUEVO: ESTILO + CLIMA -->
+        <div class="event-extra">
+          <div class="field">
+            <label for="eventStyle">Estilo para el evento</label>
+            <select id="eventStyle">
+              <option value="">—</option>
+              <option value="casual">CASUAL</option>
+              <option value="smart_casual">SMART CASUAL</option>
+              <option value="elegante">ELEGANTE</option>
+              <option value="formal">FORMAL</option>
+              <option value="fiesta">FIESTA / NOCHE</option>
+              <option value="work">WORK / OFICINA</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="eventWeather">Clima</label>
+            <select id="eventWeather">
+              <option value="">—</option>
+              <option value="frio">FRÍO</option>
+              <option value="templado">TEMPLADO</option>
+              <option value="calor">CALOR</option>
+              <option value="lluvia">LLUVIA</option>
+              <option value="viento">VIENTO</option>
+            </select>
+          </div>
+        </div>
 
         <div class="notify-wrap">
           <label class="label">Notificaciones</label>
@@ -514,6 +570,37 @@
     return `${y}-${m}-${d}`;
   }
 
+  function labelFromValue(v){
+    if(!v) return "—";
+    const map = {
+      casual:"CASUAL",
+      smart_casual:"SMART CASUAL",
+      elegante:"ELEGANTE",
+      formal:"FORMAL",
+      fiesta:"FIESTA / NOCHE",
+      work:"WORK / OFICINA",
+      frio:"FRÍO",
+      templado:"TEMPLADO",
+      calor:"CALOR",
+      lluvia:"LLUVIA",
+      viento:"VIENTO"
+    };
+    return map[v] || String(v).toUpperCase().replaceAll("_"," ");
+  }
+
+  function updateSummary(entry){
+    const text = (entry?.text || "").trim();
+    const style = entry?.style || "";
+    const weather = entry?.weather || "";
+
+    const summary =
+      (text ? text : "SIN NOTA") +
+      "\n\nESTILO: " + labelFromValue(style) +
+      "\nCLIMA: " + labelFromValue(weather);
+
+    els.summaryText.textContent = summary;
+  }
+
   const els = {
     grid: document.getElementById("calendarGrid"),
     monthLabel: document.getElementById("monthLabel"),
@@ -538,6 +625,10 @@
     notifyBeforeValue: document.getElementById("notifyBeforeValue"),
     notifyBeforeUnit: document.getElementById("notifyBeforeUnit"),
     downloadIcsBtn: document.getElementById("downloadIcsBtn"),
+
+    /* ✅ NUEVO */
+    eventStyle: document.getElementById("eventStyle"),
+    eventWeather: document.getElementById("eventWeather"),
   };
 
   let viewDate = new Date();
@@ -596,7 +687,7 @@
         const preview = document.createElement("div");
         preview.className = "preview";
         const entry = notes[iso];
-        const text = entry?.text || "";
+        const text = (entry?.text || "").trim();
         preview.textContent = text ? text : "—";
         cell.appendChild(preview);
 
@@ -613,11 +704,19 @@
   function openDay(iso){
     selectedISO = iso;
     const notes = loadNotes();
-    const entry = notes[iso] || { text:"", notify: { enabled:false, email:"", value:1, unit:"days" } };
+    const entry = notes[iso] || {
+      text:"",
+      style:"",
+      weather:"",
+      notify: { enabled:false, email:"", value:1, unit:"days" }
+    };
 
     els.modalTitle.textContent = iso;
     els.noteText.value = entry.text || "";
-    els.summaryText.textContent = entry.text ? entry.text : "Sin nota";
+
+    /* ✅ cargar estilo/clima */
+    els.eventStyle.value = entry.style || "";
+    els.eventWeather.value = entry.weather || "";
 
     const n = entry.notify || { enabled:false, email:"", value:1, unit:"days" };
     els.notifyEnabled.checked = !!n.enabled;
@@ -626,6 +725,7 @@
     els.notifyBeforeValue.value = (n.value ?? 1);
     els.notifyBeforeUnit.value = n.unit || "days";
 
+    updateSummary(entry);
     toggleModal(true);
   }
 
@@ -642,8 +742,14 @@
     const notes = loadNotes();
     const text = (els.noteText.value || "").trim();
     const notify = getNotifyConfig();
-    notes[selectedISO] = { text, notify };
+
+    /* ✅ nuevo */
+    const style = els.eventStyle.value || "";
+    const weather = els.eventWeather.value || "";
+
+    notes[selectedISO] = { text, style, weather, notify };
     saveNotes(notes);
+
     toggleModal(false);
     renderCalendar();
   }
@@ -726,6 +832,32 @@ END:VCALENDAR`;
     els.notifyFields.style.display = els.notifyEnabled.checked ? "block" : "none";
   });
 
+  /* ✅ actualizar resumen en vivo */
+  els.noteText.addEventListener("input", () => {
+    const entry = {
+      text: els.noteText.value || "",
+      style: els.eventStyle.value || "",
+      weather: els.eventWeather.value || ""
+    };
+    updateSummary(entry);
+  });
+  els.eventStyle.addEventListener("change", () => {
+    const entry = {
+      text: els.noteText.value || "",
+      style: els.eventStyle.value || "",
+      weather: els.eventWeather.value || ""
+    };
+    updateSummary(entry);
+  });
+  els.eventWeather.addEventListener("change", () => {
+    const entry = {
+      text: els.noteText.value || "",
+      style: els.eventStyle.value || "",
+      weather: els.eventWeather.value || ""
+    };
+    updateSummary(entry);
+  });
+
   els.saveBtn.addEventListener("click", saveDay);
   els.deleteBtn.addEventListener("click", deleteDay);
 
@@ -743,11 +875,19 @@ END:VCALENDAR`;
 
   els.downloadIcsBtn.addEventListener("click", () => {
     if(!selectedISO) return;
+
     const note = (els.noteText.value || "").trim();
+    const style = els.eventStyle.value || "";
+    const weather = els.eventWeather.value || "";
+
+    const desc =
+      (note ? note : "Recordatorio") +
+      ` | ESTILO: ${labelFromValue(style)} | CLIMA: ${labelFromValue(weather)}`;
+
     downloadICS({
       dateISO: selectedISO,
       title: "Nota en Agenda",
-      description: note ? note : "Recordatorio",
+      description: desc,
       minutesBefore: minutesBeforeFromModal()
     });
   });
@@ -757,7 +897,3 @@ END:VCALENDAR`;
 
 </body>
 </html>
-
-
-
-
