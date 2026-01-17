@@ -959,5 +959,25 @@ button.onclick = () => {
 close.onclick = () => {
   chat.classList.add("hidden");
 };
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("chat-messages");
+
+input.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    const userText = input.value;
+    input.value = "";
+
+    messages.innerHTML += `<div><strong>Tú:</strong> ${userText}</div>`;
+
+    const response = await fetch("https://zara-style-assistant-api-7fvc.vercel.app/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userText })
+    });
+
+    const data = await response.json();
+    messages.innerHTML += `<div><strong>Asistente:</strong> ${data.reply}</div>`;
+  }
+});
 </script>
 </html>
