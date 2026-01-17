@@ -427,8 +427,74 @@ font-size: 13px;
                 display: none;
             }
         }
+        #assistant-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: black;
+  color: white;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+#assistant-chat {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 300px;
+  background: white;
+  border: 1px solid #000;
+  font-family: Arial, sans-serif;
+  z-index: 9999;
+}
+
+.hidden {
+  display: none;
+}
+
+.chat-header {
+  background: black;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#chat-messages {
+  height: 200px;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+#chat-input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-top: 1px solid #000;
+}
     </style>
 </head>
+<!-- BOTÓN FLOTANTE DEL ASISTENTE -->
+<div id="assistant-button">💬</div>
+
+<!-- VENTANA DEL CHAT -->
+<div id="assistant-chat" class="hidden">
+  <div class="chat-header">
+    ZARA Style Assistant
+    <span id="close-chat">✕</span>
+  </div>
+  <div id="chat-messages"></div>
+  <input id="chat-input" placeholder="Escribe tu pregunta..." />
+</div>
+
 <body>
 <div class="navbar1">
     <div id="menu">
@@ -881,5 +947,17 @@ let username = document.getElementById('username')
 for(let i=0; i<logpage.length; i++){
             username.innerText = logpage[i]
         }
+
+    const button = document.getElementById("assistant-button");
+const chat = document.getElementById("assistant-chat");
+const close = document.getElementById("close-chat");
+
+button.onclick = () => {
+  chat.classList.toggle("hidden");
+};
+
+close.onclick = () => {
+  chat.classList.add("hidden");
+};
 </script>
 </html>
