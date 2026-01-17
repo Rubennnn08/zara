@@ -217,10 +217,97 @@
     .thumbs img{
       width:100%;height:100%;object-fit:cover;
     }
+/* ===================== CHAT ASSISTANT ===================== */
+#assistant-button{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#111;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  z-index:999999;
+}
+
+#assistant-chat{
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:320px;
+  background:#fff;
+  border:1px solid #111;
+  z-index:999999;
+}
+
+.chat-header{
+  background:#111;
+  color:#fff;
+  padding:10px 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+}
+
+#chat-messages{
+  height:230px;
+  padding:10px 12px;
+  overflow-y:auto;
+  font-size:12px;
+  line-height:1.5;
+}
+
+#chat-input{
+  width:100%;
+  border:none;
+  border-top:1px solid #111;
+  padding:12px;
+  font-size:12px;
+  outline:none;
+}
+
+.msg-user{ margin:8px 0; }
+.msg-bot{ margin:8px 0; }
+
+#close-chat{ cursor:pointer; }
+
+/* ===================== CONTENIDO ===================== */
+.container{
+  max-width:980px;
+  margin:0 auto;
+  padding:18px;
+}
+.title{
+  text-align:center;
+  font-weight:600;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+  margin:20px 0;
+}
   </style>
 </head>
 
 <body>
+
+<!-- ===================== CHAT ===================== -->
+<div id="assistant-button">💬</div>
+
+<div id="assistant-chat" class="hidden">
+  <div class="chat-header">
+    ZARA STYLE ASSISTANT
+    <span id="close-chat">✕</span>
+  </div>
+  <div id="chat-messages"></div>
+  <input id="chat-input" placeholder="Escribe tu pregunta..." />
+</div>
 
 <!-- NAVBAR -->
 <div class="navbar1">
@@ -264,8 +351,79 @@ LOOKS.forEach(item=>{
     </article>
   `;
 });
+
+<!-- ===================== JS ASISTENTE ===================== -->
+const button = document.getElementById("assistant-button");
+const chat = document.getElementById("assistant-chat");
+const closeBtn = document.getElementById("close-chat");
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("chat-messages");
+
+const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
+
+let chatHistory = [];
+
+function addMsg(type, text){
+  const div = document.createElement("div");
+  div.className = type === "user" ? "msg-user" : "msg-bot";
+  div.innerHTML =
+    type === "user"
+      ? `<strong>Tú:</strong> ${text}`
+      : `<strong>Asistente:</strong> ${text}`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+button.addEventListener("click", () => {
+  chat.classList.toggle("hidden");
+  setTimeout(()=>input.focus(),50);
+});
+
+closeBtn.addEventListener("click", () => {
+  chat.classList.add("hidden");
+});
+
+input.addEventListener("keydown", async (e) => {
+  if(e.key !== "Enter") return;
+
+  const text = input.value.trim();
+  if(!text) return;
+
+  input.value = "";
+  addMsg("user", text);
+  chatHistory.push({ role:"user", content:text });
+
+  const typing = document.createElement("div");
+  typing.className = "msg-bot";
+  typing.innerHTML = "<strong>Asistente:</strong> …";
+  messages.appendChild(typing);
+
+  try{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ message:text, messages:chatHistory })
+    });
+
+    typing.remove();
+
+    if(!res.ok){
+      addMsg("bot","No puedo responder ahora mismo.");
+      return;
+    }
+
+    const data = await res.json();
+    addMsg("bot", data.reply);
+    chatHistory.push({ role:"assistant", content:data.reply });
+
+  }catch{
+    typing.remove();
+    addMsg("bot","Error de conexión con el asistente.");
+  }
+});
 </script>
 
 </body>
 </html>
+
 
