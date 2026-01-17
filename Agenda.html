@@ -359,6 +359,86 @@
       display:grid;
       gap:12px;
     }
+
+    /* ✅ Label con tooltip */
+    .label-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .info-btn{
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      border:1px solid rgba(17,17,17,.35);
+      background:#fff;
+      color:#111;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      letter-spacing:.02em;
+      cursor:pointer;
+      padding:0;
+      line-height:1;
+      user-select:none;
+    }
+    .info-btn:active{ transform:scale(.98); }
+
+    .tooltip{
+      position:relative;
+      display:inline-block;
+    }
+    .tip-box{
+      position:absolute;
+      left:0;
+      top:26px;
+      min-width:260px;
+      max-width:360px;
+      background:#fff;
+      border:1px solid rgba(17,17,17,.25);
+      box-shadow:0 10px 34px rgba(0,0,0,.10);
+      padding:10px 12px;
+      z-index:200;
+      display:none;
+    }
+    .tip-box::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      left:10px;
+      width:12px;
+      height:12px;
+      background:#fff;
+      border-left:1px solid rgba(17,17,17,.25);
+      border-top:1px solid rgba(17,17,17,.25);
+      transform:rotate(45deg);
+    }
+    .tip-title{
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:#111;
+      margin:0 0 6px;
+      font-weight:600;
+    }
+    .tip-text{
+      margin:0;
+      font-size:10px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      line-height:1.5;
+      white-space:normal;
+    }
+
+    /* Desktop hover */
+    @media (hover:hover){
+      .tooltip:hover .tip-box{ display:block; }
+    }
+    /* Mobile click */
+    .tooltip.open .tip-box{ display:block; }
+
     .event-extra .field label{
       display:block;
       font-size:11px;
@@ -481,10 +561,21 @@
         <label class="label" for="noteText">Nota</label>
         <textarea id="noteText" placeholder="Escribe tu nota..."></textarea>
 
-        <!-- ✅ NUEVO: ESTILO + CLIMA -->
+        <!-- ✅ NUEVO: ESTILO + CLIMA + TOOLTIP -->
         <div class="event-extra">
           <div class="field">
-            <label for="eventStyle">Estilo para el evento</label>
+            <div class="label-row">
+              <label for="eventStyle" style="margin:0;">Estilo para el evento</label>
+
+              <span class="tooltip" id="styleTip">
+                <button class="info-btn" type="button" aria-label="Info estilo" id="styleTipBtn">i</button>
+                <span class="tip-box" role="tooltip" aria-live="polite">
+                  <p class="tip-title" id="styleTipTitle">ESTILO</p>
+                  <p class="tip-text" id="styleTipText">Selecciona un estilo para adaptar las recomendaciones.</p>
+                </span>
+              </span>
+            </div>
+
             <select id="eventStyle">
               <option value="">—</option>
               <option value="casual">CASUAL</option>
@@ -500,7 +591,18 @@
           </div>
 
           <div class="field">
-            <label for="eventWeather">Clima</label>
+            <div class="label-row">
+              <label for="eventWeather" style="margin:0;">Clima</label>
+
+              <span class="tooltip" id="weatherTip">
+                <button class="info-btn" type="button" aria-label="Info clima" id="weatherTipBtn">i</button>
+                <span class="tip-box" role="tooltip" aria-live="polite">
+                  <p class="tip-title" id="weatherTipTitle">CLIMA</p>
+                  <p class="tip-text" id="weatherTipText">Selecciona el clima para ajustar tejidos y capas.</p>
+                </span>
+              </span>
+            </div>
+
             <select id="eventWeather">
               <option value="">—</option>
               <option value="frio">FRÍO</option>
@@ -578,7 +680,7 @@
     const map = {
       casual:"CASUAL",
       elegante:"ELEGANTE",
-      clásico:"CLÁSICO",
+      "clásico":"CLÁSICO",
       fiesta:"FIESTA / NOCHE",
       work:"WORK / OFICINA",
       chic:"CHIC",
@@ -592,6 +694,38 @@
       viento:"VIENTO"
     };
     return map[v] || String(v).toUpperCase().replaceAll("_"," ");
+  }
+
+  /* ✅ Tooltips: significado de estilos */
+  const STYLE_HELP = {
+    "": "Selecciona un estilo para adaptar las recomendaciones.",
+    casual: "RELAXED Y CÓMODO. BÁSICOS LIMPIOS, TEJIDOS SUAVES.",
+    chic: "ELEVADO PERO SENCILLO. SILUETAS PULIDAS, NEUTROS, ACCESORIOS MINIMAL.",
+    elegante: "MÁS FORMAL. PRENDAS ESTRUCTURADAS.",
+    "clásico": "ATEMPORAL Y SOBRIO.",
+    fiesta: "NOCHE. BRILLOS O NEGRO, PIEZAS CON PRESENCIA.",
+    work: "IMAGEN PROFESIONAL PARA EL ENTORNO LABORAL",
+    boho: "RELAJADO Y CREATIVO. TEJIDOS FLUIDOS, ESTAMPADOS SUAVES Y ESTÉTICA NATURAL",
+    streetwear: "URBANO, ACTUAL Y DESENFADADO.",
+    oversize: "VOLUMEN CONTROLADO SILUETAS AMPLIAS CON ENFOQUE MODERNO."
+  };
+
+  const WEATHER_HELP = {
+    "": "Selecciona el clima para ajustar tejidos y capas.",
+    frio: "CAPAS Y TEJIDOS CÁLIDOS. ABRIGO, JERSEY, BOTAS O BOTINES.",
+    templado: "ENTRETIEMPO. TRENCH O CHAQUETA LIGERA, CAPAS FINAS.",
+    calor: "LIGERO Y TRANSPIRABLE. ALGODÓN/LINO.",
+    lluvia: "IMPERMEABLE. TRENCH/CHAQUETA, TEJIDOS QUE NO CALEN, CALZADO RESISTENTE.",
+    viento: "CORTAVIENTOS. CAPA EXTERIOR MÁS ESTRUCTURADA, PAÑUELO/BUFANDA."
+  };
+
+  function updateStyleTooltip(value){
+    const txt = STYLE_HELP[value || ""] || STYLE_HELP[""];
+    document.getElementById("styleTipText").textContent = txt;
+  }
+  function updateWeatherTooltip(value){
+    const txt = WEATHER_HELP[value || ""] || WEATHER_HELP[""];
+    document.getElementById("weatherTipText").textContent = txt;
   }
 
   function updateSummary(entry){
@@ -635,6 +769,12 @@
     /* ✅ NUEVO */
     eventStyle: document.getElementById("eventStyle"),
     eventWeather: document.getElementById("eventWeather"),
+
+    /* Tooltips */
+    styleTip: document.getElementById("styleTip"),
+    styleTipBtn: document.getElementById("styleTipBtn"),
+    weatherTip: document.getElementById("weatherTip"),
+    weatherTipBtn: document.getElementById("weatherTipBtn"),
   };
 
   let viewDate = new Date();
@@ -724,6 +864,10 @@
     els.eventStyle.value = entry.style || "";
     els.eventWeather.value = entry.weather || "";
 
+    /* ✅ tooltips dinámicos */
+    updateStyleTooltip(els.eventStyle.value);
+    updateWeatherTooltip(els.eventWeather.value);
+
     const n = entry.notify || { enabled:false, email:"", value:1, unit:"days" };
     els.notifyEnabled.checked = !!n.enabled;
     els.notifyFields.style.display = els.notifyEnabled.checked ? "block" : "none";
@@ -773,6 +917,7 @@
     const value = Number(els.notifyBeforeValue.value || 1);
     const unit = els.notifyBeforeUnit.value || "days";
     if(unit === "hours") return Math.max(1, value * 60);
+    if(unit === "meses") return Math.max(1, value * 30 * 24 * 60); /* aproximación */
     return Math.max(1, value * 24 * 60);
   }
 
@@ -838,36 +983,57 @@ END:VCALENDAR`;
     els.notifyFields.style.display = els.notifyEnabled.checked ? "block" : "none";
   });
 
-  /* ✅ actualizar resumen en vivo */
-  els.noteText.addEventListener("input", () => {
-    const entry = {
+  /* ✅ actualizar resumen + tooltips en vivo */
+  function liveEntry(){
+    return {
       text: els.noteText.value || "",
       style: els.eventStyle.value || "",
       weather: els.eventWeather.value || ""
     };
-    updateSummary(entry);
-  });
+  }
+
+  els.noteText.addEventListener("input", () => updateSummary(liveEntry()));
+
   els.eventStyle.addEventListener("change", () => {
-    const entry = {
-      text: els.noteText.value || "",
-      style: els.eventStyle.value || "",
-      weather: els.eventWeather.value || ""
-    };
-    updateSummary(entry);
+    updateStyleTooltip(els.eventStyle.value);
+    updateSummary(liveEntry());
   });
+
   els.eventWeather.addEventListener("change", () => {
-    const entry = {
-      text: els.noteText.value || "",
-      style: els.eventStyle.value || "",
-      weather: els.eventWeather.value || ""
-    };
-    updateSummary(entry);
+    updateWeatherTooltip(els.eventWeather.value);
+    updateSummary(liveEntry());
   });
+
+  /* ✅ Tooltips: móvil (tap/click) */
+  function closeAllTips(){
+    els.styleTip.classList.remove("open");
+    els.weatherTip.classList.remove("open");
+  }
+
+  els.styleTipBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !els.styleTip.classList.contains("open");
+    closeAllTips();
+    if(willOpen) els.styleTip.classList.add("open");
+  });
+
+  els.weatherTipBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !els.weatherTip.classList.contains("open");
+    closeAllTips();
+    if(willOpen) els.weatherTip.classList.add("open");
+  });
+
+  document.addEventListener("click", () => closeAllTips());
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeAllTips(); });
 
   els.saveBtn.addEventListener("click", saveDay);
   els.deleteBtn.addEventListener("click", deleteDay);
 
-  function closeModal(){ toggleModal(false); }
+  function closeModal(){
+    closeAllTips();
+    toggleModal(false);
+  }
 
   els.closeBtn.addEventListener("click", closeModal);
   els.closeBtn2.addEventListener("click", closeModal);
@@ -903,4 +1069,3 @@ END:VCALENDAR`;
 
 </body>
 </html>
-
