@@ -274,10 +274,87 @@
       .navbar1 .logo img{ height:46px; }
       .navbar1 .help{ font-size:10px; gap:12px; }
     }
+
+    /* =========================
+       ✅ CHAT ASSISTANT (FLOAT)
+       ========================= */
+    #assistant-button{
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #111;
+      color: #fff;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 999999;
+      user-select:none;
+    }
+    #assistant-chat{
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 320px;
+      background: #fff;
+      border: 1px solid #111;
+      z-index: 999999;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
+    .hidden{ display:none; }
+
+    .chat-header{
+      background:#111;
+      color:#fff;
+      padding:10px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    #close-chat{ cursor:pointer; padding-left:10px; }
+
+    #chat-messages{
+      height: 230px;
+      padding: 10px 12px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    #chat-input{
+      width:100%;
+      padding: 12px;
+      border: none;
+      border-top: 1px solid rgba(17,17,17,.25);
+      outline:none;
+      font-size: 12px;
+      letter-spacing:.04em;
+    }
+    .msg-user{ margin: 6px 0; }
+    .msg-bot{ margin: 6px 0; }
   </style>
 </head>
 
 <body>
+
+  <!-- ✅ BOTÓN FLOTANTE DEL ASISTENTE -->
+  <div id="assistant-button" aria-label="Abrir asistente">💬</div>
+
+  <!-- ✅ VENTANA DEL CHAT -->
+  <div id="assistant-chat" class="hidden">
+    <div class="chat-header">
+      ZARA Style Assistant
+      <span id="close-chat" aria-label="Cerrar">✕</span>
+    </div>
+    <div id="chat-messages"></div>
+    <input id="chat-input" placeholder="Escribe tu pregunta..." />
+  </div>
 
   <!-- NAVBAR -->
   <div class="navbar1">
@@ -343,6 +420,9 @@
   </main>
 
 <script>
+  /* =========================
+     REGISTRO (TU CÓDIGO)
+     ========================= */
   let loginData = JSON.parse(localStorage.getItem('regdata'));
   if (loginData == null) loginData = [];
 
@@ -380,6 +460,94 @@
     setTimeout(() => {
       window.location.href = './RP.html';
     }, 1800);
+  });
+
+  /* =========================
+     ✅ CHAT ASSISTANT (CON MEMORIA)
+     ========================= */
+  const assistantBtn = document.getElementById("assistant-button");
+  const assistantChat = document.getElementById("assistant-chat");
+  const assistantClose = document.getElementById("close-chat");
+  const assistantInput = document.getElementById("chat-input");
+  const assistantMessages = document.getElementById("chat-messages");
+
+  const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
+
+  let chatHistory = []; // memoria local (se mantiene mientras estés en la página)
+
+  function addMsg(type, text) {
+    const div = document.createElement("div");
+    div.className = type === "user" ? "msg-user" : "msg-bot";
+    div.innerHTML = type === "user"
+      ? `<strong>Tú:</strong> ${text}`
+      : `<strong>Asistente:</strong> ${text}`;
+    assistantMessages.appendChild(div);
+    assistantMessages.scrollTop = assistantMessages.scrollHeight;
+  }
+
+  assistantBtn.addEventListener("click", () => {
+    assistantChat.classList.toggle("hidden");
+    if (!assistantChat.classList.contains("hidden")) {
+      setTimeout(() => assistantInput.focus(), 50);
+    }
+  });
+
+  assistantClose.addEventListener("click", () => {
+    assistantChat.classList.add("hidden");
+  });
+
+  assistantInput.addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return;
+
+    const userText = assistantInput.value.trim();
+    if (!userText) return;
+
+    // comando para reiniciar chat
+    if (userText.toLowerCase() === "/reset") {
+      assistantInput.value = "";
+      chatHistory = [];
+      assistantMessages.innerHTML = "";
+      addMsg("bot", "Chat reiniciado ✅");
+      return;
+    }
+
+    assistantInput.value = "";
+    addMsg("user", userText);
+
+    chatHistory.push({ role: "user", content: userText });
+
+    // escribiendo...
+    const typing = document.createElement("div");
+    typing.className = "msg-bot";
+    typing.innerHTML = `<strong>Asistente:</strong> …`;
+    assistantMessages.appendChild(typing);
+    assistantMessages.scrollTop = assistantMessages.scrollHeight;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Mandamos ambas cosas: message (compat) + messages (memoria)
+        body: JSON.stringify({ message: userText, messages: chatHistory }),
+      });
+
+      typing.remove();
+
+      if (!response.ok) {
+        addMsg("bot", "Ahora mismo no puedo responder. Revisa Vercel / API.");
+        return;
+      }
+
+      const data = await response.json();
+      const reply = data.reply || "No he recibido respuesta.";
+
+      addMsg("bot", reply);
+      chatHistory.push({ role: "assistant", content: reply });
+
+    } catch (err) {
+      typing.remove();
+      addMsg("bot", "Error de conexión. ¿Tu API de Vercel está desplegada?");
+    }
   });
 </script>
 
