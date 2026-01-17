@@ -498,6 +498,38 @@
       gap:10px;
       flex-wrap:wrap;
     }
+    /* ===== RESUMEN: jerarquía (evento grande, estilo/clima pequeño) ===== */
+.summary{
+  border-top:1px solid var(--hair);
+  padding-top:12px;
+}
+
+.summary-main{
+  font-size:12px;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  color:#111;
+  line-height:1.6;
+  margin:0;
+}
+
+.summary-sub{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.chip{
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  border:1px solid rgba(17,17,17,.18);
+  padding:6px 8px;
+  background:#fff;
+}
+
   </style>
 </head>
 
@@ -650,7 +682,12 @@
 
       <aside class="panel">
         <div class="label">Resumen</div>
-        <div class="hint" id="summaryText">—</div>
+
+<div class="summary">
+  <p class="summary-main" id="summaryMain">—</p>
+  <div class="summary-sub" id="summarySub"></div>
+</div>
+
 
         <div class="hint" style="margin-top:12px;">
           Consejo: guarda una nota corta para verla en el calendario.
@@ -728,17 +765,22 @@
     document.getElementById("weatherTipText").textContent = txt;
   }
 
-  function updateSummary(entry){
-    const text = (entry?.text || "").trim();
-    const style = entry?.style || "";
-    const weather = entry?.weather || "";
+function updateSummary(entry){
+  const text = (entry?.text || "").trim();
+  const style = entry?.style || "";
+  const weather = entry?.weather || "";
 
-    const summary =
-      (text ? text : "SIN NOTA") +
-      "\n\nESTILO: " + labelFromValue(style) +
-      "\nCLIMA: " + labelFromValue(weather);
+  const main = document.getElementById("summaryMain");
+  const sub  = document.getElementById("summarySub");
 
-    els.summaryText.textContent = summary;
+  main.textContent = text ? text : "SIN NOTA";
+
+  const chips = [];
+  chips.push(`ESTILO: ${labelFromValue(style)}`);
+  chips.push(`CLIMA: ${labelFromValue(weather)}`);
+
+  sub.innerHTML = chips.map(t => `<span class="chip">${t}</span>`).join("");
+
   }
 
   const els = {
@@ -765,6 +807,9 @@
     notifyBeforeValue: document.getElementById("notifyBeforeValue"),
     notifyBeforeUnit: document.getElementById("notifyBeforeUnit"),
     downloadIcsBtn: document.getElementById("downloadIcsBtn"),
+
+    summaryMain: document.getElementById("summaryMain"),
+summarySub: document.getElementById("summarySub"),
 
     /* ✅ NUEVO */
     eventStyle: document.getElementById("eventStyle"),
@@ -1069,3 +1114,4 @@ END:VCALENDAR`;
 
 </body>
 </html>
+
