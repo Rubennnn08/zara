@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Perfil + Recomendaciones</title>
 
-<link rel="stylesheet" href="menu.css" />
+menu.css
 
 <style>
   :root{
@@ -137,11 +138,16 @@
     background:#000;
     pointer-events:none;
   }
+
+  /* Overlay del texto (recolocado arriba para no tapar miniaturas) */
   .overlay{
     position:absolute;left:10px;right:10px;bottom:10px;
     display:flex;align-items:center;justify-content:center;
     pointer-events:none;
+    z-index:1;
   }
+  /* Elevo la tira de miniaturas y subo un poco el overlay */
+  .media .overlay{ bottom:76px; }
   .overlay span{
     background:rgba(255,255,255,.88);
     border:1px solid rgba(0,0,0,.15);
@@ -151,6 +157,30 @@
     text-transform:uppercase;
     color:#111;
   }
+
+  /* Tira de miniaturas sobre el borde inferior del video */
+  .thumbs-inline{
+    position:absolute;left:0;right:0;bottom:0;
+    display:flex;gap:8px;padding:8px;
+    background:rgba(255,255,255,.88);
+    border-top:1px solid var(--hair);
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    z-index:2;
+  }
+  .thumbs-inline button{
+    border:1px solid var(--hair);
+    background:#fff;
+    padding:0;margin:0;
+    width:62px;height:78px;
+    flex:0 0 auto;
+    cursor:pointer;
+  }
+  .thumbs-inline img{
+    width:100%;height:100%;
+    object-fit:cover;display:block;
+  }
+
   .meta{padding:8px 2px 2px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;}
 
   .pager{border-top:1px solid var(--hair);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -304,81 +334,81 @@
   .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
   .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
 
-/* ===================== CHAT ASSISTANT ===================== */
-#assistant-button{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  background:#111;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-  cursor:pointer;
-  z-index:999999;
-}
+  /* ===================== CHAT ASSISTANT ===================== */
+  #assistant-button{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:#111;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    z-index:999999;
+  }
 
-#assistant-chat{
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  width:320px;
-  background:#fff;
-  border:1px solid #111;
-  z-index:999999;
-}
+  #assistant-chat{
+    position:fixed;
+    bottom:90px;
+    right:20px;
+    width:320px;
+    background:#fff;
+    border:1px solid #111;
+    z-index:999999;
+  }
 
-.chat-header{
-  background:#111;
-  color:#fff;
-  padding:10px 12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:12px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-}
+  .chat-header{
+    background:#111;
+    color:#fff;
+    padding:10px 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+  }
 
-#chat-messages{
-  height:230px;
-  padding:10px 12px;
-  overflow-y:auto;
-  font-size:12px;
-  line-height:1.5;
-}
+  #chat-messages{
+    height:230px;
+    padding:10px 12px;
+    overflow-y:auto;
+    font-size:12px;
+    line-height:1.5;
+  }
 
-#chat-input{
-  width:100%;
-  border:none;
-  border-top:1px solid #111;
-  padding:12px;
-  font-size:12px;
-  outline:none;
-}
+  #chat-input{
+    width:100%;
+    border:none;
+    border-top:1px solid #111;
+    padding:12px;
+    font-size:12px;
+    outline:none;
+  }
 
-.msg-user{ margin:8px 0; }
-.msg-bot{ margin:8px 0; }
+  .msg-user{ margin:8px 0; }
+  .msg-bot{ margin:8px 0; }
 
-#close-chat{ cursor:pointer; }
+  #close-chat{ cursor:pointer; }
 
-/* ===================== CONTENIDO ===================== */
-.container{
-  max-width:980px;
-  margin:0 auto;
-  padding:18px;
-}
-.title{
-  text-align:center;
-  font-weight:600;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-  margin:20px 0;
-}
+  /* ===================== CONTENIDO ===================== */
+  .container{
+    max-width:980px;
+    margin:0 auto;
+    padding:18px;
+  }
+  .title{
+    text-align:center;
+    font-weight:600;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    margin:20px 0;
+  }
 
 </style>
 </head>
@@ -405,14 +435,14 @@
     <span class="bar"></span>
     <span class="bar"></span>
   </div>
-  <div class="logo"><a href="./index.html"><img src="logo.png" alt="Logo"></a></div>
+  <div class="logo">./index.htmllogo.png</a></div>
   <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
   <div class="help">
-    <a href="./index.html">INICIAR SESIÓN</a>
-    <a >AYUDA</a>
-    <a >CESTA [0]</a>
-    <a href="./MYPLNAER.html">MY PLANNER</a>
-    <a href="./Agenda.html">AGENDA</a>
+    ./index.htmlINICIAR SESIÓN</a>
+    <a>AYUDA</a>
+    <a>CESTA [0]</a>
+    <aMYPLNAER.htmlMY PLANNER</a>
+    ./Agenda.htmlAGENDA</a>
   </div>
 </div>
 
@@ -488,7 +518,7 @@
 
       <aside class="side">
         <div class="avatar-wrap">
-          <img id="avatar" class="avatar" src="mujer.png" alt="Avatar">
+          <imgr.png
           <div class="pill" id="pill-body">TIPO DE CUERPO: —</div>
           <div class="pill" style="max-width:360px;">
             Sugerencia: se calcula con espalda, cintura y cadera.
@@ -545,7 +575,7 @@
       </div>
     </div>
 
-    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES</div>
+    <div class="note">PINCHA EL VIDEO O UNA MINIATURA PARA VER IMÁGENES</div>
 
     <div class="reco-actions">
       <button class="button secondary" type="button" onclick="restart()">EDITAR PERFIL</button>
@@ -920,6 +950,11 @@ function renderRecoPage(){
   els.grid.innerHTML = slice.map(item => {
     const imagesPacked = (item.images || []).join("|");
     const poster = item.images?.[0] || "";
+    const thumbs = (item.images || []).map((src, idx) => `
+      <button type="button" class="thumb-btn" data-idx="${idx}" aria-label="Miniatura ${idx+1}">
+        ${src}
+      </button>
+    `).join("");
     return `
       <article class="card" tabindex="0"
         data-name="${escapeHtml(item.name)}"
@@ -928,9 +963,12 @@ function renderRecoPage(){
         data-images="${escapeHtml(imagesPacked)}">
         <div class="media">
           <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
-            <source src="${item.video}" type="video/mp4">
+            ${item.video}
           </video>
           <div class="overlay"><span>VER IMÁGENES</span></div>
+          <div class="thumbs-inline" aria-label="Miniaturas del look">
+            ${thumbs}
+          </div>
         </div>
         <div class="meta">
           <span>${escapeHtml(item.tag)}</span>
@@ -946,6 +984,7 @@ function renderRecoPage(){
   els.nextBtn.disabled = recoState.page >= totalPages - 1;
 }
 
+/* Navegación paginador */
 els.prevBtn.addEventListener("click", () => {
   recoState.page = Math.max(0, recoState.page - 1);
   renderRecoPage();
@@ -956,20 +995,43 @@ els.nextBtn.addEventListener("click", () => {
   renderRecoPage();
 });
 
-/* Click abre galería */
+/* Click grid: primero miniaturas, luego tarjeta completa */
 els.grid.addEventListener("click", (e) => {
+  const thumbBtn = e.target.closest(".thumbs-inline .thumb-btn");
+  if(thumbBtn){
+    e.stopPropagation();
+    const card = thumbBtn.closest(".card");
+    if(!card) return;
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    const startIdx = Number(thumbBtn.dataset.idx) || 0;
+    openModal({
+      name: card.dataset.name,
+      tag: card.dataset.tag,
+      desc: card.dataset.desc,
+      images
+    }, startIdx);
+    return;
+  }
+
   const card = e.target.closest(".card");
   if(!card) return;
   const images = (card.dataset.images || "").split("|").filter(Boolean);
-  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  openModal({
+    name: card.dataset.name,
+    tag: card.dataset.tag,
+    desc: card.dataset.desc,
+    images
+  }, 0);
 });
+
+/* Teclado sobre tarjeta: abre modal desde la primera */
 els.grid.addEventListener("keydown", (e) => {
   if(e.key !== "Enter" && e.key !== " ") return;
   const card = e.target.closest(".card");
   if(!card) return;
   e.preventDefault();
   const images = (card.dataset.images || "").split("|").filter(Boolean);
-  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images }, 0);
 });
 
 window.addEventListener("resize", () => {
@@ -1011,7 +1073,7 @@ function setMainImage(index){
   setActiveThumb();
 }
 
-function openModal({name, tag, desc, images}){
+function openModal({name, tag, desc, images}, startIdx = 0){
   els.modal.classList.add("open");
   els.modal.setAttribute("aria-hidden","false");
   els.modalTitle.textContent = String(name).toUpperCase();
@@ -1020,11 +1082,11 @@ function openModal({name, tag, desc, images}){
   els.modalDesc.textContent = desc;
 
   modalState.images = Array.isArray(images) ? images : [];
-  modalState.idx = 0;
+  modalState.idx = Math.max(0, Math.min(startIdx, modalState.images.length - 1));
 
   els.thumbs.innerHTML = modalState.images.map((src, idx) => `
     <button type="button" data-idx="${idx}" aria-label="Imagen ${idx+1}">
-      <img src="${src}" alt="Miniatura ${idx+1}">
+      ${src}
     </button>
   `).join("");
 
@@ -1032,7 +1094,7 @@ function openModal({name, tag, desc, images}){
     btn.addEventListener("click", () => setMainImage(Number(btn.dataset.idx)));
   });
 
-  els.galleryMain.src = modalState.images[0] || "";
+  els.galleryMain.src = modalState.images[modalState.idx] || "";
   setActiveThumb();
 
   document.body.style.overflow = "hidden";
@@ -1091,7 +1153,7 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   updateHeightAvatar();
 })();
 
-<!-- ===================== JS ASISTENTE ===================== -->
+/* ===================== JS ASISTENTE ===================== */
 const button = document.getElementById("assistant-button");
 const chat = document.getElementById("assistant-chat");
 const closeBtn = document.getElementById("close-chat");
@@ -1160,10 +1222,10 @@ input.addEventListener("keydown", async (e) => {
     addMsg("bot","Error de conexión con el asistente.");
   }
 });
-
 </script>
 
 </body>
 </html>
+
 
 
