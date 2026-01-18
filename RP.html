@@ -15,6 +15,10 @@
     --shadow:0 18px 60px rgba(0,0,0,.18);
     --letter:.14em;
     --cardMaxH:520px;
+
+    /* LOOK DRAWER */
+    --drawerW: 300px;
+    --tabW: 34px;
   }
   *{box-sizing:border-box}
   body{
@@ -123,15 +127,9 @@
 
   .card{user-select:none;background:#fff;}
   .card:focus{outline:none;}
-  .card-inner{
-    display:grid;
-    grid-template-columns: 1fr auto;
-    gap:10px;
-    align-items:stretch;
-  }
-  @media (max-width: 640px){
-    .card-inner{ grid-template-columns: 1fr; }
-  }
+
+  /* ya no hay rail lateral */
+  .card-inner{display:block;}
 
   .media{
     position:relative;
@@ -153,6 +151,7 @@
     position:absolute;left:10px;right:10px;bottom:10px;
     display:flex;align-items:center;justify-content:center;
     pointer-events:none;
+    z-index:2; /* importante */
   }
   .overlay span{
     background:rgba(255,255,255,.88);
@@ -164,90 +163,165 @@
     color:#111;
   }
 
-  /* ===== NUEVO: rail de prendas (innovador + Zara) ===== */
-  .product-rail{
-    width:110px;
+  /* ===================== ✅ LOOK DRAWER (OPCIÓN 3) ===================== */
+
+  /* Pestaña LOOK (dentro de .media) */
+  .look-tab{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:var(--tabW);
+    height:92px;
+    border:1px solid rgba(255,255,255,.65);
+    background:rgba(17,17,17,.86);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:5;
+    user-select:none;
+  }
+  .look-tab span{
+    display:block;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    font-size:10px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+  }
+
+  /* Panel lateral */
+  .look-drawer{
+    position:absolute;
+    top:0;
+    right:0;
+    height:100%;
+    width:var(--drawerW);
+    background:rgba(255,255,255,.97);
+    border-left:1px solid var(--hair);
+    transform:translateX(100%);
+    transition:transform .22s ease;
+    z-index:6;
     display:flex;
     flex-direction:column;
-    gap:10px;
-    justify-content:flex-start;
   }
-  @media (max-width: 640px){
-    .product-rail{
-      width:auto;
-      flex-direction:row;
-      overflow-x:auto;
-      padding-bottom:6px;
-      -webkit-overflow-scrolling:touch;
-      gap:10px;
-    }
+  .look-drawer.open{ transform:translateX(0); }
+
+  .look-drawer .ld-head{
+    padding:12px 12px 10px;
+    border-bottom:1px solid var(--hair);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:#fff;
+  }
+  .look-drawer .ld-head .t{
+    font-size:11px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+  }
+  .look-drawer .ld-close{
+    border:1px solid transparent;
+    background:transparent;
+    width:34px;height:34px;
+    cursor:pointer;
+    position:relative;
+  }
+  .look-drawer .ld-close::before,
+  .look-drawer .ld-close::after{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    width:16px;height:1px;
+    background:#111;
+  }
+  .look-drawer .ld-close::before{ transform:translate(-50%,-50%) rotate(45deg); }
+  .look-drawer .ld-close::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+
+  .look-items{
+    padding:10px 10px 12px;
+    overflow:auto;
+    display:grid;
+    gap:10px;
   }
 
-  .prod-thumb{
-    position:relative;
+  .look-item{
+    display:grid;
+    grid-template-columns:72px 1fr;
+    gap:10px;
     border:1px solid var(--hair);
     background:#fff;
-    padding:0;
+    padding:8px;
+    position:relative;
     cursor:pointer;
-    width:110px;
-    height:140px;
-    overflow:hidden;
-    flex:0 0 auto;
-  }
-  @media (max-width: 640px){
-    .prod-thumb{ width:92px; height:120px; }
-  }
-  .prod-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .18s ease;}
-  .prod-thumb:hover{ border-color:rgba(17,17,17,.55); }
-  .prod-thumb:hover img{ transform:scale(1.03); }
-  .prod-thumb:focus{ outline:none; border-color:#111; box-shadow: inset 0 0 0 1px #111; }
-
-  /* Tooltip minimal */
-  .prod-tip{
-    position:absolute;
-    left:8px;
-    right:8px;
-    bottom:8px;
-    background:rgba(255,255,255,.92);
-    border:1px solid rgba(0,0,0,.18);
-    padding:8px 8px;
-    opacity:0;
-    transform:translateY(6px);
-    transition:opacity .16s ease, transform .16s ease;
-    pointer-events:none;
     text-align:left;
   }
-  .prod-thumb:hover .prod-tip,
-  .prod-thumb:focus .prod-tip{
-    opacity:1;
-    transform:translateY(0);
+  .look-item img{
+    width:72px;height:92px;
+    object-fit:cover;
+    display:block;
+    border:1px solid var(--hair);
+    background:#fafafa;
   }
-  .prod-tip .ref{
+  .look-item .ref{
     font-size:10px;
     letter-spacing:var(--letter);
     text-transform:uppercase;
     color:#111;
-    margin:0 0 4px;
+    margin:2px 0 6px;
   }
-  .prod-tip .name{
-    font-size:10px;
-    letter-spacing:.10em;
-    text-transform:uppercase;
-    color:#111;
-    margin:0 0 4px;
-    line-height:1.2;
-  }
-  .prod-tip .desc{
-    font-size:10px;
+  .look-item .name{
+    font-size:11px;
     letter-spacing:.06em;
     text-transform:uppercase;
     color:var(--muted);
+    line-height:1.4;
     margin:0;
-    line-height:1.25;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
+  }
+
+  /* Tooltip */
+  .look-tip{
+    position:absolute;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    background:rgba(17,17,17,.92);
+    color:#fff;
+    padding:10px;
+    border:1px solid rgba(255,255,255,.18);
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .16s ease, transform .16s ease;
+    pointer-events:none;
+  }
+  .look-tip .d{
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    line-height:1.45;
+    margin:0 0 8px;
+  }
+  .look-tip .btn{
+    display:inline-block;
+    border:1px solid rgba(255,255,255,.35);
+    padding:8px 10px;
+    font-size:10px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#fff;
+  }
+
+  @media (hover:hover){
+    .look-item:hover .look-tip{ opacity:1; transform:translateY(0); }
+  }
+  .look-item.show-tip .look-tip{ opacity:1; transform:translateY(0); }
+
+  @media (max-width: 520px){
+    :root{ --drawerW: 84vw; }
+    .look-tab{ top:10px; right:10px; height:84px; }
   }
 
   .meta{padding:8px 2px 2px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;}
@@ -625,7 +699,7 @@
       </div>
     </div>
 
-    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES · PASA EL RATÓN POR LAS PRENDAS PARA VER DETALLES</div>
+    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES · ABRE LOOK PARA VER PRENDAS</div>
 
     <div class="reco-actions">
       <button class="button secondary" type="button" onclick="restart()">EDITAR PERFIL</button>
@@ -667,13 +741,8 @@
 function imgPath(base){ return `img/${base}.jpg`; }
 function videoPath(base){ return `video/${base}.mp4`; }
 
-/* ===== PRENDAS (ejemplos) =====
-   Cambia img/ref/name/desc a tus prendas reales.
-   Recomendación: guarda las prendas en /img/prendas/...
-*/
-function prod(img, ref, name, desc){
-  return { img, ref, name, desc };
-}
+/* ===== PRENDAS ===== */
+function prod(img, ref, name, desc){ return { img, ref, name, desc }; }
 
 /* ===== ITEMS ===== */
 const LOOKS = [
@@ -972,36 +1041,6 @@ function escapeHtml(str){
     .replaceAll("'","&#039;");
 }
 
-function renderProductsRail(products){
-  const list = Array.isArray(products) ? products : [];
-  if(list.length === 0){
-    // rail vacío pero mantenemos espacio coherente
-    return `<div class="product-rail" aria-label="Prendas"></div>`;
-  }
-
-  return `
-    <div class="product-rail" aria-label="Prendas">
-      ${list.slice(0,5).map((p, idx) => `
-        <button type="button"
-          class="prod-thumb"
-          data-prod="1"
-          data-prod-img="${escapeHtml(p.img || '')}"
-          data-prod-ref="${escapeHtml(p.ref || '')}"
-          data-prod-name="${escapeHtml(p.name || '')}"
-          data-prod-desc="${escapeHtml(p.desc || '')}"
-          aria-label="${escapeHtml((p.name||'Prenda') + ' ' + (p.ref||''))}">
-          <img src="${escapeHtml(p.img || '')}" alt="${escapeHtml(p.name || 'Prenda')}">
-          <div class="prod-tip" aria-hidden="true">
-            <p class="ref">${escapeHtml(p.ref || 'REF —')}</p>
-            <p class="name">${escapeHtml(p.name || 'PRENDA')}</p>
-            <p class="desc">${escapeHtml(p.desc || '—')}</p>
-          </div>
-        </button>
-      `).join("")}
-    </div>
-  `;
-}
-
 function renderRecommendations(profile, bodyType){
   const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
 
@@ -1089,25 +1128,18 @@ function renderRecoPage(){
   els.grid.innerHTML = slice.map(item => {
     const imagesPacked = (item.images || []).join("|");
     const poster = item.images?.[0] || "";
-    const productsJson = escapeHtml(JSON.stringify(item.products || []));
     return `
       <article class="card" tabindex="0"
         data-name="${escapeHtml(item.name)}"
         data-tag="${escapeHtml(item.tag)}"
         data-desc="${escapeHtml(item.desc)}"
-        data-images="${escapeHtml(imagesPacked)}"
-        data-products="${productsJson}">
-        <div class="card-inner">
-          <div class="media" data-open="gallery">
-            <video autoplay muted loop playsinline preload="metadata" poster="${escapeHtml(poster)}">
-              <source src="${escapeHtml(item.video)}" type="video/mp4">
-            </video>
-            <div class="overlay"><span>VER IMÁGENES</span></div>
-          </div>
-
-          ${renderProductsRail(item.products)}
+        data-images="${escapeHtml(imagesPacked)}">
+        <div class="media">
+          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+            <source src="${item.video}" type="video/mp4">
+          </video>
+          <div class="overlay"><span>VER IMÁGENES</span></div>
         </div>
-
         <div class="meta">
           <span>${escapeHtml(item.tag)}</span>
           <span>VIDEO</span>
@@ -1132,55 +1164,15 @@ els.nextBtn.addEventListener("click", () => {
   renderRecoPage();
 });
 
-/* Clicks */
+/* Click abre galería */
 els.grid.addEventListener("click", (e) => {
-  const prodBtn = e.target.closest(".prod-thumb");
-  if(prodBtn){
-    e.preventDefault();
-    e.stopPropagation();
-
-    const p = {
-      img: prodBtn.dataset.prodImg || "",
-      ref: prodBtn.dataset.prodRef || "REF —",
-      name: prodBtn.dataset.prodName || "PRENDA",
-      desc: prodBtn.dataset.prodDesc || "—",
-    };
-
-    openModal({
-      name: p.name,
-      tag: p.ref,
-      desc: p.desc,
-      images: [p.img].filter(Boolean)
-    });
-    return;
-  }
-
-  const media = e.target.closest(".media");
-  if(media){
-    const card = e.target.closest(".card");
-    if(!card) return;
-    const images = (card.dataset.images || "").split("|").filter(Boolean);
-    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
-  }
+  const card = e.target.closest(".card");
+  if(!card) return;
+  const images = (card.dataset.images || "").split("|").filter(Boolean);
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
 });
-
 els.grid.addEventListener("keydown", (e) => {
-  // Enter/Espacio en tarjetas -> abre galería
   if(e.key !== "Enter" && e.key !== " ") return;
-
-  const prodBtn = e.target.closest(".prod-thumb");
-  if(prodBtn){
-    e.preventDefault();
-    const p = {
-      img: prodBtn.dataset.prodImg || "",
-      ref: prodBtn.dataset.prodRef || "REF —",
-      name: prodBtn.dataset.prodName || "PRENDA",
-      desc: prodBtn.dataset.prodDesc || "—",
-    };
-    openModal({ name: p.name, tag: p.ref, desc: p.desc, images: [p.img].filter(Boolean) });
-    return;
-  }
-
   const card = e.target.closest(".card");
   if(!card) return;
   e.preventDefault();
@@ -1202,7 +1194,7 @@ function exitApp(){
   toggle(els.start, true);
 }
 
-/* ===================== MODAL ===================== */
+/* ===================== MODAL: ACTIVO + FADE + SWIPE ===================== */
 const modalState = { images: [], idx: 0 };
 
 function setActiveThumb(){
@@ -1240,7 +1232,7 @@ function openModal({name, tag, desc, images}){
 
   els.thumbs.innerHTML = modalState.images.map((src, idx) => `
     <button type="button" data-idx="${idx}" aria-label="Imagen ${idx+1}">
-      <img src="${escapeHtml(src)}" alt="Miniatura ${idx+1}">
+      <img src="${src}" alt="Miniatura ${idx+1}">
     </button>
   `).join("");
 
@@ -1268,7 +1260,7 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
 
-/* Swipe móvil */
+/* Swipe móvil (izq/der) */
 let startX = 0, startY = 0, touching = false;
 
 els.galleryMain.addEventListener("touchstart", (e) => {
@@ -1293,7 +1285,7 @@ els.galleryMain.addEventListener("touchend", (e) => {
   if(dx > 50)  setMainImage(modalState.idx - 1);
 }, {passive:true});
 
-/* Eventos perfil */
+/* Eventos */
 els.height.addEventListener("input", updateHeightAvatar);
 els.back.addEventListener("input", scheduleMeasuresHint);
 els.waist.addEventListener("input", scheduleMeasuresHint);
@@ -1307,44 +1299,51 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   updateHeightAvatar();
 })();
 
-/* ===================== ASISTENTE ===================== */
+<!-- ===================== JS ASISTENTE ===================== -->
+const button = document.getElementById("assistant-button");
+const chat = document.getElementById("assistant-chat");
+const closeBtn = document.getElementById("close-chat");
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("chat-messages");
+
 const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
+
 let chatHistory = [];
 
 function addMsg(type, text){
   const div = document.createElement("div");
   div.className = type === "user" ? "msg-user" : "msg-bot";
-  div.innerHTML = type === "user"
-    ? `<strong>Tú:</strong> ${escapeHtml(text)}`
-    : `<strong>Asistente:</strong> ${escapeHtml(text)}`;
-  els.chatMessages.appendChild(div);
-  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
+  div.innerHTML =
+    type === "user"
+      ? `<strong>Tú:</strong> ${text}`
+      : `<strong>Asistente:</strong> ${text}`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 }
 
-els.assistantBtn.addEventListener("click", () => {
-  els.chat.classList.toggle("hidden");
-  if(!els.chat.classList.contains("hidden")) setTimeout(()=>els.chatInput.focus(),50);
+button.addEventListener("click", () => {
+  chat.classList.toggle("hidden");
+  setTimeout(()=>input.focus(),50);
 });
 
-els.chatClose.addEventListener("click", () => {
-  els.chat.classList.add("hidden");
+closeBtn.addEventListener("click", () => {
+  chat.classList.add("hidden");
 });
 
-els.chatInput.addEventListener("keydown", async (e) => {
+input.addEventListener("keydown", async (e) => {
   if(e.key !== "Enter") return;
 
-  const text = els.chatInput.value.trim();
+  const text = input.value.trim();
   if(!text) return;
 
-  els.chatInput.value = "";
+  input.value = "";
   addMsg("user", text);
   chatHistory.push({ role:"user", content:text });
 
   const typing = document.createElement("div");
   typing.className = "msg-bot";
   typing.innerHTML = "<strong>Asistente:</strong> …";
-  els.chatMessages.appendChild(typing);
-  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
+  messages.appendChild(typing);
 
   try{
     const res = await fetch(API_URL,{
@@ -1361,20 +1360,18 @@ els.chatInput.addEventListener("keydown", async (e) => {
     }
 
     const data = await res.json();
-    const reply = data.reply || "No he recibido respuesta.";
-    addMsg("bot", reply);
-    chatHistory.push({ role:"assistant", content:reply });
+    addMsg("bot", data.reply);
+    chatHistory.push({ role:"assistant", content:data.reply });
 
   }catch{
     typing.remove();
     addMsg("bot","Error de conexión con el asistente.");
   }
 });
+
 </script>
 
 </body>
 </html>
-
-
 
 
