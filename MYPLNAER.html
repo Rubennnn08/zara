@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recomendaciones</title>
 
-<link rel="stylesheet" href="menu.css" />
+  <link rel="stylesheet" href="menu.css" />
 
   <style>
     :root{
@@ -116,33 +115,21 @@
       .grid{grid-template-columns:1fr}
     }
 
-    article{
-      outline:none;
-    }
-    article:focus{
-      box-shadow: 0 0 0 2px #111 inset;
-    }
-
     .media{
       position:relative;
       aspect-ratio:3/4;
       overflow:hidden;
       border:1px solid var(--hair);
-      cursor:pointer;
-      background:#000;
     }
     .media video{
       width:100%;
       height:100%;
       object-fit:cover;
-      pointer-events:none; /* el clic va al contenedor (media) */
-      display:block;
-      background:#000;
+      pointer-events:none;
     }
     .overlay{
       position:absolute; bottom:10px; left:10px; right:10px;
       display:flex; justify-content:center;
-      pointer-events:none;
     }
     .overlay span{
       background:rgba(255,255,255,.9);
@@ -186,20 +173,7 @@
       padding:14px 16px;
       border-bottom:1px solid var(--hair);
       background:#fff;
-      position:sticky; top:0;
     }
-    .modal-title{
-      font-size:14px;
-      letter-spacing:var(--letter);
-      text-transform:uppercase;
-      font-weight:600;
-    }
-    .close{
-      width:40px;height:40px;border:1px solid transparent;background:transparent;cursor:pointer;position:relative;
-    }
-    .close::before,.close::after{content:"";position:absolute;top:50%;left:50%;width:18px;height:1px;background:#111;}
-    .close::before{transform:translate(-50%,-50%) rotate(45deg)}
-    .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
 
     .modal-content{
       max-width:980px;
@@ -221,51 +195,33 @@
       gap:10px;
     }
     .gallery-main{
-      width:100%;
       max-height:60vh;
       object-fit:contain;
       box-shadow:var(--shadow);
-      background:#fff;
-      transition:opacity .18s ease;
-      display:block;
     }
-    .gallery-main.is-fading{ opacity:.06; }
-
     .thumbs{
       display:flex;
       gap:10px;
       overflow-x:auto;
       max-height:120px;
-      padding-bottom:6px;
-      -webkit-overflow-scrolling:touch;
     }
     .thumbs button{
       width:92px;height:120px;
       border:1px solid var(--hair);
       background:#fff;
       padding:0;
-      cursor:pointer;
-      flex:0 0 auto;
     }
     .thumbs button.active{
       border-color:#111;
-      box-shadow: inset 0 0 0 1px #111;
     }
     .thumbs img{
-      width:100%;height:100%;object-fit:cover;display:block;
+      width:100%;height:100%;object-fit:cover;
     }
-
-    .side-info{
-      font-size:13px;line-height:1.55;color:#222;
-    }
-    .side-info .name{font-weight:600;text-transform:uppercase;letter-spacing:var(--letter);margin:0 0 6px;}
-    .side-info .tag{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:var(--letter);margin:0 0 10px;}
   </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <!-- NAVBAR -->
 <div class="navbar1">
   <div id="menu">
@@ -283,175 +239,31 @@
 </div>
 
 <div class="container">
-  <section class="grid" id="grid" aria-label="Recomendaciones"></section>
+  <section class="grid" id="grid"></section>
 </div>
 
-<!-- ===== Modal / Galería ===== -->
-<section class="modal" id="modal" aria-hidden="true" role="dialog" aria-label="Imágenes relacionadas">
-  <div class="modal-top">
-    <div class="modal-title" id="modalTitle">IMÁGENES</div>
-    <button class="close" type="button" aria-label="Cerrar" id="closeModal"></button>
-  </div>
-
-  <div class="modal-content">
-    <div class="gallery">
-      <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal">
-      <div id="thumbs" class="thumbs" aria-label="Miniaturas"></div>
-    </div>
-    <aside class="side-info">
-      <h2 class="name" id="modalName">—</h2>
-      <p class="tag" id="modalTag">—</p>
-      <p id="modalDesc">—</p>
-    </aside>
-  </div>
-</section>
-
 <script>
-/* ================= DATA ================= */
 const LOOKS=[
-  {name:"CENA FAMILIAR",tag:"SUGERENCIA",video:"video/cena.mp4",images:["img/relojarena1.jpg","img/relojarena2.jpg"], desc:"Ideas de outfits para cena familiar."},
-  {name:"CENA FAMILIAR",tag:"SUGERENCIA",video:"video/cena1.mp4",images:["img/relojarena2.jpg","img/relojarena1.jpg"], desc:"Variaciones de color y accesorios."}
+  {name:"CENA FAMILIAR",tag:"SUGERENCIA",video:"video/cena.mp4",images:["img/relojarena1.jpg","img/relojarena2.jpg"]},
+  {name:"CENA FAMILIAR",tag:"SUGERENCIA",video:"video/cena1.mp4",images:["img/relojarena2.jpg","img/relojarena1.jpg"]}
 ];
 
-/* ================= RENDER GRID ================= */
 const grid=document.getElementById("grid");
 
-function escapeHtml(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-grid.innerHTML = LOOKS.map(item=>{
-  const imagesPacked = (item.images||[]).join("|");
-  const poster = item.images?.[0] || ""; // opcional si quieres usar poster
-  return `
-    <article class="card" tabindex="0"
-      data-name="${escapeHtml(item.name)}"
-      data-tag="${escapeHtml(item.tag)}"
-      data-desc="${escapeHtml(item.desc||'')}"
-      data-images="${escapeHtml(imagesPacked)}">
-      <div class="media" role="button" aria-label="Abrir imágenes de ${escapeHtml(item.name)}">
-        <video autoplay muted loop playsinline preload="metadata" ${poster ? `poster="${poster}"` : ""}>
-          ${escapeHtml(item.video)}
+LOOKS.forEach(item=>{
+  grid.innerHTML+=`
+    <article>
+      <div class="media">
+        <video autoplay muted loop playsinline>
+          <source src="${item.video}">
         </video>
         <div class="overlay"><span>VER IMÁGENES</span></div>
       </div>
-      <div class="title-under">${escapeHtml(item.name)}</div>
-      <div class="meta"><span>${escapeHtml(item.tag)}</span><span>VIDEO</span></div>
+      <div class="title-under">${item.name}</div>
+      <div class="meta"><span>${item.tag}</span><span>VIDEO</span></div>
     </article>
   `;
-}).join("");
-
-/* ================= MODAL LOGIC ================= */
-const els = {
-  modal: document.getElementById("modal"),
-  closeModal: document.getElementById("closeModal"),
-  modalTitle: document.getElementById("modalTitle"),
-  modalName: document.getElementById("modalName"),
-  modalTag: document.getElementById("modalTag"),
-  modalDesc: document.getElementById("modalDesc"),
-  galleryMain: document.getElementById("galleryMain"),
-  thumbs: document.getElementById("thumbs"),
-};
-
-const modalState = { images: [], idx: 0 };
-
-function openModal({name, tag, desc, images}, startIdx=0){
-  modalState.images = Array.isArray(images) ? images : [];
-  modalState.idx = Math.max(0, Math.min(startIdx, modalState.images.length-1));
-
-  els.modalTitle.textContent = String(name).toUpperCase();
-  els.modalName.textContent = String(name).toUpperCase();
-  els.modalTag.textContent = String(tag).toUpperCase();
-  els.modalDesc.textContent = desc || "";
-
-  els.thumbs.innerHTML = modalState.images.map((src, i)=>`
-    <button type="button" data-idx="${i}" aria-label="Miniatura ${i+1}">
-      ${src}
-    </button>
-  `).join("");
-
-  els.thumbs.querySelectorAll("button").forEach(btn=>{
-    btn.addEventListener("click", ()=> setMainImage(Number(btn.dataset.idx)));
-  });
-
-  els.galleryMain.src = modalState.images[modalState.idx] || "";
-  setActiveThumb();
-
-  els.modal.classList.add("open");
-  els.modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden";
-}
-
-function closeModal(){
-  els.modal.classList.remove("open");
-  els.modal.setAttribute("aria-hidden","true");
-  document.body.style.overflow = "";
-}
-
-function setActiveThumb(){
-  const buttons = els.thumbs.querySelectorAll("button");
-  buttons.forEach((b,i)=> b.classList.toggle("active", i===modalState.idx));
-  const active = buttons[modalState.idx];
-  if(active) active.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
-}
-
-function setMainImage(index){
-  if(!modalState.images.length) return;
-  const total = modalState.images.length;
-  modalState.idx = (index + total) % total;
-
-  els.galleryMain.classList.add("is-fading");
-  const nextSrc = modalState.images[modalState.idx];
-  setTimeout(()=>{ els.galleryMain.src = nextSrc; }, 100);
-  els.galleryMain.onload = () => els.galleryMain.classList.remove("is-fading");
-
-  setActiveThumb();
-}
-
-/* ================= EVENTS ================= */
-/* Abrir modal al hacer clic en el video o la tarjeta */
-grid.addEventListener("click", (e)=>{
-  const media = e.target.closest(".media");
-  const card = e.target.closest(".card");
-  if(!card) return;
-  if(media || e.target.closest("article")){
-    const images = (card.dataset.images||"").split("|").filter(Boolean);
-    openModal({
-      name: card.dataset.name,
-      tag: card.dataset.tag,
-      desc: card.dataset.desc,
-      images
-    }, 0);
-  }
 });
-
-/* Teclado: abrir modal con Enter o Espacio */
-grid.addEventListener("keydown", (e)=>{
-  if(e.key !== "Enter" && e.key !== " ") return;
-  const card = e.target.closest(".card");
-  if(!card) return;
-  e.preventDefault();
-  const images = (card.dataset.images||"").split("|").filter(Boolean);
-  openModal({
-    name: card.dataset.name,
-    tag: card.dataset.tag,
-    desc: card.dataset.desc,
-    images
-  }, 0);
-});
-
-/* Cerrar modal */
-els.closeModal.addEventListener("click", closeModal);
-/* Cerrar al clicar fuera (fondo) */
-els.modal.addEventListener("click", (e)=>{ if(e.target === els.modal) closeModal(); });
-/* Cerrar con Escape */
-document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal(); });
-
 </script>
 
 </body>
