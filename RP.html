@@ -17,7 +17,7 @@
     --cardMaxH:520px;
 
     /* LOOK DRAWER */
-    --drawerW: 300px;
+    --drawerW: min(260px, 36vw);
     --tabW: 34px;
   }
   *{box-sizing:border-box}
@@ -250,7 +250,7 @@
 
   .look-item{
     display:grid;
-    grid-template-columns:72px 1fr;
+    grid-template-columns:64px 1fr;
     gap:10px;
     border:1px solid var(--hair);
     background:#fff;
@@ -260,7 +260,7 @@
     text-align:left;
   }
   .look-item img{
-    width:72px;height:92px;
+    width:64px;height:82px;
     object-fit:cover;
     display:block;
     border:1px solid var(--hair);
@@ -1041,6 +1041,43 @@ function escapeHtml(str){
     .replaceAll("'","&#039;");
 }
 
+function renderLookDrawer(products){
+  const list = Array.isArray(products) ? products : [];
+  const items = list.slice(0, 6).map((p) => `
+    <div class="look-item" role="button" tabindex="0"
+         data-prod-img="${escapeHtml(p.img || "")}"
+         data-prod-ref="${escapeHtml(p.ref || "")}"
+         data-prod-name="${escapeHtml(p.name || "")}"
+         data-prod-desc="${escapeHtml(p.desc || "")}">
+      <img src="${escapeHtml(p.img || "")}" alt="${escapeHtml(p.name || "Prenda")}">
+      <div>
+        <div class="ref">${escapeHtml(p.ref || "REF —")}</div>
+        <p class="name">${escapeHtml(p.name || "PRENDA")}</p>
+      </div>
+      <div class="look-tip" aria-hidden="true">
+        <p class="d">${escapeHtml(p.desc || "—")}</p>
+        <span class="btn">VER DETALLE</span>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="look-tab" data-look="toggle" aria-label="Abrir look">
+      <span>LOOK</span>
+    </div>
+
+    <aside class="look-drawer" aria-label="Look drawer">
+      <div class="ld-head">
+        <div class="t">LOOK</div>
+        <button type="button" class="ld-close" data-look="close" aria-label="Cerrar"></button>
+      </div>
+      <div class="look-items">
+        ${items || `<div class="pill" style="max-width:none;">NO HAY PRENDAS EN ESTE LOOK</div>`}
+      </div>
+    </aside>
+  `;
+}
+
 function renderRecommendations(profile, bodyType){
   const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
 
@@ -1113,12 +1150,16 @@ function renderRecoPage(){
   els.reco.classList.toggle("is-empty", isEmpty);
   els.emptyState.classList.toggle("hidden", !isEmpty);
 
+// Cierra cualquier drawer abierto al re-render
+els.grid.querySelectorAll(".look-drawer.open").forEach(d => d.classList.remove("open"));
+
   if(isEmpty){
     els.grid.innerHTML = "";
     els.pageInfo.textContent = "1 / 1";
     els.prevBtn.disabled = true;
     els.nextBtn.disabled = true;
-    return;
+    
+return;
   }
 
   const start = recoState.page * recoState.perPage;
@@ -1134,12 +1175,15 @@ function renderRecoPage(){
         data-tag="${escapeHtml(item.tag)}"
         data-desc="${escapeHtml(item.desc)}"
         data-images="${escapeHtml(imagesPacked)}">
-        <div class="media">
-          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
-            <source src="${item.video}" type="video/mp4">
-          </video>
-          <div class="overlay"><span>VER IMÁGENES</span></div>
-        </div>
+      <div class="media">
+  <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+    <source src="${item.video}" type="video/mp4">
+  </video>
+
+  <div class="overlay"><span>VER IMÁGENES</span></div>
+
+  ${renderLookDrawer(item.products)}
+</div>
         <div class="meta">
           <span>${escapeHtml(item.tag)}</span>
           <span>VIDEO</span>
@@ -1166,15 +1210,108 @@ els.nextBtn.addEventListener("click", () => {
 
 /* Click abre galería */
 els.grid.addEventListener("click", (e) => {
+
+// Si hay un drawer abierto y clicas fuera de él, se cierra
+const openDrawer = els.grid.querySelector(".look-drawer.open");
+if (openDrawer) {
+  const clickedInsideDrawer = e.target.closest(".look-drawer");
+  const clickedTab = e.target.closest('[data-look="toggle"]');
+  if (!clickedInsideDrawer && !clickedTab) {
+    openDrawer.classList.remove("open");
+  }
+}
+  // 1) Abrir/cerrar LOOK drawer (sin abrir galería)
+  const toggleBtn = e.target.closest('[data-look="toggle"]');
+ if (toggleBtn){
+  e.preventDefault();
+  e.stopPropagation();
+  const media = toggleBtn.closest(".media");
+  const drawer = media?.querySelector(".look-drawer");
+  if (drawer){
+    els.grid.querySelectorAll(".look-drawer.open").forEach(d => {
+      if(d !== drawer) d.classList.remove("open");
+    });
+    drawer.classList.toggle("open");
+  }
+  return;
+}
+
+  const closeBtn = e.target.closest('[data-look="close"]');
+  if (closeBtn){
+    e.preventDefault();
+    e.stopPropagation();
+    const media = closeBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer) drawer.classList.remove("open");
+    return;
+  }
+// ✅ Si clicas dentro del drawer (pero no en una prenda), NO abras la galería
+  const insideDrawer = e.target.closest(".look-drawer");
+ const lookItem = e.target.closest(".look-item");
+if (insideDrawer && !lookItem) {
+  e.preventDefault();
+  e.stopPropagation();
+  return;
+  }
+  // 2) Click en una prenda: móvil muestra tooltip / desktop abre modal con esa prenda
+  if (lookItem){
+    e.preventDefault();
+    e.stopPropagation();
+
+    // móvil: toggle tooltip
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+
+    // desktop: abre modal solo con la imagen de la prenda
+    const img = lookItem.dataset.prodImg || "";
+    const ref = lookItem.dataset.prodRef || "REF —";
+    const name = lookItem.dataset.prodName || "PRENDA";
+    const desc = lookItem.dataset.prodDesc || "—";
+    openModal({ name, tag: ref, desc, images: img ? [img] : [] });
+    return;
+  }
+
+  // 3) Click en la tarjeta / vídeo -> abre galería del look
   const card = e.target.closest(".card");
-  if(!card) return;
-  const images = (card.dataset.images || "").split("|").filter(Boolean);
-  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  if(card){
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  }
 });
 els.grid.addEventListener("keydown", (e) => {
-  if(e.key !== "Enter" && e.key !== " ") return;
+  if (e.key !== "Enter" && e.key !== " ") return;
+
+// ✅ BLOQUEO: si estás dentro del drawer pero NO en una prenda, no abras nada
+const insideDrawer = e.target.closest(".look-drawer");
+const lookItem = e.target.closest(".look-item");
+if (insideDrawer && !lookItem) {
+  e.preventDefault();
+  e.stopPropagation();
+  return;
+}
+  // 1) Si estás en una prenda, actúa sobre la prenda
+    if (lookItem) {
+    e.preventDefault();
+
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+
+    const img = lookItem.dataset.prodImg || "";
+    const ref = lookItem.dataset.prodRef || "REF —";
+    const name = lookItem.dataset.prodName || "PRENDA";
+    const desc = lookItem.dataset.prodDesc || "—";
+    openModal({ name, tag: ref, desc, images: img ? [img] : [] });
+    return;
+  }
+
+  // 2) Si no es prenda, pero sí card, abre la galería del look
   const card = e.target.closest(".card");
-  if(!card) return;
+  if (!card) return;
+
   e.preventDefault();
   const images = (card.dataset.images || "").split("|").filter(Boolean);
   openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
@@ -1299,12 +1436,7 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   updateHeightAvatar();
 })();
 
-<!-- ===================== JS ASISTENTE ===================== -->
-const button = document.getElementById("assistant-button");
-const chat = document.getElementById("assistant-chat");
-const closeBtn = document.getElementById("close-chat");
-const input = document.getElementById("chat-input");
-const messages = document.getElementById("chat-messages");
+// ===================== JS ASISTENTE =====================
 
 const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
 
@@ -1317,33 +1449,33 @@ function addMsg(type, text){
     type === "user"
       ? `<strong>Tú:</strong> ${text}`
       : `<strong>Asistente:</strong> ${text}`;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+ els.chatMessages.appendChild(div);
+  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
 }
 
-button.addEventListener("click", () => {
-  chat.classList.toggle("hidden");
-  setTimeout(()=>input.focus(),50);
+els.assistantBtn.addEventListener("click", () => {
+  els.chat.classList.toggle("hidden");
+  setTimeout(()=>els.chatInput.focus(),50);
 });
 
-closeBtn.addEventListener("click", () => {
-  chat.classList.add("hidden");
+els.chatClose.addEventListener("click", () => {
+  els.chat.classList.add("hidden");
 });
 
-input.addEventListener("keydown", async (e) => {
+els.chatInput.addEventListener("keydown", async (e) => {
   if(e.key !== "Enter") return;
 
-  const text = input.value.trim();
+  const text = els.chatInput.value.trim();
   if(!text) return;
 
-  input.value = "";
+  els.chatInput.value = "";
   addMsg("user", text);
   chatHistory.push({ role:"user", content:text });
 
   const typing = document.createElement("div");
   typing.className = "msg-bot";
   typing.innerHTML = "<strong>Asistente:</strong> …";
-  messages.appendChild(typing);
+  els.chatMessages.appendChild(typing);
 
   try{
     const res = await fetch(API_URL,{
@@ -1373,5 +1505,3 @@ input.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
-
-
