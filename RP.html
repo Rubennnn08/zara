@@ -380,7 +380,105 @@
   text-transform:uppercase;
   margin:20px 0;
 }
+/* ===================== PRODUCT MINI STRIP (INNOVADOR) ===================== */
+.media{
+  position:relative;
+}
 
+/* tira vertical junto al video */
+.prod-strip{
+  position:absolute;
+  top:10px;
+  right:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  z-index:6;
+}
+
+/* miniatura */
+.prod-thumb{
+  width:46px;
+  height:58px;
+  border:1px solid rgba(255,255,255,.38);
+  background:rgba(0,0,0,.15);
+  padding:0;
+  cursor:pointer;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter: blur(2px);
+}
+.prod-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* tooltip estilo Zara (clean) */
+.prod-tip{
+  position:absolute;
+  right:62px;
+  top:0;
+  min-width:210px;
+  max-width:240px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(0,0,0,.18);
+  box-shadow:0 18px 60px rgba(0,0,0,.18);
+  padding:10px 10px;
+  opacity:0;
+  transform:translateY(2px);
+  pointer-events:none;
+  transition:opacity .16s ease, transform .16s ease;
+  z-index:7;
+}
+
+.prod-tip .ref{
+  font-size:10px;
+  color:#666;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+  margin:0 0 6px;
+}
+.prod-tip .name{
+  font-size:12px;
+  color:#111;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+  margin:0 0 6px;
+}
+.prod-tip .desc{
+  font-size:12px;
+  line-height:1.45;
+  color:#222;
+  margin:0;
+  max-width:42ch;
+}
+
+/* mostrar tooltip en hover */
+.prod-thumb:hover + .prod-tip{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* En móvil: la tira pasa a horizontal abajo (sin hover) */
+@media (max-width: 520px){
+  .prod-strip{
+    right:auto;
+    left:10px;
+    bottom:10px;
+    top:auto;
+    flex-direction:row;
+  }
+  .prod-tip{
+    right:auto;
+    left:0;
+    bottom:72px;
+    top:auto;
+  }
+}
 </style>
 </head>
 
@@ -607,6 +705,12 @@ const LOOKS = [
     video: videoPath('relojarena1'),
     images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
     desc:'Video + imágenes relacionadas (reloj de arena).' },
+    products:[
+    { img: "img/prenda_blazer1.jpg", ref:"REF. 1234/567", name:"BLAZER ESTRUCTURADA", desc:"Línea limpia, hombro marcado, ideal para look elegante." },
+    { img: "img/prenda_pantalon1.jpg", ref:"REF. 2345/678", name:"PANTALÓN RECTO", desc:"Corte alto, estiliza y equilibra proporciones." },
+    { img: "img/prenda_tacon1.jpg", ref:"REF. 3456/789", name:"SALÓN PUNTA", desc:"Tacón cerrado para elevar el conjunto sin recargar." }
+  ]
+}
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
     video: videoPath('relojarena2'),
     images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
@@ -919,26 +1023,51 @@ function renderRecoPage(){
   const slice = recoState.items.slice(start, end);
 
   els.grid.innerHTML = slice.map(item => {
-    const imagesPacked = (item.images || []).join("|");
-    const poster = item.images?.[0] || "";
-    return `
-      <article class="card" tabindex="0"
-        data-name="${escapeHtml(item.name)}"
-        data-tag="${escapeHtml(item.tag)}"
-        data-desc="${escapeHtml(item.desc)}"
-        data-images="${escapeHtml(imagesPacked)}">
-        <div class="media">
-          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
-            <source src="${item.video}" type="video/mp4">
-          </video>
-          <div class="overlay"><span>VER IMÁGENES</span></div>
-        </div>
-        <div class="meta">
-          <span>${escapeHtml(item.tag)}</span>
-          <span>VIDEO</span>
-        </div>
-      </article>
-    `;
+     const imagesPacked = (item.images || []).join("|");
+  const poster = item.images?.[0] || "";
+
+  // productos
+  const prods = Array.isArray(item.products) ? item.products.slice(0,4) : [];
+  const prodsPacked = escapeHtml(JSON.stringify(prods));
+
+  return `
+    <article class="card" tabindex="0"
+      data-name="${escapeHtml(item.name)}"
+      data-tag="${escapeHtml(item.tag)}"
+      data-desc="${escapeHtml(item.desc)}"
+      data-images="${escapeHtml(imagesPacked)}"
+      data-products='${prodsPacked}'>
+      <div class="media">
+        <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+          <source src="${item.video}" type="video/mp4">
+        </video>
+
+        ${prods.length ? `
+          <div class="prod-strip" aria-label="Productos">
+            ${prods.map((p, idx) => `
+              <button class="prod-thumb" type="button"
+                data-idx="${idx}"
+                aria-label="${escapeHtml(p.name || "Producto")}">
+                <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name || "Producto")}">
+              </button>
+              <div class="prod-tip" role="tooltip">
+                <p class="ref">${escapeHtml(p.ref || "REF.")}</p>
+                <p class="name">${escapeHtml(p.name || "PRODUCTO")}</p>
+                <p class="desc">${escapeHtml(p.desc || "")}</p>
+              </div>
+            `).join("")}
+          </div>
+        ` : ""}
+
+        <div class="overlay"><span>VER IMÁGENES</span></div>
+      </div>
+
+      <div class="meta">
+        <span>${escapeHtml(item.tag)}</span>
+        <span>VIDEO</span>
+      </div>
+    </article>
+  `;  
   }).join("");
 
   const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
@@ -959,8 +1088,12 @@ els.nextBtn.addEventListener("click", () => {
 
 /* Click abre galería */
 els.grid.addEventListener("click", (e) => {
+  // Si pulsas una miniatura, no abras la galería del look
+  if(e.target.closest(".prod-thumb")) return;
+
   const card = e.target.closest(".card");
   if(!card) return;
+
   const images = (card.dataset.images || "").split("|").filter(Boolean);
   openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
 });
@@ -1053,6 +1186,8 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
 
+  
+
 /* Swipe móvil (izq/der) */
 let startX = 0, startY = 0, touching = false;
 
@@ -1091,6 +1226,30 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   els.avatar.src = `${selectedGender}.png`;
   updateHeightAvatar();
 })();
+
+// En móvil: tap en miniatura alterna tooltip (sin hover)
+els.grid.addEventListener("click", (e) => {
+  const btn = e.target.closest(".prod-thumb");
+  if(!btn) return;
+
+  // cerrar otros tooltips en la misma card
+  const card = btn.closest(".card");
+  if(!card) return;
+
+  const tips = card.querySelectorAll(".prod-tip");
+  tips.forEach(t => t.style.opacity = "0");
+
+  // mostrar el tooltip justo después del botón
+  const tip = btn.nextElementSibling;
+  if(tip && tip.classList.contains("prod-tip")){
+    tip.style.opacity = "1";
+    tip.style.transform = "translateY(0)";
+    setTimeout(() => {
+      tip.style.opacity = "0";
+      tip.style.transform = "translateY(2px)";
+    }, 2200);
+  }
+});
 
 <!-- ===================== JS ASISTENTE ===================== -->
 const button = document.getElementById("assistant-button");
@@ -1166,6 +1325,7 @@ input.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
+
 
 
 
