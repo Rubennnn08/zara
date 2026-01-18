@@ -247,6 +247,29 @@
     display:grid;
     gap:10px;
   }
+ 
+/* Animación sutil de entrada de prendas */
+.look-drawer .look-item{
+  opacity:0;
+  transform:translateY(6px);
+  transition:
+    opacity .18s ease,
+    transform .18s ease;
+}
+
+/* Cuando el drawer está abierto, aparecen */
+.look-drawer.open .look-item{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Micro-delay progresivo (efecto editorial) */
+.look-drawer.open .look-item:nth-child(1){ transition-delay:.04s; }
+.look-drawer.open .look-item:nth-child(2){ transition-delay:.07s; }
+.look-drawer.open .look-item:nth-child(3){ transition-delay:.10s; }
+.look-drawer.open .look-item:nth-child(4){ transition-delay:.13s; }
+.look-drawer.open .look-item:nth-child(5){ transition-delay:.16s; }
+.look-drawer.open .look-item:nth-child(6){ transition-delay:.19s; }
 
   .look-item{
     display:grid;
@@ -1505,3 +1528,4 @@ els.chatInput.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
+
