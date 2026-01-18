@@ -38,6 +38,7 @@
     letter-spacing:var(--letter);text-transform:uppercase;font-size:16px;line-height:1.25;
   }
   @media (min-width: 720px){ .title{font-size:18px;} }
+
   .subtitle{
     text-align:center;color:var(--muted);margin:0 auto 16px;max-width:60ch;
     font-size:11px;letter-spacing:.08em;text-transform:uppercase;line-height:1.6;
@@ -82,7 +83,10 @@
     background:#fff;
   }
   input[type="range"]{accent-color:#111}
-  .value{display:block;margin-top:8px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;line-height:1.4;}
+  .value{
+    display:block;margin-top:8px;font-size:11px;color:var(--muted);
+    letter-spacing:.08em;text-transform:uppercase;line-height:1.4;
+  }
   .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
   @media (min-width: 520px){ .actions{grid-template-columns:1fr 1fr;} }
 
@@ -103,7 +107,7 @@
   .body-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
   @media (min-width: 520px){ .body-actions{grid-template-columns:1fr 1fr;} }
 
-  /* Reco */
+  /* Reco (videos grandes) */
   #reco-screen{height: calc(100vh - 130px);overflow:hidden;display:flex;flex-direction:column;}
   .rec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:10px 0 12px;flex-wrap:wrap;}
   .rec-head h1{margin:0;font-size:18px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
@@ -121,27 +125,27 @@
   }
   @media (max-width: 520px){ .grid{grid-template-columns:1fr;} }
 
-  .card{user-select:none;background:#fff;}
-  .card:focus{outline:none;}
-  .card-inner{
+  .card{cursor:pointer;user-select:none;background:#fff;}
+
+  /* ====== NUEVO: layout media + LOOK drawer ====== */
+  .media{
+    position:relative;
     display:grid;
-    grid-template-columns: 1fr auto;
-    gap:10px;
-    align-items:stretch;
-  }
-  @media (max-width: 640px){
-    .card-inner{ grid-template-columns: 1fr; }
+    grid-template-columns: 1fr;
+    background:#000;
+    max-height: var(--cardMaxH);
+    border:1px solid var(--hair);
+    overflow:hidden;
   }
 
-  .media{
+  /* Contenedor vídeo */
+  .media-inner{
     position:relative;
     aspect-ratio:3/4;
     overflow:hidden;
     background:#000;
-    max-height: var(--cardMaxH);
-    border:1px solid var(--hair);
-    cursor:pointer;
   }
+
   .media video{
     width:100%;height:100%;
     object-fit:cover;
@@ -149,6 +153,7 @@
     background:#000;
     pointer-events:none;
   }
+
   .overlay{
     position:absolute;left:10px;right:10px;bottom:10px;
     display:flex;align-items:center;justify-content:center;
@@ -164,93 +169,162 @@
     color:#111;
   }
 
-  /* ===== NUEVO: rail de prendas (innovador + Zara) ===== */
-  .product-rail{
-    width:110px;
+  /* LOOK tab */
+  .look-tab{
+    position:absolute;
+    top:12px;
+    right:12px;
+    z-index:6;
+    border:1px solid rgba(255,255,255,.55);
+    background:rgba(17,17,17,.55);
+    color:#fff;
+    padding:8px 10px;
+    font-size:10px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    cursor:pointer;
+    backdrop-filter: blur(6px);
+  }
+
+  /* Drawer (desktop: lateral derecha dentro del media) */
+  .look-drawer{
+    position:absolute;
+    top:0; right:0;
+    height:100%;
+    width:min(46%, 240px);
+    background:rgba(255,255,255,.96);
+    border-left:1px solid var(--hair);
+    transform:translateX(102%);
+    transition:transform .18s ease;
+    z-index:5;
     display:flex;
     flex-direction:column;
-    gap:10px;
-    justify-content:flex-start;
   }
-  @media (max-width: 640px){
-    .product-rail{
-      width:auto;
-      flex-direction:row;
-      overflow-x:auto;
-      padding-bottom:6px;
-      -webkit-overflow-scrolling:touch;
-      gap:10px;
-    }
+  .media.is-look-open .look-drawer{ transform:translateX(0); }
+
+  .look-head{
+    padding:12px 12px 10px;
+    border-bottom:1px solid var(--hair);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .look-head .t{
+    font-size:11px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+    margin:0;
+  }
+  .look-close{
+    width:34px;height:34px;
+    border:1px solid transparent;
+    background:transparent;
+    cursor:pointer;
+    position:relative;
+  }
+  .look-close::before,.look-close::after{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    width:16px;height:1px;
+    background:#111;
+  }
+  .look-close::before{transform:translate(-50%,-50%) rotate(45deg)}
+  .look-close::after{transform:translate(-50%,-50%) rotate(-45deg)}
+
+  .look-list{
+    padding:10px 10px 12px;
+    overflow:auto;
+    display:grid;
+    gap:10px;
   }
 
-  .prod-thumb{
-    position:relative;
+  .prod{
+    display:grid;
+    grid-template-columns:58px 1fr;
+    gap:10px;
+    align-items:center;
     border:1px solid var(--hair);
     background:#fff;
-    padding:0;
+    padding:8px;
     cursor:pointer;
-    width:110px;
-    height:140px;
-    overflow:hidden;
-    flex:0 0 auto;
+    position:relative;
   }
-  @media (max-width: 640px){
-    .prod-thumb{ width:92px; height:120px; }
+  .prod img{
+    width:58px;height:72px;
+    object-fit:cover;
+    display:block;
+    background:#f3f3f3;
   }
-  .prod-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .18s ease;}
-  .prod-thumb:hover{ border-color:rgba(17,17,17,.55); }
-  .prod-thumb:hover img{ transform:scale(1.03); }
-  .prod-thumb:focus{ outline:none; border-color:#111; box-shadow: inset 0 0 0 1px #111; }
-
-  /* Tooltip minimal */
-  .prod-tip{
-    position:absolute;
-    left:8px;
-    right:8px;
-    bottom:8px;
-    background:rgba(255,255,255,.92);
-    border:1px solid rgba(0,0,0,.18);
-    padding:8px 8px;
-    opacity:0;
-    transform:translateY(6px);
-    transition:opacity .16s ease, transform .16s ease;
-    pointer-events:none;
-    text-align:left;
-  }
-  .prod-thumb:hover .prod-tip,
-  .prod-thumb:focus .prod-tip{
-    opacity:1;
-    transform:translateY(0);
-  }
-  .prod-tip .ref{
+  .prod .ref{
     font-size:10px;
     letter-spacing:var(--letter);
     text-transform:uppercase;
     color:#111;
-    margin:0 0 4px;
-  }
-  .prod-tip .name{
-    font-size:10px;
-    letter-spacing:.10em;
-    text-transform:uppercase;
-    color:#111;
-    margin:0 0 4px;
     line-height:1.2;
   }
-  .prod-tip .desc{
+  .prod .name{
+    margin-top:4px;
     font-size:10px;
-    letter-spacing:.06em;
+    letter-spacing:.08em;
     text-transform:uppercase;
     color:var(--muted);
-    margin:0;
-    line-height:1.25;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
+    line-height:1.35;
   }
 
-  .meta{padding:8px 2px 2px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;}
+  /* Tooltip (innovador, muy Zara) */
+  .prod-tip{
+    position:absolute;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    transform:translateY(6px);
+    opacity:0;
+    pointer-events:none;
+    background:#fff;
+    border:1px solid rgba(17,17,17,.25);
+    padding:10px;
+    box-shadow:0 14px 44px rgba(0,0,0,.18);
+    transition:opacity .14s ease, transform .14s ease;
+    z-index:10;
+  }
+  .prod:hover .prod-tip{opacity:1; transform:translateY(0);}
+  .prod.is-open .prod-tip{opacity:1; transform:translateY(0); pointer-events:auto;}
+
+  .prod-tip .tt{
+    font-size:10px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+    margin:0 0 6px;
+  }
+  .prod-tip .dd{
+    margin:0;
+    font-size:12px;
+    line-height:1.5;
+    color:#222;
+  }
+  .prod-tip .cta{
+    margin-top:10px;
+    width:100%;
+    border:1px solid #111;
+    background:#111;
+    color:#fff;
+    padding:10px 10px;
+    font-size:11px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+
+  /* meta */
+  .meta{
+    padding:8px 2px 2px;
+    display:flex;justify-content:space-between;gap:10px;
+    color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;
+  }
 
   .pager{border-top:1px solid var(--hair);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .pager .count{font-size:10px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;}
@@ -268,7 +342,7 @@
   .empty-state .t{font-size:12px;letter-spacing:var(--letter);text-transform:uppercase;margin:0 0 6px;color:#111;}
   .empty-state .s{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted);}
 
-  /* ===================== NAVBAR ===================== */
+  /* NAVBAR */
   .navbar1{
     position:fixed; top:0; left:0; right:0;
     height:130px;
@@ -302,6 +376,7 @@
     white-space:nowrap;
   }
 
+  /* NAVBAR móvil */
   @media (max-width: 900px){
     body{ padding-top:160px; }
     #reco-screen{ height: calc(100vh - 160px); }
@@ -312,12 +387,10 @@
       gap:10px;
       padding:10px 14px;
     }
-
     .navbar1 #menu{ order:1; }
     .navbar1 .logo{ order:2; }
     .navbar1 .searchbar{ order:3; flex:1 1 100%; }
     .navbar1 .searchbar input{ width:100%; max-width:none; }
-
     .navbar1 .help{
       order:4;
       display:flex !important;
@@ -334,7 +407,32 @@
     .navbar1 .help{ font-size:10px; gap:12px; }
   }
 
-  /* ===================== MODAL GALERIA ===================== */
+  /* ===== LOOK drawer móvil (debajo del vídeo, no lateral) ===== */
+  @media (max-width: 720px){
+    .look-drawer{
+      position:static;
+      width:100%;
+      height:auto;
+      transform:none;
+      border-left:none;
+      border-top:1px solid var(--hair);
+      display:none;
+    }
+    .media.is-look-open .look-drawer{ display:flex; }
+    .look-tab{
+      top:12px;
+      right:12px;
+    }
+    .look-list{
+      grid-template-columns:1fr;
+      max-height:260px;
+    }
+    .prod-tip{
+      left:8px; right:8px;
+    }
+  }
+
+  /* MODAL GALERÍA */
   .modal{position:fixed;inset:0;background:rgba(255,255,255,.96);display:none;z-index:80;}
   .modal.open{display:block;}
   .modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hair);background:#fff;position:sticky;top:0;}
@@ -343,7 +441,6 @@
   .close::before,.close::after{content:"";position:absolute;top:50%;left:50%;width:18px;height:1px;background:#111;}
   .close::before{transform:translate(-50%,-50%) rotate(45deg)}
   .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
-
   .modal-content{
     max-width:980px;margin:0 auto;padding:16px;
     display:grid;grid-template-columns:1fr;gap:16px;
@@ -352,115 +449,47 @@
   }
   @media (min-width: 860px){ .modal-content{grid-template-columns:1.2fr .8fr;gap:22px;padding:18px;} }
 
-  .gallery{
-    display:flex;flex-direction:column;gap:10px;
-    max-height: calc(100vh - 140px);
-    overflow:hidden;
-  }
-
+  .gallery{display:flex;flex-direction:column;gap:10px;max-height: calc(100vh - 140px);overflow:hidden;}
   .gallery-main{
-    width:100%;
-    max-height:60vh;
-    object-fit:contain;
-    display:block;
-    box-shadow:var(--shadow);
-    background:#fff;
-    touch-action:pan-y;
-    transition:opacity .18s ease;
+    width:100%;max-height:60vh;object-fit:contain;display:block;
+    box-shadow:var(--shadow);background:#fff;touch-action:pan-y;transition:opacity .18s ease;
   }
   .gallery-main.is-fading{ opacity:0; }
-
-  .thumbs{
-    display:flex;
-    gap:10px;
-    overflow-x:auto;
-    overflow-y:hidden;
-    padding-bottom:6px;
-    max-height:120px;
-  }
+  .thumbs{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;max-height:120px;}
   .thumbs button{
-    border:1px solid var(--hair);
-    background:#fff;
-    padding:0;
-    cursor:pointer;
-    flex:0 0 auto;
-    width:92px;
-    height:120px;
-    overflow:hidden;
+    border:1px solid var(--hair);background:#fff;padding:0;cursor:pointer;flex:0 0 auto;
+    width:92px;height:120px;overflow:hidden;
   }
-  .thumbs button.active{
-    border-color:#111;
-    box-shadow: inset 0 0 0 1px #111;
-  }
+  .thumbs button.active{border-color:#111;box-shadow: inset 0 0 0 1px #111;}
   .thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
 
   .below-back{display:flex;gap:10px;}
   .below-back .button{width:auto}
-
   .panel-right h2{margin:0 0 8px;font-size:16px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
   .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
   .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
 
-  /* ===================== CHAT ASSISTANT ===================== */
+  /* CHAT */
   #assistant-button{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    width:56px;
-    height:56px;
-    border-radius:50%;
-    background:#111;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    cursor:pointer;
-    z-index:999999;
+    position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;
+    background:#111;color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:22px;cursor:pointer;z-index:999999;
   }
-
   #assistant-chat{
-    position:fixed;
-    bottom:90px;
-    right:20px;
-    width:320px;
-    background:#fff;
-    border:1px solid #111;
-    z-index:999999;
+    position:fixed;bottom:90px;right:20px;width:320px;background:#fff;border:1px solid #111;z-index:999999;
   }
-
+  @media (max-width: 520px){
+    #assistant-chat{ right:14px; left:14px; width:auto; }
+    #assistant-button{ right:14px; }
+  }
   .chat-header{
-    background:#111;
-    color:#fff;
-    padding:10px 12px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:12px;
-    letter-spacing:var(--letter);
-    text-transform:uppercase;
+    background:#111;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;letter-spacing:var(--letter);text-transform:uppercase;
   }
-
-  #chat-messages{
-    height:230px;
-    padding:10px 12px;
-    overflow-y:auto;
-    font-size:12px;
-    line-height:1.5;
-  }
-
-  #chat-input{
-    width:100%;
-    border:none;
-    border-top:1px solid #111;
-    padding:12px;
-    font-size:12px;
-    outline:none;
-  }
-
+  #chat-messages{height:230px;padding:10px 12px;overflow-y:auto;font-size:12px;line-height:1.5;}
+  #chat-input{width:100%;border:none;border-top:1px solid #111;padding:12px;font-size:12px;outline:none;}
   .msg-user{ margin:8px 0; }
   .msg-bot{ margin:8px 0; }
-
   #close-chat{ cursor:pointer; }
 </style>
 </head>
@@ -469,11 +498,10 @@
 
 <!-- CHAT -->
 <div id="assistant-button" aria-label="Abrir asistente">💬</div>
-
-<div id="assistant-chat" class="hidden" role="dialog" aria-label="Zara Style Assistant">
+<div id="assistant-chat" class="hidden" role="dialog" aria-label="ZARA Style Assistant">
   <div class="chat-header">
     ZARA STYLE ASSISTANT
-    <span id="close-chat" aria-label="Cerrar">✕</span>
+    <span id="close-chat" aria-label="Cerrar chat">✕</span>
   </div>
   <div id="chat-messages"></div>
   <input id="chat-input" placeholder="Escribe tu pregunta..." />
@@ -505,9 +533,9 @@
     <p class="subtitle">Adaptamos las prendas a tu tipo de cuerpo para ayudarte a elegir mejor.</p>
     <div class="panel">
       <div class="btn-row">
-        <button class="button" type="button" onclick="selectGender('hombre')">Hombre</button>
-        <button class="button" type="button" onclick="selectGender('mujer')">Mujer</button>
-        <button class="button secondary" type="button" onclick="selectGender('neutro')">Género no definido</button>
+        <button class="button" onclick="selectGender('hombre')">Hombre</button>
+        <button class="button" onclick="selectGender('mujer')">Mujer</button>
+        <button class="button secondary" onclick="selectGender('neutro')">Género no definido</button>
       </div>
     </div>
   </section>
@@ -561,7 +589,7 @@
         </div>
 
         <div class="actions">
-          <button class="button" type="button" onclick="processProfile()">Continuar</button>
+          <button class="button" onclick="processProfile()">Continuar</button>
           <button class="button secondary" type="button" onclick="backToStart()">Volver</button>
         </div>
       </div>
@@ -625,7 +653,7 @@
       </div>
     </div>
 
-    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES · PASA EL RATÓN POR LAS PRENDAS PARA VER DETALLES</div>
+    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES</div>
 
     <div class="reco-actions">
       <button class="button secondary" type="button" onclick="restart()">EDITAR PERFIL</button>
@@ -667,45 +695,35 @@
 function imgPath(base){ return `img/${base}.jpg`; }
 function videoPath(base){ return `video/${base}.mp4`; }
 
-/* ===== PRENDAS (ejemplos) =====
-   Cambia img/ref/name/desc a tus prendas reales.
-   Recomendación: guarda las prendas en /img/prendas/...
+/* ===== ITEMS =====
+   IMPORTANTE:
+   - Puedes añadir productos reales en cada LOOK así:
+     products: [
+       { img:"img/prenda1.jpg", ref:"REF. 1234/567", name:"TOP SATINADO", desc:"..." , url:"producto.html" }
+     ]
+   - Si NO pones products, el sistema crea 4 “prendas demo” usando images[1..] para que se vea el drawer.
 */
-function prod(img, ref, name, desc){
-  return { img, ref, name, desc };
-}
-
-/* ===== ITEMS ===== */
 const LOOKS = [
-  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
+  {
+    gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
     video: videoPath('triangulo1'),
     images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
-    products:[
-      prod('img/prendas/prenda1.jpg','REF 1234/567','TOP SATINADO','Hombro estructurado, caída ligera.'),
-      prod('img/prendas/prenda2.jpg','REF 2234/111','PANTALÓN RECTO','Tiro medio, línea limpia.'),
-      prod('img/prendas/prenda3.jpg','REF 9981/220','BLAZER ENTALLADA','Equilibrio visual en la silueta.')
+    products: [
+      { img: imgPath('triangulo11'), ref:'REF. 1001/011', name:'BLAZER ESTRUCTURADA', desc:'Equilibra hombros con línea vertical y caída limpia.', url:'#' },
+      { img: imgPath('triangulo12'), ref:'REF. 1001/012', name:'TOP CUELLO PICO', desc:'Aporta ligereza visual y estiliza la parte superior.', url:'#' },
+      { img: imgPath('triangulo13'), ref:'REF. 1001/013', name:'PANTALÓN RECTO', desc:'Compensa proporciones y alarga pierna.', url:'#' },
     ]
   },
-  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
+  {
+    gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
     video: videoPath('triangulo2'),
     images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
-    desc:'Video + imágenes relacionadas (triángulo invertido).',
-    products:[
-      prod('img/prendas/prenda4.jpg','REF 3011/002','FALDA MIDI','Movimiento suave, proporción.'),
-      prod('img/prendas/prenda5.jpg','REF 4420/190','CAMISA OVERSIZE','Contraste de volúmenes.')
-    ]
-  },
-  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
-    video: videoPath('triangulo3'),
-    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
-    desc:'Video + imágenes relacionadas (triángulo invertido).',
-    products:[
-      prod('img/prendas/prenda6.jpg','REF 8801/010','VESTIDO NEGRO','Minimal, favorece cintura.')
-    ]
+    desc:'Video + imágenes relacionadas (triángulo invertido).'
   },
 
-  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
+  {
+     { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
     video: videoPath('relojarena1'),
     images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
     desc:'Video + imágenes relacionadas (reloj de arena).',
@@ -716,7 +734,7 @@ const LOOKS = [
       prod('img/prenda/bota1arena.png','REF 3032/610/700','BOTA MARRÓN','Bota detalle grabados con hebilla.'),
       prod('img/prenda/bolso1arena.png','REF 6332/610/700','FALDA CUADROS','Falda midi detalle volumen.')
     ]
-  },
+   },
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
     video: videoPath('relojarena2'),
     images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
@@ -734,8 +752,9 @@ const LOOKS = [
       prod('img/prendas/prenda11.jpg','REF 9001/001','TOP ESTRUCTURA','Escote favorecedor.')
     ]
   },
-
-  { gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
+'
+  },
+{ gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
     video: videoPath('redondo1'),
     images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13'), imgPath('redondo14'), imgPath('redondo15')],
     desc:'Video + imágenes relacionadas (redondo).',
@@ -780,7 +799,6 @@ const els = {
   height: document.getElementById("height"),
   heightValue: document.getElementById("height-value"),
   weight: document.getElementById("weight"),
-
   hair: document.getElementById("hair"),
 
   back: document.getElementById("back"),
@@ -816,12 +834,6 @@ const els = {
   modalDesc: document.getElementById("modalDesc"),
   galleryMain: document.getElementById("galleryMain"),
   thumbs: document.getElementById("thumbs"),
-
-  assistantBtn: document.getElementById("assistant-button"),
-  chat: document.getElementById("assistant-chat"),
-  chatClose: document.getElementById("close-chat"),
-  chatInput: document.getElementById("chat-input"),
-  chatMessages: document.getElementById("chat-messages"),
 };
 
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
@@ -972,34 +984,21 @@ function escapeHtml(str){
     .replaceAll("'","&#039;");
 }
 
-function renderProductsRail(products){
-  const list = Array.isArray(products) ? products : [];
-  if(list.length === 0){
-    // rail vacío pero mantenemos espacio coherente
-    return `<div class="product-rail" aria-label="Prendas"></div>`;
+function getProductsForItem(item){
+  // Si el item trae products, los usamos.
+  if(Array.isArray(item.products) && item.products.length){
+    return item.products.slice(0,6);
   }
-
-  return `
-    <div class="product-rail" aria-label="Prendas">
-      ${list.slice(0,5).map((p, idx) => `
-        <button type="button"
-          class="prod-thumb"
-          data-prod="1"
-          data-prod-img="${escapeHtml(p.img || '')}"
-          data-prod-ref="${escapeHtml(p.ref || '')}"
-          data-prod-name="${escapeHtml(p.name || '')}"
-          data-prod-desc="${escapeHtml(p.desc || '')}"
-          aria-label="${escapeHtml((p.name||'Prenda') + ' ' + (p.ref||''))}">
-          <img src="${escapeHtml(p.img || '')}" alt="${escapeHtml(p.name || 'Prenda')}">
-          <div class="prod-tip" aria-hidden="true">
-            <p class="ref">${escapeHtml(p.ref || 'REF —')}</p>
-            <p class="name">${escapeHtml(p.name || 'PRENDA')}</p>
-            <p class="desc">${escapeHtml(p.desc || '—')}</p>
-          </div>
-        </button>
-      `).join("")}
-    </div>
-  `;
+  // Si no, creamos demo desde images[1..]
+  const imgs = Array.isArray(item.images) ? item.images : [];
+  const demo = imgs.slice(1, 7).map((img, i) => ({
+    img,
+    ref: `REF. ${String(2000 + i)}/0${String(i+1).padStart(2,"0")}`,
+    name: "PRENDA SELECCIONADA",
+    desc: "Descripción breve (demo). Sustituye por datos reales.",
+    url: "#"
+  }));
+  return demo.slice(0,6);
 }
 
 function renderRecommendations(profile, bodyType){
@@ -1089,23 +1088,54 @@ function renderRecoPage(){
   els.grid.innerHTML = slice.map(item => {
     const imagesPacked = (item.images || []).join("|");
     const poster = item.images?.[0] || "";
-    const productsJson = escapeHtml(JSON.stringify(item.products || []));
+    const products = getProductsForItem(item);
+    const productsEncoded = encodeURIComponent(JSON.stringify(products));
+
+    const drawerItems = products.map(p => `
+      <div class="prod" tabindex="0"
+           data-ref="${escapeHtml(p.ref||'')}"
+           data-name="${escapeHtml(p.name||'')}"
+           data-desc="${escapeHtml(p.desc||'')}"
+           data-url="${escapeHtml(p.url||'#')}">
+        <img src="${escapeHtml(p.img||'')}" alt="${escapeHtml(p.name||'PRENDA')}">
+        <div>
+          <div class="ref">${escapeHtml(p.ref||'REF.')}</div>
+          <div class="name">${escapeHtml(p.name||'PRENDA')}</div>
+        </div>
+        <div class="prod-tip" role="tooltip" aria-hidden="true">
+          <p class="tt">${escapeHtml(p.ref||'REF.')}</p>
+          <p class="dd">${escapeHtml(p.desc||'')}</p>
+          <button class="cta" type="button">VER PRODUCTO</button>
+        </div>
+      </div>
+    `).join("");
+
     return `
       <article class="card" tabindex="0"
         data-name="${escapeHtml(item.name)}"
         data-tag="${escapeHtml(item.tag)}"
         data-desc="${escapeHtml(item.desc)}"
         data-images="${escapeHtml(imagesPacked)}"
-        data-products="${productsJson}">
-        <div class="card-inner">
-          <div class="media" data-open="gallery">
-            <video autoplay muted loop playsinline preload="metadata" poster="${escapeHtml(poster)}">
-              <source src="${escapeHtml(item.video)}" type="video/mp4">
+        data-products="${productsEncoded}">
+        <div class="media">
+          <div class="media-inner">
+            <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+              <source src="${item.video}" type="video/mp4">
             </video>
             <div class="overlay"><span>VER IMÁGENES</span></div>
+
+            <button class="look-tab" type="button" aria-label="Abrir look">LOOK</button>
           </div>
 
-          ${renderProductsRail(item.products)}
+          <aside class="look-drawer" aria-label="Look del vídeo">
+            <div class="look-head">
+              <p class="t">LOOK</p>
+              <button class="look-close" type="button" aria-label="Cerrar look"></button>
+            </div>
+            <div class="look-list">
+              ${drawerItems || `<div class="value">SIN PRENDAS</div>`}
+            </div>
+          </aside>
         </div>
 
         <div class="meta">
@@ -1120,6 +1150,66 @@ function renderRecoPage(){
   els.pageInfo.textContent = `${recoState.page + 1} / ${totalPages}`;
   els.prevBtn.disabled = recoState.page <= 0;
   els.nextBtn.disabled = recoState.page >= totalPages - 1;
+
+  // Activar interacciones del drawer en las cards recién renderizadas
+  wireLookDrawers();
+}
+
+function wireLookDrawers(){
+  els.grid.querySelectorAll(".card .media").forEach(media => {
+    const tab = media.querySelector(".look-tab");
+    const close = media.querySelector(".look-close");
+
+    if(tab){
+      tab.addEventListener("click", (e) => {
+        e.stopPropagation();
+        // cerrar otros abiertos para que se vea limpio
+        els.grid.querySelectorAll(".card .media.is-look-open").forEach(m => {
+          if(m !== media) m.classList.remove("is-look-open");
+        });
+        media.classList.toggle("is-look-open");
+      });
+    }
+    if(close){
+      close.addEventListener("click", (e) => {
+        e.stopPropagation();
+        media.classList.remove("is-look-open");
+      });
+    }
+
+    // móvil: tocar prenda abre tooltip (toggle)
+    media.querySelectorAll(".prod").forEach(prod => {
+      prod.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = prod.classList.contains("is-open");
+        // cerrar otros tooltips del mismo drawer
+        media.querySelectorAll(".prod.is-open").forEach(p => p.classList.remove("is-open"));
+        prod.classList.toggle("is-open", !isOpen);
+      });
+
+      // botón "VER PRODUCTO"
+      const cta = prod.querySelector(".cta");
+      if(cta){
+        cta.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const url = prod.dataset.url || "#";
+          if(url && url !== "#") window.open(url, "_blank");
+        });
+      }
+
+      // accesibilidad: Enter abre tooltip
+      prod.addEventListener("keydown", (e) => {
+        if(e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        prod.click();
+      });
+    });
+
+    // click fuera dentro del drawer cierra tooltips
+    media.addEventListener("click", () => {
+      media.querySelectorAll(".prod.is-open").forEach(p => p.classList.remove("is-open"));
+    });
+  });
 }
 
 els.prevBtn.addEventListener("click", () => {
@@ -1132,57 +1222,24 @@ els.nextBtn.addEventListener("click", () => {
   renderRecoPage();
 });
 
-/* Clicks */
+/* Click abre galería (si NO es look) */
 els.grid.addEventListener("click", (e) => {
-  const prodBtn = e.target.closest(".prod-thumb");
-  if(prodBtn){
-    e.preventDefault();
-    e.stopPropagation();
-
-    const p = {
-      img: prodBtn.dataset.prodImg || "",
-      ref: prodBtn.dataset.prodRef || "REF —",
-      name: prodBtn.dataset.prodName || "PRENDA",
-      desc: prodBtn.dataset.prodDesc || "—",
-    };
-
-    openModal({
-      name: p.name,
-      tag: p.ref,
-      desc: p.desc,
-      images: [p.img].filter(Boolean)
-    });
-    return;
-  }
-
-  const media = e.target.closest(".media");
-  if(media){
-    const card = e.target.closest(".card");
-    if(!card) return;
-    const images = (card.dataset.images || "").split("|").filter(Boolean);
-    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
-  }
-});
-
-els.grid.addEventListener("keydown", (e) => {
-  // Enter/Espacio en tarjetas -> abre galería
-  if(e.key !== "Enter" && e.key !== " ") return;
-
-  const prodBtn = e.target.closest(".prod-thumb");
-  if(prodBtn){
-    e.preventDefault();
-    const p = {
-      img: prodBtn.dataset.prodImg || "",
-      ref: prodBtn.dataset.prodRef || "REF —",
-      name: prodBtn.dataset.prodName || "PRENDA",
-      desc: prodBtn.dataset.prodDesc || "—",
-    };
-    openModal({ name: p.name, tag: p.ref, desc: p.desc, images: [p.img].filter(Boolean) });
-    return;
-  }
+  // si click viene del look-tab / drawer, no abrir galería
+  if(e.target.closest(".look-tab") || e.target.closest(".look-drawer")) return;
 
   const card = e.target.closest(".card");
   if(!card) return;
+
+  const images = (card.dataset.images || "").split("|").filter(Boolean);
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+});
+els.grid.addEventListener("keydown", (e) => {
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const card = e.target.closest(".card");
+  if(!card) return;
+  // si focus está en un producto del drawer, no abrir galería
+  if(e.target.closest(".look-drawer")) return;
+
   e.preventDefault();
   const images = (card.dataset.images || "").split("|").filter(Boolean);
   openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
@@ -1374,6 +1431,7 @@ els.chatInput.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
+
 
 
 
