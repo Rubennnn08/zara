@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,7 +14,7 @@
     --line:rgba(17,17,17,.55);
     --shadow:0 18px 60px rgba(0,0,0,.18);
     --letter:.14em;
-    --cardMaxH:520px; /* videos grandes */
+    --cardMaxH:520px;
   }
   *{box-sizing:border-box}
   body{
@@ -104,7 +103,7 @@
   .body-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
   @media (min-width: 520px){ .body-actions{grid-template-columns:1fr 1fr;} }
 
-  /* Reco (videos grandes) */
+  /* Reco */
   #reco-screen{height: calc(100vh - 130px);overflow:hidden;display:flex;flex-direction:column;}
   .rec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:10px 0 12px;flex-wrap:wrap;}
   .rec-head h1{margin:0;font-size:18px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
@@ -122,7 +121,18 @@
   }
   @media (max-width: 520px){ .grid{grid-template-columns:1fr;} }
 
-  .card{cursor:pointer;user-select:none;background:#fff;}
+  .card{user-select:none;background:#fff;}
+  .card:focus{outline:none;}
+  .card-inner{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:10px;
+    align-items:stretch;
+  }
+  @media (max-width: 640px){
+    .card-inner{ grid-template-columns: 1fr; }
+  }
+
   .media{
     position:relative;
     aspect-ratio:3/4;
@@ -130,6 +140,7 @@
     background:#000;
     max-height: var(--cardMaxH);
     border:1px solid var(--hair);
+    cursor:pointer;
   }
   .media video{
     width:100%;height:100%;
@@ -152,6 +163,93 @@
     text-transform:uppercase;
     color:#111;
   }
+
+  /* ===== NUEVO: rail de prendas (innovador + Zara) ===== */
+  .product-rail{
+    width:110px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    justify-content:flex-start;
+  }
+  @media (max-width: 640px){
+    .product-rail{
+      width:auto;
+      flex-direction:row;
+      overflow-x:auto;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling:touch;
+      gap:10px;
+    }
+  }
+
+  .prod-thumb{
+    position:relative;
+    border:1px solid var(--hair);
+    background:#fff;
+    padding:0;
+    cursor:pointer;
+    width:110px;
+    height:140px;
+    overflow:hidden;
+    flex:0 0 auto;
+  }
+  @media (max-width: 640px){
+    .prod-thumb{ width:92px; height:120px; }
+  }
+  .prod-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .18s ease;}
+  .prod-thumb:hover{ border-color:rgba(17,17,17,.55); }
+  .prod-thumb:hover img{ transform:scale(1.03); }
+  .prod-thumb:focus{ outline:none; border-color:#111; box-shadow: inset 0 0 0 1px #111; }
+
+  /* Tooltip minimal */
+  .prod-tip{
+    position:absolute;
+    left:8px;
+    right:8px;
+    bottom:8px;
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(0,0,0,.18);
+    padding:8px 8px;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .16s ease, transform .16s ease;
+    pointer-events:none;
+    text-align:left;
+  }
+  .prod-thumb:hover .prod-tip,
+  .prod-thumb:focus .prod-tip{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .prod-tip .ref{
+    font-size:10px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+    margin:0 0 4px;
+  }
+  .prod-tip .name{
+    font-size:10px;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+    color:#111;
+    margin:0 0 4px;
+    line-height:1.2;
+  }
+  .prod-tip .desc{
+    font-size:10px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0;
+    line-height:1.25;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
   .meta{padding:8px 2px 2px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;}
 
   .pager{border-top:1px solid var(--hair);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -170,7 +268,7 @@
   .empty-state .t{font-size:12px;letter-spacing:var(--letter);text-transform:uppercase;margin:0 0 6px;color:#111;}
   .empty-state .s{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted);}
 
-  /* ===================== NAVBAR (TU MISMO) ===================== */
+  /* ===================== NAVBAR ===================== */
   .navbar1{
     position:fixed; top:0; left:0; right:0;
     height:130px;
@@ -204,7 +302,6 @@
     white-space:nowrap;
   }
 
-  /* ✅ NAVBAR COMPLETO EN MOVIL (2 filas) */
   @media (max-width: 900px){
     body{ padding-top:160px; }
     #reco-screen{ height: calc(100vh - 160px); }
@@ -237,7 +334,7 @@
     .navbar1 .help{ font-size:10px; gap:12px; }
   }
 
-  /* ===================== MODAL GALERIA (MEJORADO) ===================== */
+  /* ===================== MODAL GALERIA ===================== */
   .modal{position:fixed;inset:0;background:rgba(255,255,255,.96);display:none;z-index:80;}
   .modal.open{display:block;}
   .modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hair);background:#fff;position:sticky;top:0;}
@@ -247,7 +344,6 @@
   .close::before{transform:translate(-50%,-50%) rotate(45deg)}
   .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
 
-  /* ✅ evita que la imagen empuje las miniaturas fuera de pantalla */
   .modal-content{
     max-width:980px;margin:0 auto;padding:16px;
     display:grid;grid-template-columns:1fr;gap:16px;
@@ -305,99 +401,83 @@
   .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
   .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
 
-/* ===================== CHAT ASSISTANT ===================== */
-#assistant-button{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  background:#111;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-  cursor:pointer;
-  z-index:999999;
-}
+  /* ===================== CHAT ASSISTANT ===================== */
+  #assistant-button{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:#111;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    z-index:999999;
+  }
 
-#assistant-chat{
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  width:320px;
-  background:#fff;
-  border:1px solid #111;
-  z-index:999999;
-}
+  #assistant-chat{
+    position:fixed;
+    bottom:90px;
+    right:20px;
+    width:320px;
+    background:#fff;
+    border:1px solid #111;
+    z-index:999999;
+  }
 
-.chat-header{
-  background:#111;
-  color:#fff;
-  padding:10px 12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:12px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-}
+  .chat-header{
+    background:#111;
+    color:#fff;
+    padding:10px 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+  }
 
-#chat-messages{
-  height:230px;
-  padding:10px 12px;
-  overflow-y:auto;
-  font-size:12px;
-  line-height:1.5;
-}
+  #chat-messages{
+    height:230px;
+    padding:10px 12px;
+    overflow-y:auto;
+    font-size:12px;
+    line-height:1.5;
+  }
 
-#chat-input{
-  width:100%;
-  border:none;
-  border-top:1px solid #111;
-  padding:12px;
-  font-size:12px;
-  outline:none;
-}
+  #chat-input{
+    width:100%;
+    border:none;
+    border-top:1px solid #111;
+    padding:12px;
+    font-size:12px;
+    outline:none;
+  }
 
-.msg-user{ margin:8px 0; }
-.msg-bot{ margin:8px 0; }
+  .msg-user{ margin:8px 0; }
+  .msg-bot{ margin:8px 0; }
 
-#close-chat{ cursor:pointer; }
-
-/* ===================== CONTENIDO ===================== */
-.container{
-  max-width:980px;
-  margin:0 auto;
-  padding:18px;
-}
-.title{
-  text-align:center;
-  font-weight:600;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-  margin:20px 0;
-}
-
+  #close-chat{ cursor:pointer; }
 </style>
 </head>
 
 <body>
 
-<!-- ===================== CHAT ===================== -->
-<div id="assistant-button">💬</div>
+<!-- CHAT -->
+<div id="assistant-button" aria-label="Abrir asistente">💬</div>
 
-<div id="assistant-chat" class="hidden">
+<div id="assistant-chat" class="hidden" role="dialog" aria-label="Zara Style Assistant">
   <div class="chat-header">
     ZARA STYLE ASSISTANT
-    <span id="close-chat">✕</span>
+    <span id="close-chat" aria-label="Cerrar">✕</span>
   </div>
   <div id="chat-messages"></div>
   <input id="chat-input" placeholder="Escribe tu pregunta..." />
 </div>
-
 
 <!-- NAVBAR -->
 <div class="navbar1">
@@ -410,8 +490,8 @@
   <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
   <div class="help">
     <a href="./index.html">INICIAR SESIÓN</a>
-    <a >AYUDA</a>
-    <a >CESTA [0]</a>
+    <a>AYUDA</a>
+    <a>CESTA [0]</a>
     <a href="./MYPLNAER.html">MY PLANNER</a>
     <a href="./Agenda.html">AGENDA</a>
   </div>
@@ -425,9 +505,9 @@
     <p class="subtitle">Adaptamos las prendas a tu tipo de cuerpo para ayudarte a elegir mejor.</p>
     <div class="panel">
       <div class="btn-row">
-        <button class="button" onclick="selectGender('hombre')">Hombre</button>
-        <button class="button" onclick="selectGender('mujer')">Mujer</button>
-        <button class="button secondary" onclick="selectGender('neutro')">Género no definido</button>
+        <button class="button" type="button" onclick="selectGender('hombre')">Hombre</button>
+        <button class="button" type="button" onclick="selectGender('mujer')">Mujer</button>
+        <button class="button secondary" type="button" onclick="selectGender('neutro')">Género no definido</button>
       </div>
     </div>
   </section>
@@ -450,7 +530,6 @@
           <input type="number" id="weight" placeholder="kg" inputmode="numeric">
         </div>
 
-        <!-- ✅ PELO -->
         <div class="input-group">
           <label for="hair">Tipo de pelo</label>
           <select id="hair">
@@ -482,7 +561,7 @@
         </div>
 
         <div class="actions">
-          <button class="button" onclick="processProfile()">Continuar</button>
+          <button class="button" type="button" onclick="processProfile()">Continuar</button>
           <button class="button secondary" type="button" onclick="backToStart()">Volver</button>
         </div>
       </div>
@@ -546,7 +625,7 @@
       </div>
     </div>
 
-    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES</div>
+    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES · PASA EL RATÓN POR LAS PRENDAS PARA VER DETALLES</div>
 
     <div class="reco-actions">
       <button class="button secondary" type="button" onclick="restart()">EDITAR PERFIL</button>
@@ -588,51 +667,101 @@
 function imgPath(base){ return `img/${base}.jpg`; }
 function videoPath(base){ return `video/${base}.mp4`; }
 
+/* ===== PRENDAS (ejemplos) =====
+   Cambia img/ref/name/desc a tus prendas reales.
+   Recomendación: guarda las prendas en /img/prendas/...
+*/
+function prod(img, ref, name, desc){
+  return { img, ref, name, desc };
+}
+
 /* ===== ITEMS ===== */
 const LOOKS = [
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
     video: videoPath('triangulo1'),
     images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
-    desc:'Video + imágenes relacionadas (triángulo invertido).' },
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod('img/prendas/prenda1.jpg','REF 1234/567','TOP SATINADO','Hombro estructurado, caída ligera.'),
+      prod('img/prendas/prenda2.jpg','REF 2234/111','PANTALÓN RECTO','Tiro medio, línea limpia.'),
+      prod('img/prendas/prenda3.jpg','REF 9981/220','BLAZER ENTALLADA','Equilibrio visual en la silueta.')
+    ]
+  },
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
     video: videoPath('triangulo2'),
     images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
-    desc:'Video + imágenes relacionadas (triángulo invertido).' },
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod('img/prendas/prenda4.jpg','REF 3011/002','FALDA MIDI','Movimiento suave, proporción.'),
+      prod('img/prendas/prenda5.jpg','REF 4420/190','CAMISA OVERSIZE','Contraste de volúmenes.')
+    ]
+  },
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
     video: videoPath('triangulo3'),
-    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37') ],
-    desc:'Video + imágenes relacionadas (triángulo invertido).' },
+    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod('img/prendas/prenda6.jpg','REF 8801/010','VESTIDO NEGRO','Minimal, favorece cintura.')
+    ]
+  },
 
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
     video: videoPath('relojarena1'),
     images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
-    desc:'Video + imágenes relacionadas (reloj de arena).' },
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda7.jpg','REF 1200/400','VESTIDO ENTALLADO','Marca cintura sin exceso.'),
+      prod('img/prendas/prenda8.jpg','REF 7700/300','JEANS ALTO','Equilibrio y proporción.')
+    ]
+  },
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
     video: videoPath('relojarena2'),
     images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
-    desc:'Video + imágenes relacionadas (reloj de arena).' },
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda9.jpg','REF 5550/120','BLAZER CORTA','Define cintura y hombro.'),
+      prod('img/prendas/prenda10.jpg','REF 8880/090','FALDA LÁPIZ','Línea limpia, elegante.')
+    ]
+  },
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 3', tag:'SUGERENCIA',
     video: videoPath('relojarena3'),
     images:[imgPath('relojarena3'), imgPath('relojarena31'), imgPath('relojarena32'), imgPath('relojarena33')],
-    desc:'Video + imágenes relacionadas (reloj de arena).' },
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda11.jpg','REF 9001/001','TOP ESTRUCTURA','Escote favorecedor.')
+    ]
+  },
 
   { gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
     video: videoPath('redondo1'),
-    images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13') , imgPath('redondo14'), imgPath('redondo15')],
-    desc:'Video + imágenes relacionadas (redondo).' },
+    images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13'), imgPath('redondo14'), imgPath('redondo15')],
+    desc:'Video + imágenes relacionadas (redondo).',
+    products:[
+      prod('img/prendas/prenda12.jpg','REF 1010/222','ABRIGO RECTO','Caída vertical, estiliza.'),
+      prod('img/prendas/prenda13.jpg','REF 2020/333','PANTALÓN FLUIDO','Comodidad + línea.')
+    ]
+  },
   { gender:'mujer', bodyType:'redondo', name:'REDONDO 2', tag:'SUGERENCIA',
     video: videoPath('redondo2'),
     images:[imgPath('redondo2'), imgPath('redondo21'), imgPath('redondo22'), imgPath('redondo23'), imgPath('redondo24'), imgPath('redondo25'), imgPath('redondo26'), imgPath('redondo27')],
-    desc:'Video + imágenes relacionadas (redondo).' },
+    desc:'Video + imágenes relacionadas (redondo).',
+    products:[
+      prod('img/prendas/prenda14.jpg','REF 3030/444','CAMISA LARGA','Cubre, alarga visualmente.')
+    ]
+  },
 
   { gender:'mujer', bodyType:'generico', name:'GENÉRICO 1', tag:'GENÉRICO',
     video: videoPath('generico1'),
     images:[imgPath('generico1'), imgPath('generico2')],
-    desc:'Genérico cuando no encaja en un tipo.' },
+    desc:'Genérico cuando no encaja en un tipo.',
+    products:[]
+  },
   { gender:'mujer', bodyType:'generico', name:'GENÉRICO 2', tag:'GENÉRICO',
     video: videoPath('generico2'),
     images:[imgPath('generico2'), imgPath('generico1')],
-    desc:'Genérico cuando no encaja en un tipo.' },
+    desc:'Genérico cuando no encaja en un tipo.',
+    products:[]
+  },
 ];
 
 const MIN_SCALE = 0.7, MAX_SCALE = 1.35;
@@ -684,6 +813,12 @@ const els = {
   modalDesc: document.getElementById("modalDesc"),
   galleryMain: document.getElementById("galleryMain"),
   thumbs: document.getElementById("thumbs"),
+
+  assistantBtn: document.getElementById("assistant-button"),
+  chat: document.getElementById("assistant-chat"),
+  chatClose: document.getElementById("close-chat"),
+  chatInput: document.getElementById("chat-input"),
+  chatMessages: document.getElementById("chat-messages"),
 };
 
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
@@ -834,6 +969,36 @@ function escapeHtml(str){
     .replaceAll("'","&#039;");
 }
 
+function renderProductsRail(products){
+  const list = Array.isArray(products) ? products : [];
+  if(list.length === 0){
+    // rail vacío pero mantenemos espacio coherente
+    return `<div class="product-rail" aria-label="Prendas"></div>`;
+  }
+
+  return `
+    <div class="product-rail" aria-label="Prendas">
+      ${list.slice(0,5).map((p, idx) => `
+        <button type="button"
+          class="prod-thumb"
+          data-prod="1"
+          data-prod-img="${escapeHtml(p.img || '')}"
+          data-prod-ref="${escapeHtml(p.ref || '')}"
+          data-prod-name="${escapeHtml(p.name || '')}"
+          data-prod-desc="${escapeHtml(p.desc || '')}"
+          aria-label="${escapeHtml((p.name||'Prenda') + ' ' + (p.ref||''))}">
+          <img src="${escapeHtml(p.img || '')}" alt="${escapeHtml(p.name || 'Prenda')}">
+          <div class="prod-tip" aria-hidden="true">
+            <p class="ref">${escapeHtml(p.ref || 'REF —')}</p>
+            <p class="name">${escapeHtml(p.name || 'PRENDA')}</p>
+            <p class="desc">${escapeHtml(p.desc || '—')}</p>
+          </div>
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
 function renderRecommendations(profile, bodyType){
   const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
 
@@ -921,18 +1086,25 @@ function renderRecoPage(){
   els.grid.innerHTML = slice.map(item => {
     const imagesPacked = (item.images || []).join("|");
     const poster = item.images?.[0] || "";
+    const productsJson = escapeHtml(JSON.stringify(item.products || []));
     return `
       <article class="card" tabindex="0"
         data-name="${escapeHtml(item.name)}"
         data-tag="${escapeHtml(item.tag)}"
         data-desc="${escapeHtml(item.desc)}"
-        data-images="${escapeHtml(imagesPacked)}">
-        <div class="media">
-          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
-            <source src="${item.video}" type="video/mp4">
-          </video>
-          <div class="overlay"><span>VER IMÁGENES</span></div>
+        data-images="${escapeHtml(imagesPacked)}"
+        data-products="${productsJson}">
+        <div class="card-inner">
+          <div class="media" data-open="gallery">
+            <video autoplay muted loop playsinline preload="metadata" poster="${escapeHtml(poster)}">
+              <source src="${escapeHtml(item.video)}" type="video/mp4">
+            </video>
+            <div class="overlay"><span>VER IMÁGENES</span></div>
+          </div>
+
+          ${renderProductsRail(item.products)}
         </div>
+
         <div class="meta">
           <span>${escapeHtml(item.tag)}</span>
           <span>VIDEO</span>
@@ -957,15 +1129,55 @@ els.nextBtn.addEventListener("click", () => {
   renderRecoPage();
 });
 
-/* Click abre galería */
+/* Clicks */
 els.grid.addEventListener("click", (e) => {
-  const card = e.target.closest(".card");
-  if(!card) return;
-  const images = (card.dataset.images || "").split("|").filter(Boolean);
-  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  const prodBtn = e.target.closest(".prod-thumb");
+  if(prodBtn){
+    e.preventDefault();
+    e.stopPropagation();
+
+    const p = {
+      img: prodBtn.dataset.prodImg || "",
+      ref: prodBtn.dataset.prodRef || "REF —",
+      name: prodBtn.dataset.prodName || "PRENDA",
+      desc: prodBtn.dataset.prodDesc || "—",
+    };
+
+    openModal({
+      name: p.name,
+      tag: p.ref,
+      desc: p.desc,
+      images: [p.img].filter(Boolean)
+    });
+    return;
+  }
+
+  const media = e.target.closest(".media");
+  if(media){
+    const card = e.target.closest(".card");
+    if(!card) return;
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  }
 });
+
 els.grid.addEventListener("keydown", (e) => {
+  // Enter/Espacio en tarjetas -> abre galería
   if(e.key !== "Enter" && e.key !== " ") return;
+
+  const prodBtn = e.target.closest(".prod-thumb");
+  if(prodBtn){
+    e.preventDefault();
+    const p = {
+      img: prodBtn.dataset.prodImg || "",
+      ref: prodBtn.dataset.prodRef || "REF —",
+      name: prodBtn.dataset.prodName || "PRENDA",
+      desc: prodBtn.dataset.prodDesc || "—",
+    };
+    openModal({ name: p.name, tag: p.ref, desc: p.desc, images: [p.img].filter(Boolean) });
+    return;
+  }
+
   const card = e.target.closest(".card");
   if(!card) return;
   e.preventDefault();
@@ -987,7 +1199,7 @@ function exitApp(){
   toggle(els.start, true);
 }
 
-/* ===================== MODAL: ACTIVO + FADE + SWIPE ===================== */
+/* ===================== MODAL ===================== */
 const modalState = { images: [], idx: 0 };
 
 function setActiveThumb(){
@@ -1025,7 +1237,7 @@ function openModal({name, tag, desc, images}){
 
   els.thumbs.innerHTML = modalState.images.map((src, idx) => `
     <button type="button" data-idx="${idx}" aria-label="Imagen ${idx+1}">
-      <img src="${src}" alt="Miniatura ${idx+1}">
+      <img src="${escapeHtml(src)}" alt="Miniatura ${idx+1}">
     </button>
   `).join("");
 
@@ -1053,7 +1265,7 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
 
-/* Swipe móvil (izq/der) */
+/* Swipe móvil */
 let startX = 0, startY = 0, touching = false;
 
 els.galleryMain.addEventListener("touchstart", (e) => {
@@ -1078,7 +1290,7 @@ els.galleryMain.addEventListener("touchend", (e) => {
   if(dx > 50)  setMainImage(modalState.idx - 1);
 }, {passive:true});
 
-/* Eventos */
+/* Eventos perfil */
 els.height.addEventListener("input", updateHeightAvatar);
 els.back.addEventListener("input", scheduleMeasuresHint);
 els.waist.addEventListener("input", scheduleMeasuresHint);
@@ -1092,51 +1304,44 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   updateHeightAvatar();
 })();
 
-<!-- ===================== JS ASISTENTE ===================== -->
-const button = document.getElementById("assistant-button");
-const chat = document.getElementById("assistant-chat");
-const closeBtn = document.getElementById("close-chat");
-const input = document.getElementById("chat-input");
-const messages = document.getElementById("chat-messages");
-
+/* ===================== ASISTENTE ===================== */
 const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
-
 let chatHistory = [];
 
 function addMsg(type, text){
   const div = document.createElement("div");
   div.className = type === "user" ? "msg-user" : "msg-bot";
-  div.innerHTML =
-    type === "user"
-      ? `<strong>Tú:</strong> ${text}`
-      : `<strong>Asistente:</strong> ${text}`;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  div.innerHTML = type === "user"
+    ? `<strong>Tú:</strong> ${escapeHtml(text)}`
+    : `<strong>Asistente:</strong> ${escapeHtml(text)}`;
+  els.chatMessages.appendChild(div);
+  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
 }
 
-button.addEventListener("click", () => {
-  chat.classList.toggle("hidden");
-  setTimeout(()=>input.focus(),50);
+els.assistantBtn.addEventListener("click", () => {
+  els.chat.classList.toggle("hidden");
+  if(!els.chat.classList.contains("hidden")) setTimeout(()=>els.chatInput.focus(),50);
 });
 
-closeBtn.addEventListener("click", () => {
-  chat.classList.add("hidden");
+els.chatClose.addEventListener("click", () => {
+  els.chat.classList.add("hidden");
 });
 
-input.addEventListener("keydown", async (e) => {
+els.chatInput.addEventListener("keydown", async (e) => {
   if(e.key !== "Enter") return;
 
-  const text = input.value.trim();
+  const text = els.chatInput.value.trim();
   if(!text) return;
 
-  input.value = "";
+  els.chatInput.value = "";
   addMsg("user", text);
   chatHistory.push({ role:"user", content:text });
 
   const typing = document.createElement("div");
   typing.className = "msg-bot";
   typing.innerHTML = "<strong>Asistente:</strong> …";
-  messages.appendChild(typing);
+  els.chatMessages.appendChild(typing);
+  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
 
   try{
     const res = await fetch(API_URL,{
@@ -1153,21 +1358,18 @@ input.addEventListener("keydown", async (e) => {
     }
 
     const data = await res.json();
-    addMsg("bot", data.reply);
-    chatHistory.push({ role:"assistant", content:data.reply });
+    const reply = data.reply || "No he recibido respuesta.";
+    addMsg("bot", reply);
+    chatHistory.push({ role:"assistant", content:reply });
 
   }catch{
     typing.remove();
     addMsg("bot","Error de conexión con el asistente.");
   }
 });
-
 </script>
 
 </body>
 </html>
-
-
-
 
 
