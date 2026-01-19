@@ -192,7 +192,6 @@
   }
 
   /* Panel lateral */
-   /* Panel lateral */
   .look-drawer{
     position:absolute;
     top:0;
@@ -225,8 +224,7 @@
   transition:
     transform .22s cubic-bezier(.4,0,.2,1),
     opacity .18s ease;
-  }
-  
+}
   .look-drawer.open{ transform:translateX(0); }
 
   .look-drawer .ld-head{
@@ -268,7 +266,6 @@
     display:grid;
     gap:10px;
   }
- 
 /* Animación sutil de entrada de prendas */
 .look-drawer .look-item{
   opacity:0;
@@ -786,8 +783,10 @@ function imgPath(base){ return `img/${base}.jpg`; }
 function videoPath(base){ return `video/${base}.mp4`; }
 
 /* ===== PRENDAS ===== */
-function prod(img, ref, name, desc){ return { img, ref, name, desc }; }
-
+function prod(imgOrImgs, ref, name, desc){
+  const imgs = Array.isArray(imgOrImgs) ? imgOrImgs : [imgOrImgs];
+  return { imgs, ref, name, desc };
+}
 /* ===== ITEMS ===== */
 const LOOKS = [
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
@@ -823,13 +822,23 @@ const LOOKS = [
     images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
     desc:'Altura modelo: 165 cm. Medidas: Pecho: 89 cm, Cintura: 66 cm, Cadera: 92 cm. Largo de la pierna: 75 cm',
     products:[
-      prod('img/prenda/ropa12arena.png','REF 1255/404/505','FALDA CUADROS','Falda midi detalle volumen.'),
-      prod('img/prenda/ropa11arena.png','REF 4341/736/717','BOMBER POLIPIEL','Bomber polipiel marrón.'),
+      prod(
+[
+      'img/prenda/ropa12arena.png',
+'img/prenda/ropa12arena_2.png',
+'img/prenda/ropa12arena_3.png'
+    ],
+'REF 1255/404/505',
+'FALDA CUADROS',
+'Falda midi detalle volumen.'
+),
+ prod('img/prenda/ropa11arena.png','REF 4341/736/717','BOMBER POLIPIEL','Bomber polipiel marrón.'),
       prod('img/prenda/ropa1arena.png','REF 8372/267/716','CHAQUETA FELPA','Chaqueta marrón con gorro.'),
       prod('img/prenda/bota1arena.png','REF 3032/610/700','BOTA MARRÓN','Bota detalle grabados con hebilla.'),
       prod('img/prenda/bolso1arena.png','REF 6332/610/700','FALDA CUADROS','Falda midi detalle volumen.')
-    ]
-  },
+  ]
+},
+
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
     video: videoPath('relojarena2'),
     images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
@@ -1089,11 +1098,11 @@ function renderLookDrawer(products){
   const list = Array.isArray(products) ? products : [];
   const items = list.slice(0, 6).map((p) => `
     <div class="look-item" role="button" tabindex="0"
-         data-prod-img="${escapeHtml(p.img || "")}"
+        data-prod-imgs="${escapeHtml((p.imgs || []).join("|"))}"
          data-prod-ref="${escapeHtml(p.ref || "")}"
          data-prod-name="${escapeHtml(p.name || "")}"
          data-prod-desc="${escapeHtml(p.desc || "")}">
-      <img src="${escapeHtml(p.img || "")}" alt="${escapeHtml(p.name || "Prenda")}">
+      <img src="${escapeHtml((p.imgs && p.imgs[0]) ? p.imgs[0] : "")}" alt="${escapeHtml(p.name || "Prenda")}">
       <div>
         <div class="ref">${escapeHtml(p.ref || "REF —")}</div>
         <p class="name">${escapeHtml(p.name || "PRENDA")}</p>
@@ -1309,12 +1318,15 @@ if (insideDrawer && !lookItem) {
     }
 
     // desktop: abre modal solo con la imagen de la prenda
-    const img = lookItem.dataset.prodImg || "";
-    const ref = lookItem.dataset.prodRef || "REF —";
-    const name = lookItem.dataset.prodName || "PRENDA";
-    const desc = lookItem.dataset.prodDesc || "—";
-    openModal({ name, tag: ref, desc, images: img ? [img] : [] });
-    return;
+   const imgsPacked = lookItem.dataset.prodImges || "";
+const imgs = imgsPacked.split("|").filter(Boolean);
+
+const ref = lookItem.dataset.prodRef || "REF —";
+const name = lookItem.dataset.prodName || "PRENDA";
+const desc = lookItem.dataset.prodDesc || "—";
+
+openModal({ name, tag: ref, desc, images: imgs });
+return;
   }
 
   // 3) Click en la tarjeta / vídeo -> abre galería del look
@@ -1344,12 +1356,15 @@ if (insideDrawer && !lookItem) {
       return;
     }
 
-    const img = lookItem.dataset.prodImg || "";
-    const ref = lookItem.dataset.prodRef || "REF —";
-    const name = lookItem.dataset.prodName || "PRENDA";
-    const desc = lookItem.dataset.prodDesc || "—";
-    openModal({ name, tag: ref, desc, images: img ? [img] : [] });
-    return;
+   const packed = lookItem.dataset.prodImages || "";
+const images = packed.split("|").filter(Boolean);
+
+const ref = lookItem.dataset.prodRef || "REF —";
+const name = lookItem.dataset.prodName || "PRENDA";
+const desc = lookItem.dataset.prodDesc || "—";
+
+openModal({ name, tag: ref, desc, images });
+return;
   }
 
   // 2) Si no es prenda, pero sí card, abre la galería del look
@@ -1549,5 +1564,3 @@ els.chatInput.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
-
-
