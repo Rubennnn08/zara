@@ -1318,7 +1318,7 @@ if (insideDrawer && !lookItem) {
     }
 
     // desktop: abre modal solo con la imagen de la prenda
-   const imgsPacked = lookItem.dataset.prodImges || "";
+   const imgsPacked = lookItem.dataset.prodImgs || "";
 const imgs = imgsPacked.split("|").filter(Boolean);
 
 const ref = lookItem.dataset.prodRef || "REF —";
@@ -1356,7 +1356,7 @@ if (insideDrawer && !lookItem) {
       return;
     }
 
-   const packed = lookItem.dataset.prodImages || "";
+   const packed = lookItem.dataset.prodImags || "";
 const images = packed.split("|").filter(Boolean);
 
 const ref = lookItem.dataset.prodRef || "REF —";
