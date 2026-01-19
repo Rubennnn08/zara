@@ -465,7 +465,13 @@
     max-height:calc(100vh - 70px);
     overflow-y:auto;
   }
-  @media (min-width: 860px){ .modal-content{grid-template-columns:1.2fr .8fr;gap:22px;padding:18px;} }
+  @media (min-width: 860px){
+  #modal3d .modal-content{
+    grid-template-columns: 1fr;
+    padding:18px;
+    gap:16px;
+  }
+}
 
   .gallery{
     display:flex;flex-direction:column;gap:10px;
@@ -515,6 +521,43 @@
   .panel-right h2{margin:0 0 8px;font-size:16px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
   .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
   .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
+
+/* ===================== MODAL 3D (2.B) ===================== */
+
+/* Reutiliza .modal y .modal-top que ya tienes, pero afinamos el contenido del 3D */
+#modal3d .modal-content{
+  max-width:980px;
+  margin:0 auto;
+  padding:16px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+  max-height:calc(100vh - 70px);
+  overflow-y:auto;
+}
+
+@media (min-width: 860px){
+  #modal3d .modal-content{
+    padding:18px;
+    gap:16px;
+  }
+}
+
+/* Caja del visor 3D */
+#viewer3d{
+  width:100%;
+  height:min(72vh, 620px);
+  border:1px solid var(--hair);
+  background:#fff;
+  overflow:hidden;
+  position:relative;
+}
+
+/* Mensaje debajo del visor (si usas el <p class="subtitle">) */
+#modal3d .subtitle{
+  margin:0 auto;
+  text-align:center;
+}
 
   /* ===================== CHAT ASSISTANT ===================== */
   #assistant-button{
@@ -621,6 +664,7 @@
   transform:translateY(0);
 }
 </style>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 
 <body>
@@ -735,25 +779,42 @@
       </aside>
     </div>
   </section>
+<!-- Modal 3D -->
+<section class="modal" id="modal3d" aria-hidden="true" role="dialog" aria-label="Modelo 3D">
+  <div class="modal-top">
+    <button class="button secondary" type="button" id="close3dBtn" style="width:auto;padding:10px 12px;">
+      VOLVER ATRÁS
+    </button>
+    <div class="modal-title">MODELO 3D</div>
+    <button class="close" type="button" aria-label="Cerrar" id="close3dX"></button>
+  </div>
 
-  <!-- Pantalla 3 -->
-  <section id="body-screen" class="hidden">
-    <div class="title">TU TIPO DE CUERPO</div>
-    <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
+  <div class="modal-content">
+    <div id="viewer3d"></div>
+    <p class="subtitle">MODELO 3D FICTICIO · PROTOTIPO</p>
+  </div>
+</section>
 
-    <div class="body-card">
-      <div class="pill" id="body-pill">TIPO: —</div>
+<!-- Pantalla 3 -->
+<section id="body-screen" class="hidden">
+  <div class="title">TU TIPO DE CUERPO</div>
+  <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
 
-      <div class="body-img">
-        <img id="body-image-final" src="" alt="Tipo de cuerpo">
-      </div>
+  <div class="body-card">
+    <div class="pill" id="body-pill">TIPO: —</div>
 
-      <div class="body-actions">
-        <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
-        <button class="button secondary" type="button" onclick="backToForm()">Editar medidas</button>
-      </div>
+    <div class="body-img">
+      <img id="body-image-final" src="" alt="Tipo de cuerpo">
     </div>
-  </section>
+
+    <!-- BOTONES -->
+  <div class="body-actions">
+  <button class="button" type="button" onclick="open3D()">VER MI MODELO 3D</button>
+  <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
+  <button class="button secondary" type="button" onclick="backToForm()">Editar medidas</button>
+</div>
+  </div>
+</section>
 
   <!-- Pantalla 4 -->
   <section id="reco-screen" class="hidden">
@@ -1110,6 +1171,11 @@ const els = {
   chatClose: document.getElementById("close-chat"),
   chatInput: document.getElementById("chat-input"),
   chatMessages: document.getElementById("chat-messages"),
+
+modal3d: document.getElementById("modal3d"),
+  viewer3d: document.getElementById("viewer3d"),
+  close3dBtn: document.getElementById("close3dBtn"),
+  close3dX: document.getElementById("close3dX"),
 
 cartCount: document.getElementById("cartCount"),
   addToCartBtn: document.getElementById("addToCartBtn"),
@@ -1647,6 +1713,34 @@ function closeModal(){
   els.modal.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
 }
+/* ===================== MODAL 3D ===================== */
+
+const MODEL_SRC = "models/avatarmorena.glb"; // ruta a tu modelo
+
+function open3D(){
+  els.modal3d.classList.add("open");
+  els.modal3d.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+
+  els.viewer3d.innerHTML = `
+    <model-viewer
+      src="${MODEL_SRC}"
+      camera-controls
+      auto-rotate
+      rotation-per-second="20deg"
+      exposure="1"
+      shadow-intensity="0.8"
+      style="width:100%;height:100%;background:#fff;">
+    </model-viewer>
+  `;
+}
+
+function close3D(){
+  els.modal3d.classList.remove("open");
+  els.modal3d.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+  els.viewer3d.innerHTML = "";
+}
 
 els.closeModal.addEventListener("click", closeModal);
 els.backModalBtn.addEventListener("click", closeModal);
@@ -1655,7 +1749,12 @@ els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeMod
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
+els.close3dBtn.addEventListener("click", close3D);
+els.close3dX.addEventListener("click", close3D);
+els.modal3d.addEventListener("click", (e) => {
+  if(e.target === els.modal3d) close3D();
 
+});
 if (els.addToCartBtn){
   els.addToCartBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -1786,7 +1885,6 @@ function showCartNotification(){
 
 </body>
 </html>
-
 
 
 
