@@ -790,13 +790,38 @@ function prod(imgOrImgs, ref, name, desc){
 /* ===== ITEMS ===== */
 const LOOKS = [
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
-    video: videoPath('triangulo1'),
-    images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
+    video: videoPath('triangulo3'),
+    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
     products:[
-      prod('img/prendas/prenda1.jpg','REF 1234/567','TOP SATINADO','Hombro estructurado, caída ligera.'),
-      prod('img/prendas/prenda2.jpg','REF 2234/111','PANTALÓN RECTO','Tiro medio, línea limpia.'),
-      prod('img/prendas/prenda3.jpg','REF 9981/220','BLAZER ENTALLADA','Equilibrio visual en la silueta.')
+      prod(
+[
+      'img/prenda/camiseta1triangulo.png',
+'img/prenda/camiseta1triangulo_1.png'
+    ],
+'REF 6224/376/250',
+'CAMISETA DETALLE',
+'Camiseta blanca con detalle letras delanteras y texto en la parte trasea.'
+),
+      prod(
+        [
+      'img/prenda/bota2triangulo.png',
+'img/prenda/bota2triangulo_1.png',
+    ],
+'REF 3022/610/800',
+'BOTA TACÓN',
+'Bota acharolada negra con tacón fino.'
+),
+            prod(
+        [
+      'img/prenda/bolso1triangulo.png',
+'img/prenda/bolso1triangulo_1.png',
+    ],
+'REF 6466/610/800',
+'BOLSO PELO',
+'Maxi bolso de pelo negro con asa de hombro.'
+),
+      prod('img/prenda/faldatriangulo.png','REF 5919/211/922','FALDA ENCAJE','Falda negra satinada asimétrica con bajo de encaje.')
     ]
   },
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
@@ -804,16 +829,50 @@ const LOOKS = [
     images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
     products:[
-      prod('img/prendas/prenda4.jpg','REF 3011/002','FALDA MIDI','Movimiento suave, proporción.'),
-      prod('img/prendas/prenda5.jpg','REF 4420/190','CAMISA OVERSIZE','Contraste de volúmenes.')
+       prod(
+        [
+      'img/prenda/vestido2triangulo.png',
+'img/prenda/vestido2triangulo_1.png',
+    ],
+'REF 9500/108/250',
+'VESTIDO LENTEJUELAS',
+'Vestido mini de lentejuelas con hombreras y escote en la espalda.'
+),
+        prod(
+        [
+      'img/prenda/tacontriangulo.png',
+'img/prenda/tacontriangulo_1.png',
+    ],
+'REF 2372/510/091',
+'SANDALIA DORADA',
+'Sandalia dorada con pulsera en el tobillo.'
+),
     ]
   },
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
-    video: videoPath('triangulo3'),
-    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
+    video: videoPath('triangulo1'),
+  images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
     products:[
-      prod('img/prendas/prenda6.jpg','REF 8801/010','VESTIDO NEGRO','Minimal, favorece cintura.')
+       prod(
+        [
+      'img/prenda/toptriangulo.png',
+'img/prenda/toptriangulo_1.png',
+    ],
+'REF 5584/205/603',
+'TOP FLECOS',
+'Top asimétrico morado con detalle de flecos.'
+),
+        prod(
+        [
+      'img/prenda/pantalon3triangulo.png',
+'img/prenda/pantalon3triangulo_1.png',
+    ],
+'REF 8307/245/400',
+'JEANS WIDE LEG ZW',
+'Jeans wide leg tiro medio. Cierre frontal con botón y cremallera.'
+),
+       prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
     ]
   },
 
@@ -1619,6 +1678,7 @@ els.chatInput.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
+
 
 
 
