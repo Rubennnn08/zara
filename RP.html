@@ -577,11 +577,54 @@
   .msg-bot{ margin:8px 0; }
 
   #close-chat{ cursor:pointer; }
+/* ===== BUY BOX (MODAL LATERAL) ===== */
+.buy-box{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--hair);
+  display:grid;
+  gap:10px;
+}
+.buy-box .button{
+  width:100%;
+}
+.buy-hint{
+  margin:0;
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  line-height:1.5;
+}
+
+/* ===== TOAST (NOTIFICACIÓN) ===== */
+.toast{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:9999999;
+  background:#111;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+  padding:12px 14px;
+  font-size:11px;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+  max-width:min(360px, calc(100vw - 36px));
+}
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
 </style>
 </head>
 
 <body>
-
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <!-- CHAT -->
 <div id="assistant-button" aria-label="Abrir asistente">💬</div>
 
@@ -606,7 +649,7 @@
   <div class="help">
     <a href="./index.html">INICIAR SESIÓN</a>
     <a>AYUDA</a>
-    <a>CESTA [0]</a>
+    <a href="#" id="cartLink">CESTA [<span id="cartCount">0</span>]</a>
     <a href="./MYPLNAER.html">MY PLANNER</a>
     <a href="./Agenda.html">AGENDA</a>
   </div>
@@ -770,11 +813,21 @@
     </div>
 
     <aside class="panel-right">
-      <h2 id="modalName">—</h2>
-      <div class="ref" id="modalTag">—</div>
-      <p class="p" id="modalDesc">—</p>
-    </aside>
+  <h2 id="modalName">—</h2>
+  <div class="ref" id="modalTag">—</div>
+  <p class="p" id="modalDesc">—</p>
+
+  <!-- NUEVO BLOQUE: AÑADIR A LA CESTA -->
+  <div class="buy-box">
+    <button class="button" type="button" id="addToCartBtn">
+      AÑADIR A LA CESTA
+    </button>
+    <p class="buy-hint">
+      Notificación ficticia para el prototipo
+    </p>
   </div>
+</aside>
+</div>
 </section>
 
 <script>
@@ -1058,6 +1111,10 @@ const els = {
   chatClose: document.getElementById("close-chat"),
   chatInput: document.getElementById("chat-input"),
   chatMessages: document.getElementById("chat-messages"),
+
+cartCount: document.getElementById("cartCount"),
+  addToCartBtn: document.getElementById("addToCartBtn"),
+  toast: document.getElementById("toast"),
 };
 
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
@@ -1507,6 +1564,36 @@ function exitApp(){
 /* ===================== MODAL: ACTIVO + FADE + SWIPE ===================== */
 const modalState = { images: [], idx: 0 };
 
+/* ===== CESTA (FICTICIA) ===== */
+const cartState = {
+  count: Number(localStorage.getItem("cartCount") || 0)
+};
+
+function updateCartUI(){
+  if(els.cartCount) els.cartCount.textContent = String(cartState.count);
+}
+
+let toastTimer = null;
+function showToast(msg){
+  if(!els.toast) return;
+  els.toast.textContent = msg;
+  els.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => els.toast.classList.remove("show"), 1600);
+}
+
+function addToCartFromModal(){
+  // Usamos lo que esté abierto en el modal (ficticio)
+  const name = (els.modalName?.textContent || "PRENDA").trim();
+  const ref = (els.modalTag?.textContent || "REF —").trim();
+
+  cartState.count += 1;
+  localStorage.setItem("cartCount", String(cartState.count));
+  updateCartUI();
+
+  showToast(`AÑADIDA A LA CESTA · ${ref} · ${name}`);
+}
+
 function setActiveThumb(){
   const buttons = els.thumbs.querySelectorAll("button");
   buttons.forEach((b, i) => b.classList.toggle("active", i === modalState.idx));
@@ -1570,6 +1657,13 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
 
+if (els.addToCartBtn){
+  els.addToCartBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    addToCartFromModal();
+});
+}
+
 /* Swipe móvil (izq/der) */
 let startX = 0, startY = 0, touching = false;
 
@@ -1607,6 +1701,8 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   if(saved?.hair && els.hair) els.hair.value = saved.hair;
   els.avatar.src = `${selectedGender}.png`;
   updateHeightAvatar();
+
+  updateCartUI(); // ✅ AÑADE ESTO
 })();
 
 // ===================== JS ASISTENTE =====================
@@ -1673,12 +1769,24 @@ els.chatInput.addEventListener("keydown", async (e) => {
     addMsg("bot","Error de conexión con el asistente.");
   }
 });
+/* ===================== NOTIFICACIÓN CESTA ===================== */
+function showCartNotification(){
+  const note = document.createElement("div");
+  note.className = "cart-note";
+  note.textContent = "La prenda ha sido añadida a la cesta";
 
+  document.body.appendChild(note);
+
+  setTimeout(() => note.classList.add("show"), 10);
+  setTimeout(() => {
+    note.classList.remove("show");
+    setTimeout(() => note.remove(), 300);
+  }, 2200);
+}
 </script>
 
 </body>
 </html>
-
 
 
 
