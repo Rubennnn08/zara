@@ -13,6 +13,10 @@
       --hair:rgba(17,17,17,.18);
       --shadow:0 18px 60px rgba(0,0,0,.18);
       --letter:.14em;
+
+      /* LOOK DRAWER */
+      --drawerW: min(260px, 36vw);
+      --tabW: 34px;
     }
     *{box-sizing:border-box}
 
@@ -120,16 +124,22 @@
       aspect-ratio:3/4;
       overflow:hidden;
       border:1px solid var(--hair);
+      background:#000;
+      cursor:pointer;
     }
     .media video{
       width:100%;
       height:100%;
       object-fit:cover;
       pointer-events:none;
+      display:block;
+      background:#000;
     }
     .overlay{
       position:absolute; bottom:10px; left:10px; right:10px;
       display:flex; justify-content:center;
+      pointer-events:none;
+      z-index:2;
     }
     .overlay span{
       background:rgba(255,255,255,.9);
@@ -138,6 +148,7 @@
       font-size:11px;
       letter-spacing:var(--letter);
       text-transform:uppercase;
+      color:#111;
     }
 
     .title-under{
@@ -158,7 +169,191 @@
       text-transform:uppercase;
     }
 
-    /* ================= MODAL ================= */
+    /* ===================== LOOK DRAWER (IGUAL QUE EL OTRO) ===================== */
+
+    .look-tab{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:var(--tabW);
+      height:92px;
+      border:1px solid rgba(255,255,255,.65);
+      background:rgba(17,17,17,.86);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:5;
+      user-select:none;
+    }
+    .look-tab span{
+      display:block;
+      writing-mode:vertical-rl;
+      transform:rotate(180deg);
+      font-size:10px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+    }
+
+    .look-drawer{
+      position:absolute;
+      top:0;
+      right:0;
+      height:100%;
+      width:var(--drawerW);
+      background:rgba(255,255,255,.97);
+      border-left:1px solid var(--hair);
+
+      transform:translateX(100%);
+      opacity:0;
+
+      transition:
+        transform .28s cubic-bezier(.2,.8,.2,1),
+        opacity .22s ease;
+
+      z-index:6;
+      display:flex;
+      flex-direction:column;
+      will-change: transform, opacity;
+    }
+    .look-drawer.open{
+      transform:translateX(0);
+      opacity:1;
+    }
+    .look-drawer .ld-head{
+      padding:12px 12px 10px;
+      border-bottom:1px solid var(--hair);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:#fff;
+    }
+    .look-drawer .ld-head .t{
+      font-size:11px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:#111;
+    }
+    .look-drawer .ld-close{
+      border:1px solid transparent;
+      background:transparent;
+      width:34px;height:34px;
+      cursor:pointer;
+      position:relative;
+    }
+    .look-drawer .ld-close::before,
+    .look-drawer .ld-close::after{
+      content:"";
+      position:absolute;
+      top:50%;left:50%;
+      width:16px;height:1px;
+      background:#111;
+    }
+    .look-drawer .ld-close::before{ transform:translate(-50%,-50%) rotate(45deg); }
+    .look-drawer .ld-close::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+
+    .look-items{
+      padding:10px 10px 12px;
+      overflow:auto;
+      display:grid;
+      gap:10px;
+    }
+
+    .look-drawer .look-item{
+      opacity:0;
+      transform:translateY(6px);
+      transition:
+        opacity .18s ease,
+        transform .18s ease;
+    }
+    .look-drawer.open .look-item{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .look-drawer.open .look-item:nth-child(1){ transition-delay:.04s; }
+    .look-drawer.open .look-item:nth-child(2){ transition-delay:.07s; }
+    .look-drawer.open .look-item:nth-child(3){ transition-delay:.10s; }
+    .look-drawer.open .look-item:nth-child(4){ transition-delay:.13s; }
+    .look-drawer.open .look-item:nth-child(5){ transition-delay:.16s; }
+    .look-drawer.open .look-item:nth-child(6){ transition-delay:.19s; }
+
+    .look-item{
+      display:grid;
+      grid-template-columns:64px 1fr;
+      gap:10px;
+      border:1px solid var(--hair);
+      background:#fff;
+      padding:8px;
+      position:relative;
+      cursor:pointer;
+      text-align:left;
+    }
+    .look-item img{
+      width:64px;height:82px;
+      object-fit:cover;
+      display:block;
+      border:1px solid var(--hair);
+      background:#fafafa;
+    }
+    .look-item .ref{
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:#111;
+      margin:2px 0 6px;
+    }
+    .look-item .name{
+      font-size:11px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted);
+      line-height:1.4;
+      margin:0;
+    }
+
+    .look-tip{
+      position:absolute;
+      left:10px;
+      right:10px;
+      bottom:10px;
+      background:rgba(17,17,17,.92);
+      color:#fff;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.18);
+      opacity:0;
+      transform:translateY(6px);
+      transition:opacity .16s ease, transform .16s ease;
+      pointer-events:none;
+    }
+    .look-tip .d{
+      font-size:11px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      line-height:1.45;
+      margin:0 0 8px;
+    }
+    .look-tip .btn{
+      display:inline-block;
+      border:1px solid rgba(255,255,255,.35);
+      padding:8px 10px;
+      font-size:10px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      color:#fff;
+    }
+    @media (hover:hover){
+      .look-item:hover .look-tip{ opacity:1; transform:translateY(0); }
+    }
+    .look-item.show-tip .look-tip{ opacity:1; transform:translateY(0); }
+
+    @media (max-width: 520px){
+      :root{ --drawerW: 84vw; }
+      .look-tab{ top:10px; right:10px; height:84px; }
+    }
+
+    /* ================= MODAL (GALERÍA IGUAL) ================= */
     .modal{
       position:fixed;
       inset:0;
@@ -173,7 +368,34 @@
       padding:14px 16px;
       border-bottom:1px solid var(--hair);
       background:#fff;
+      position:sticky;
+      top:0;
     }
+
+    .modal-title{
+      flex:1;
+      text-align:center;
+      font-size:14px;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      font-weight:600;
+    }
+    .close{
+      width:40px;height:40px;
+      border:1px solid transparent;
+      background:transparent;
+      cursor:pointer;
+      position:relative;
+    }
+    .close::before,.close::after{
+      content:"";
+      position:absolute;
+      top:50%;left:50%;
+      width:18px;height:1px;
+      background:#111;
+    }
+    .close::before{transform:translate(-50%,-50%) rotate(45deg)}
+    .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
 
     .modal-content{
       max-width:980px;
@@ -186,7 +408,7 @@
       overflow-y:auto;
     }
     @media (min-width:860px){
-      .modal-content{grid-template-columns:1.2fr .8fr}
+      .modal-content{grid-template-columns:1.2fr .8fr; gap:22px; padding:18px;}
     }
 
     .gallery{
@@ -195,27 +417,61 @@
       gap:10px;
     }
     .gallery-main{
+      width:100%;
       max-height:60vh;
       object-fit:contain;
+      display:block;
       box-shadow:var(--shadow);
+      background:#fff;
+      transition:opacity .18s ease;
     }
+    .gallery-main.is-fading{opacity:0;}
+
     .thumbs{
       display:flex;
       gap:10px;
       overflow-x:auto;
       max-height:120px;
+      padding-bottom:6px;
     }
     .thumbs button{
       width:92px;height:120px;
       border:1px solid var(--hair);
       background:#fff;
       padding:0;
+      cursor:pointer;
+      flex:0 0 auto;
+      overflow:hidden;
     }
     .thumbs button.active{
       border-color:#111;
+      box-shadow: inset 0 0 0 1px #111;
     }
     .thumbs img{
       width:100%;height:100%;object-fit:cover;
+      display:block;
+    }
+
+    .panel-right h2{
+      margin:0 0 8px;
+      font-size:16px;
+      font-weight:600;
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+    }
+    .panel-right .ref{
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:var(--letter);
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    .panel-right .p{
+      font-size:13px;
+      line-height:1.55;
+      color:#222;
+      max-width:42ch;
+      margin:0;
     }
   </style>
 </head>
@@ -227,44 +483,341 @@
   <div id="menu">
     <span class="bar"></span><span class="bar"></span><span class="bar"></span>
   </div>
-  <div class="logo"><a href="./index.html"><img src="logo.png"></a></div>
+  <div class="logo"><a href="./index.html"><img src="logo.png" alt="Logo"></a></div>
   <div class="searchbar"><input placeholder="Buscar"></div>
   <div class="help">
     <a href="./index.html">INICIAR SESIÓN</a>
-    <a >AYUDA</a>
-    <a >CESTA [0]</a>
+    <a>AYUDA</a>
+    <a>CESTA [0]</a>
     <a href="./MYPLNAER.html">MY PLANNER</a>
     <a href="./Agenda.html">AGENDA</a>
   </div>
 </div>
 
 <div class="container">
-  <section class="grid" id="grid"></section>
+  <section class="grid" id="grid" aria-label="Recomendaciones"></section>
 </div>
 
+<!-- Modal (galería) -->
+<section class="modal" id="modal" aria-hidden="true" role="dialog" aria-label="Imágenes relacionadas">
+  <div class="modal-top">
+    <button class="close" type="button" aria-label="Cerrar" id="closeModal"></button>
+    <div class="modal-title" id="modalTitle">IMÁGENES</div>
+    <span style="width:40px;"></span>
+  </div>
+
+  <div class="modal-content">
+    <div class="gallery">
+      <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal">
+      <div id="thumbs" class="thumbs" aria-label="Miniaturas"></div>
+    </div>
+
+    <aside class="panel-right">
+      <h2 id="modalName">—</h2>
+      <div class="ref" id="modalTag">—</div>
+      <p class="p" id="modalDesc">—</p>
+    </aside>
+  </div>
+</section>
+
 <script>
-const LOOKS=[
-  {name:"CENA FAMILIAR",tag:"SUGERENCIA",video:"video/cena.mp4",images:["img/relojarena1.jpg","img/relojarena2.jpg"]},
-  {name:"CENA FAMILIAR",tag:"SUGERENCIA",video:"video/cena1.mp4",images:["img/relojarena2.jpg","img/relojarena1.jpg"]}
+/* ===== Utils ===== */
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function prod(imgOrImgs, ref, name, desc){
+  const imgs = Array.isArray(imgOrImgs) ? imgOrImgs : [imgOrImgs];
+  return { imgs, ref, name, desc };
+}
+
+/* ===== DATA =====
+   Aquí añades products igual que en el otro HTML
+*/
+const LOOKS = [
+  {
+    name:"CENA FAMILIAR",
+    tag:"SUGERENCIA",
+    video:"video/cena.mp4",
+    images:["img/relojarena1.jpg","img/relojarena2.jpg"],
+    desc:"Look sugerido para una cena familiar.",
+    products:[
+      prod(["img/prenda/camiseta1triangulo.png","img/prenda/camiseta1triangulo_1.png"], "REF 6224/376/250", "CAMISETA DETALLE", "Camiseta blanca con detalle letras."),
+      prod(["img/prenda/bolso1triangulo.png","img/prenda/bolso1triangulo_1.png"], "REF 6466/610/800", "BOLSO PELO", "Maxi bolso de pelo negro con asa."),
+      prod("img/prenda/falda1triangulo.png", "REF 5919/211/922", "FALDA ENCAJE", "Falda negra satinada asimétrica con bajo encaje.")
+    ]
+  },
+  {
+    name:"CENA FAMILIAR 2",
+    tag:"SUGERENCIA",
+    video:"video/cena1.mp4",
+    images:["img/relojarena2.jpg","img/relojarena1.jpg"],
+    desc:"Otra variante del look.",
+    products:[
+      prod(["img/prenda/bota2triangulo.png","img/prenda/bota2triangulo_1.png"], "REF 3022/610/800", "BOTA TACÓN", "Bota acharolada negra con tacón fino."),
+      prod(["img/prenda/vestido2triangulo.png","img/prenda/vestido2triangulo_1.png"], "REF 9500/108/250", "VESTIDO LENTEJUELAS", "Vestido mini con hombreras y escote espalda.")
+    ]
+  }
 ];
 
-const grid=document.getElementById("grid");
+/* ===== Render LOOK drawer ===== */
+function renderLookDrawer(products){
+  const list = Array.isArray(products) ? products : [];
+  const items = list.slice(0, 6).map((p) => `
+    <div class="look-item" role="button" tabindex="0"
+      data-prod-imgs="${escapeHtml((p.imgs || []).join("|"))}"
+      data-prod-ref="${escapeHtml(p.ref || "")}"
+      data-prod-name="${escapeHtml(p.name || "")}"
+      data-prod-desc="${escapeHtml(p.desc || "")}">
+      <img src="${escapeHtml((p.imgs && p.imgs[0]) ? p.imgs[0] : "")}" alt="${escapeHtml(p.name || "Prenda")}">
+      <div>
+        <div class="ref">${escapeHtml(p.ref || "REF —")}</div>
+        <p class="name">${escapeHtml(p.name || "PRENDA")}</p>
+      </div>
+      <div class="look-tip" aria-hidden="true">
+        <p class="d">${escapeHtml(p.desc || "—")}</p>
+        <span class="btn">VER DETALLE</span>
+      </div>
+    </div>
+  `).join("");
 
-LOOKS.forEach(item=>{
-  grid.innerHTML+=`
-    <article>
+  return `
+    <div class="look-tab" data-look="toggle" aria-label="Abrir look">
+      <span>LOOK</span>
+    </div>
+
+    <aside class="look-drawer" aria-label="Look drawer">
+      <div class="ld-head">
+        <div class="t">LOOK</div>
+        <button type="button" class="ld-close" data-look="close" aria-label="Cerrar"></button>
+      </div>
+      <div class="look-items">
+        ${items || `<div style="border:1px solid var(--hair); padding:10px 12px; font-size:12px; letter-spacing:var(--letter); text-transform:uppercase;">NO HAY PRENDAS EN ESTE LOOK</div>`}
+      </div>
+    </aside>
+  `;
+}
+
+/* ===== Render cards ===== */
+const grid = document.getElementById("grid");
+grid.innerHTML = LOOKS.map(item => {
+  const imagesPacked = (item.images || []).join("|");
+  const poster = item.images?.[0] || "";
+  return `
+    <article class="card"
+      data-name="${escapeHtml(item.name)}"
+      data-tag="${escapeHtml(item.tag)}"
+      data-desc="${escapeHtml(item.desc || "")}"
+      data-images="${escapeHtml(imagesPacked)}">
       <div class="media">
-        <video autoplay muted loop playsinline>
-          <source src="${item.video}">
+        <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+          <source src="${item.video}" type="video/mp4">
         </video>
         <div class="overlay"><span>VER IMÁGENES</span></div>
+        ${renderLookDrawer(item.products)}
       </div>
-      <div class="title-under">${item.name}</div>
-      <div class="meta"><span>${item.tag}</span><span>VIDEO</span></div>
+      <div class="title-under">${escapeHtml(item.name)}</div>
+      <div class="meta"><span>${escapeHtml(item.tag)}</span><span>VIDEO</span></div>
     </article>
   `;
+}).join("");
+
+/* ================= MODAL ================= */
+const els = {
+  modal: document.getElementById("modal"),
+  closeModal: document.getElementById("closeModal"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalName: document.getElementById("modalName"),
+  modalTag: document.getElementById("modalTag"),
+  modalDesc: document.getElementById("modalDesc"),
+  galleryMain: document.getElementById("galleryMain"),
+  thumbs: document.getElementById("thumbs"),
+};
+
+const modalState = { images: [], idx: 0 };
+
+function setActiveThumb(){
+  const buttons = els.thumbs.querySelectorAll("button");
+  buttons.forEach((b, i) => b.classList.toggle("active", i === modalState.idx));
+  const active = buttons[modalState.idx];
+  if(active) active.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+}
+
+function setMainImage(index){
+  const total = modalState.images.length;
+  if(!total) return;
+
+  modalState.idx = (index + total) % total;
+
+  els.galleryMain.classList.add("is-fading");
+  const nextSrc = modalState.images[modalState.idx];
+
+  setTimeout(() => { els.galleryMain.src = nextSrc; }, 120);
+  els.galleryMain.onload = () => els.galleryMain.classList.remove("is-fading");
+
+  setActiveThumb();
+}
+
+function openModal({name, tag, desc, images}){
+  els.modal.classList.add("open");
+  els.modal.setAttribute("aria-hidden","false");
+
+  els.modalTitle.textContent = String(name || "—").toUpperCase();
+  els.modalName.textContent  = String(name || "—").toUpperCase();
+  els.modalTag.textContent   = String(tag  || "—").toUpperCase();
+  els.modalDesc.textContent  = desc || "—";
+
+  modalState.images = Array.isArray(images) ? images : [];
+  modalState.idx = 0;
+
+  els.thumbs.innerHTML = modalState.images.map((src, idx) => `
+    <button type="button" data-idx="${idx}" aria-label="Imagen ${idx+1}">
+      <img src="${src}" alt="Miniatura ${idx+1}">
+    </button>
+  `).join("");
+
+  els.thumbs.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => setMainImage(Number(btn.dataset.idx)));
+  });
+
+  els.galleryMain.src = modalState.images[0] || "";
+  setActiveThumb();
+
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+  els.modal.classList.remove("open");
+  els.modal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+
+els.closeModal.addEventListener("click", closeModal);
+els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeModal(); });
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
+});
+
+/* ================= Interacciones ================= */
+grid.addEventListener("click", (e) => {
+  // Si hay un drawer abierto y clicas fuera, se cierra
+  const openDrawer = grid.querySelector(".look-drawer.open");
+  if (openDrawer) {
+    const clickedInsideDrawer = e.target.closest(".look-drawer");
+    const clickedTab = e.target.closest('[data-look="toggle"]');
+    if (!clickedInsideDrawer && !clickedTab) {
+      openDrawer.classList.remove("open");
+    }
+  }
+
+  // 1) Toggle drawer
+  const toggleBtn = e.target.closest('[data-look="toggle"]');
+  if (toggleBtn){
+    e.preventDefault();
+    e.stopPropagation();
+    const media = toggleBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer){
+      grid.querySelectorAll(".look-drawer.open").forEach(d => {
+        if(d !== drawer) d.classList.remove("open");
+      });
+      drawer.classList.toggle("open");
+    }
+    return;
+  }
+
+  const closeBtn = e.target.closest('[data-look="close"]');
+  if (closeBtn){
+    e.preventDefault();
+    e.stopPropagation();
+    const media = closeBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer) drawer.classList.remove("open");
+    return;
+  }
+
+  // ✅ Si clicas dentro del drawer (pero no en una prenda), NO abras la galería
+  const insideDrawer = e.target.closest(".look-drawer");
+  const lookItem = e.target.closest(".look-item");
+  if (insideDrawer && !lookItem) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
+
+  // 2) Click prenda
+  if (lookItem){
+    e.preventDefault();
+    e.stopPropagation();
+
+    // móvil: tooltip
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+
+    // desktop: modal solo de la prenda
+    const imgsPacked = lookItem.dataset.prodImgs || "";
+    const imgs = imgsPacked.split("|").filter(Boolean);
+    const ref = lookItem.dataset.prodRef || "REF —";
+    const name = lookItem.dataset.prodName || "PRENDA";
+    const desc = lookItem.dataset.prodDesc || "—";
+
+    openModal({ name, tag: ref, desc, images: imgs });
+    return;
+  }
+
+  // 3) Click en card/video -> abre galería del look
+  const card = e.target.closest(".card");
+  if(card){
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  }
+});
+
+grid.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+
+  const insideDrawer = e.target.closest(".look-drawer");
+  const lookItem = e.target.closest(".look-item");
+  if (insideDrawer && !lookItem) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
+
+  if (lookItem) {
+    e.preventDefault();
+
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+
+    const packed = lookItem.dataset.prodImgs || "";
+    const images = packed.split("|").filter(Boolean);
+    const ref = lookItem.dataset.prodRef || "REF —";
+    const name = lookItem.dataset.prodName || "PRENDA";
+    const desc = lookItem.dataset.prodDesc || "—";
+
+    openModal({ name, tag: ref, desc, images });
+    return;
+  }
+
+  const card = e.target.closest(".card");
+  if (!card) return;
+
+  e.preventDefault();
+  const images = (card.dataset.images || "").split("|").filter(Boolean);
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
 });
 </script>
 
 </body>
 </html>
+
+
