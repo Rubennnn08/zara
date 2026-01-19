@@ -874,7 +874,7 @@ const LOOKS = [
       prod(
         [
       'img/prenda/camisa2redondo.png',
-'img/prenda/camisa2redondo_1.png'
+'img/prenda/camisa2redondo_1.png',
           'img/prenda/camisa2redondo_2.png'
     ],
 'REF 8800/240/809',
@@ -1374,7 +1374,7 @@ if (insideDrawer && !lookItem) {
       return;
     }
 
-   const packed = lookItem.dataset.prodImags || "";
+   const packed = lookItem.dataset.prodImgs || "";
 const images = packed.split("|").filter(Boolean);
 
 const ref = lookItem.dataset.prodRef || "REF —";
@@ -1582,5 +1582,6 @@ els.chatInput.addEventListener("keydown", async (e) => {
 
 </body>
 </html>
+
 
 
