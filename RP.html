@@ -893,50 +893,26 @@
 </section>
 
 <script>
-/* ===== RUTAS ===== */
+/* ===================== RUTAS ===================== */
 function imgPath(base){ return `img/${base}.jpg`; }
 function videoPath(base){ return `video/${base}.mp4`; }
 
-/* ===== PRENDAS ===== */
+/* ===================== PRENDAS ===================== */
 function prod(imgOrImgs, ref, name, desc){
   const imgs = Array.isArray(imgOrImgs) ? imgOrImgs : [imgOrImgs];
   return { imgs, ref, name, desc };
 }
 
-/* ===== ITEMS ===== */
+/* ===================== ITEMS ===================== */
 const LOOKS = [
- { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
     video: videoPath('triangulo3'),
     images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
     products:[
-      prod(
-        [
-          'img/prenda/camiseta1triangulo.png',
-          'img/prenda/camiseta1triangulo_1.png'
-        ],
-        'REF 6224/376/250',
-        'CAMISETA DETALLE',
-        'Camiseta blanca con detalle letras delanteras y texto en la parte trasea.'
-      ),
-      prod(
-        [
-          'img/prenda/bota2triangulo.png',
-          'img/prenda/bota2triangulo_1.png',
-        ],
-        'REF 3022/610/800',
-        'BOTA TACÓN',
-        'Bota acharolada negra con tacón fino.'
-      ),
-      prod(
-        [
-          'img/prenda/bolso1triangulo.png',
-          'img/prenda/bolso1triangulo_1.png',
-        ],
-        'REF 6466/610/800',
-        'BOLSO PELO',
-        'Maxi bolso de pelo negro con asa de hombro.'
-      ),
+      prod(['img/prenda/camiseta1triangulo.png','img/prenda/camiseta1triangulo_1.png'],'REF 6224/376/250','CAMISETA DETALLE','Camiseta blanca con detalle letras delanteras y texto en la parte trasea.'),
+      prod(['img/prenda/bota2triangulo.png','img/prenda/bota2triangulo_1.png'],'REF 3022/610/800','BOTA TACÓN','Bota acharolada negra con tacón fino.'),
+      prod(['img/prenda/bolso1triangulo.png','img/prenda/bolso1triangulo_1.png'],'REF 6466/610/800','BOLSO PELO','Maxi bolso de pelo negro con asa de hombro.'),
       prod('img/prenda/falda1triangulo.png','REF 5919/211/922','FALDA ENCAJE','Falda negra satinada asimétrica con bajo de encaje.')
     ]
   },
@@ -945,75 +921,33 @@ const LOOKS = [
     images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
     products:[
-      prod(
-        [
-          'img/prenda/vestido2triangulo.png',
-          'img/prenda/vestido2triangulo_1.png',
-        ],
-        'REF 9500/108/250',
-        'VESTIDO LENTEJUELAS',
-        'Vestido mini de lentejuelas con hombreras y escote en la espalda.'
-      ),
-      prod(
-        [
-          'img/prenda/tacontriangulo.png',
-          'img/prenda/tacontriangulo_1.png',
-        ],
-        'REF 2372/510/091',
-        'SANDALIA DORADA',
-        'Sandalia dorada con pulsera en el tobillo.'
-      ),
+      prod(['img/prenda/vestido2triangulo.png','img/prenda/vestido2triangulo_1.png'],'REF 9500/108/250','VESTIDO LENTEJUELAS','Vestido mini de lentejuelas con hombreras y escote en la espalda.'),
+      prod(['img/prenda/tacontriangulo.png','img/prenda/tacontriangulo_1.png'],'REF 2372/510/091','SANDALIA DORADA','Sandalia dorada con pulsera en el tobillo.')
     ]
   },
   { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
     video: videoPath('triangulo1'),
-    images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
+    images:[imgPath('triangulo1'), imgPath('triangulo11'), imgPath('triangulo12'), imgPath('triangulo13')],
     desc:'Video + imágenes relacionadas (triángulo invertido).',
     products:[
-      prod(
-        [
-          'img/prenda/toptriangulo.png',
-          'img/prenda/toptriangulo_1.png',
-        ],
-        'REF 5584/205/603',
-        'TOP FLECOS',
-        'Top asimétrico morado con detalle de flecos.'
-      ),
-      prod(
-        [
-          'img/prenda/pantalon3triangulo.png',
-          'img/prenda/pantalon3triangulo_1.png',
-        ],
-        'REF 8307/245/400',
-        'JEANS WIDE LEG ZW',
-        'Jeans wide leg tiro medio. Cierre frontal con botón y cremallera.'
-      ),
+      prod(['img/prenda/toptriangulo.png','img/prenda/toptriangulo_1.png'],'REF 5584/205/603','TOP FLECOS','Top asimétrico morado con detalle de flecos.'),
+      prod(['img/prenda/pantalon3triangulo.png','img/prenda/pantalon3triangulo_1.png'],'REF 8307/245/400','JEANS WIDE LEG ZW','Jeans wide leg tiro medio. Cierre frontal con botón y cremallera.'),
       prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
     ]
   },
 
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
     video: videoPath('relojarena1'),
-    images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
+    images:[imgPath('relojarena1'), imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
     desc:'Altura modelo: 165 cm. Medidas: Pecho: 89 cm, Cintura: 66 cm, Cadera: 92 cm. Largo de la pierna: 75 cm',
     products:[
-      prod(
-        [
-          'img/prenda/ropa12arena.png',
-          'img/prenda/ropa12arena_2.jpg',
-          'img/prenda/ropa12arena_3.jpg'
-        ],
-        'REF 1255/404/505',
-        'FALDA CUADROS',
-        'Falda midi detalle volumen.'
-      ),
+      prod(['img/prenda/ropa12arena.png','img/prenda/ropa12arena_2.jpg','img/prenda/ropa12arena_3.jpg'],'REF 1255/404/505','FALDA CUADROS','Falda midi detalle volumen.'),
       prod('img/prenda/ropa11arena.png','REF 4341/736/717','BOMBER POLIPIEL','Bomber polipiel marrón.'),
       prod('img/prenda/ropa1arena.png','REF 8372/267/716','CHAQUETA FELPA','Chaqueta marrón con gorro.'),
       prod('img/prenda/bota1arena.png','REF 3032/610/700','BOTA MARRÓN','Bota detalle grabados con hebilla.'),
       prod('img/prenda/bolso1arena.png','REF 6332/610/700','FALDA CUADROS','Falda midi detalle volumen.')
     ]
   },
-
   { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
     video: videoPath('relojarena2'),
     images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
@@ -1037,25 +971,8 @@ const LOOKS = [
     images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13'), imgPath('redondo14'), imgPath('redondo15')],
     desc:'Altura modelo: 155 cm. Medidas: Pecho: 95 cm, Cintura: 105 cm, Cadera: 100 cm. Largo de la pierna: 65 cm.',
     products:[
-      prod(
-        [
-          'img/prenda/pantalon2redondo.png',
-          'img/prenda/pantalon 2 redondo_1.png'
-        ],
-        'REF 6840/305/800',
-        'PANTALÓN NEGRO',
-        'Pantalón tiro medio, ballon leg, cierre con cremallera y botón frontal.'
-      ),
-      prod(
-        [
-          'img/prenda/camisa2redondo.png',
-          'img/prenda/camisa2redondo_1.png',
-          'img/prenda/camisa2redondo_2.png'
-        ],
-        'REF 8800/240/809',
-        'CAMISA CUADROS',
-        'Camisa de cuadros manga larga con detalle pañuelo.'
-      ),
+      prod(['img/prenda/pantalon2redondo.png','img/prenda/pantalon2redondo_1.png'],'REF 6840/305/800','PANTALÓN NEGRO','Pantalón tiro medio, ballon leg, cierre con cremallera y botón frontal.'),
+      prod(['img/prenda/camisa2redondo.png','img/prenda/camisa2redondo_1.png','img/prenda/camisa2redondo_2.png'],'REF 8800/240/809','CAMISA CUADROS','Camisa de cuadros manga larga con detalle pañuelo.'),
       prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
     ]
   },
@@ -1064,44 +981,10 @@ const LOOKS = [
     images:[imgPath('redondo2'), imgPath('redondo21'), imgPath('redondo22'), imgPath('redondo23'), imgPath('redondo24'), imgPath('redondo25'), imgPath('redondo26'), imgPath('redondo27')],
     desc:'Altura modelo: 155 cm. Medidas: Pecho: 95 cm, Cintura: 105 cm, Cadera: 100 cm. Largo de la pierna: 65 cm.',
     products:[
-      prod(
-        [
-          'img/prenda/pantalon1redondo.png',
-          'img/prenda/pantalon1redondo_1.png',
-          'img/prenda/pantalon1redondo_2.png'
-        ],
-        'REF 8960/760/710',
-        'PANTALÓN CUADROS',
-        'Pantalón tiro alto ballon. Cierre con cordón interno, elástico en la cintura.'
-      ),
-      prod(
-        [
-          'img/prenda/cazadora1redondo.png',
-          'img/prenda/cazadora1redondo_1.png',
-          'img/prenda/cazadora1redondo_2.png'
-        ],
-        'REF 1255/894/716',
-        'CAZADORA PAÑO',
-        'Cazadora marrón de paño con abotonadura lateral.'
-      ),
-      prod(
-        [
-          'img/prenda/calzado1redondo.png',
-          'img/prenda/calzado1redondo_1.png',
-        ],
-        'REF 3595/610/700',
-        'MOCASÍN ANTE',
-        'Mocasín ante marrón.'
-      ),
-      prod(
-        [
-          'img/prenda/bolso1redondo.png',
-          'img/prenda/bolso1redondo_1.png',
-        ],
-        'REF 6633/610/700',
-        'BOLSO ANTE',
-        'Mini saca de ante con cierre metálico. Asa pequeña.'
-      ),
+      prod(['img/prenda/pantalon1redondo.png','img/prenda/pantalon1redondo_1.png','img/prenda/pantalon1redondo_2.png'],'REF 8960/760/710','PANTALÓN CUADROS','Pantalón tiro alto ballon. Cierre con cordón interno, elástico en la cintura.'),
+      prod(['img/prenda/cazadora1redondo.png','img/prenda/cazadora1redondo_1.png','img/prenda/cazadora1redondo_2.png'],'REF 1255/894/716','CAZADORA PAÑO','Cazadora marrón de paño con abotonadura lateral.'),
+      prod(['img/prenda/calzado1redondo.png','img/prenda/calzado1redondo_1.png'],'REF 3595/610/700','MOCASÍN ANTE','Mocasín ante marrón.'),
+      prod(['img/prenda/bolso1redondo.png','img/prenda/bolso1redondo_1.png'],'REF 6633/610/700','BOLSO ANTE','Mini saca de ante con cierre metálico. Asa pequeña.')
     ]
   },
 
@@ -1185,6 +1068,17 @@ const els = {
 
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
 
+/* ===================== UI HELPERS ===================== */
+let toastTimer = null;
+function showToast(msg){
+  if(!els.toast) return;
+  els.toast.textContent = String(msg || "");
+  els.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => els.toast.classList.remove("show"), 1800);
+}
+
+/* ===================== PERFIL ===================== */
 function selectGender(gender){
   selectedGender = gender;
   localStorage.setItem("gender", gender);
@@ -1231,14 +1125,12 @@ function getBodyTypeFromMeasures() {
   return "no_definido";
 }
 
-/* ✅ Decide si mostrar JPG o GLB */
+/* ===================== JPG / GLB EN TIPO CUERPO ===================== */
 function bodyAssetForType(type, hair){
-  // ✅ Caso especial: morena + reloj de arena -> arenamorena.glb
   if(type === "reloj_arena" && hair === "morena"){
     return { kind:"glb", src:"img/arenamorena.glb" };
   }
 
-  // ✅ Resto: JPGs
   const h = (hair === "morena") ? "morena" : "rubia";
   let base;
   if(type === "triangulo_invertido") base = "trianguloinvertido";
@@ -1254,7 +1146,6 @@ function setTypeAssetRobust(type, hair){
   const asset = bodyAssetForType(type, hair);
   const hasModel = !!els.bodyFinalModel;
 
-  // Limpia listeners/estado (por si vienes de glb a jpg)
   if(hasModel){
     els.bodyFinalModel.classList.add("hidden");
     els.bodyFinalModel.removeAttribute("src");
@@ -1265,7 +1156,6 @@ function setTypeAssetRobust(type, hair){
     els.bodyFinalModel.classList.remove("hidden");
     els.bodyFinalModel.setAttribute("src", asset.src);
 
-    // Fallback si falla GLB
     els.bodyFinalModel.addEventListener("error", () => {
       els.bodyFinalModel.classList.add("hidden");
       els.bodyFinalImg.classList.remove("hidden");
@@ -1275,7 +1165,6 @@ function setTypeAssetRobust(type, hair){
     return;
   }
 
-  // JPG
   els.bodyFinalImg.classList.remove("hidden");
   els.bodyFinalImg.onerror = () => {
     els.bodyFinalImg.onerror = null;
@@ -1308,7 +1197,6 @@ function updatePillFromMeasures(){
     ? `NO DEFINIDO: se mostrarán recomendaciones genéricas`
     : `ESPALDA ${backValue} · CINTURA ${waistValue} · CADERA ${hipsValue} → ${displayBodyTypeLabel(type)}`;
 
-  // ✅ (Opcional pero pro): si ya hay medidas válidas, guardamos el tipo calculado para usarlo luego
   lastBodyType = type;
 }
 
@@ -1338,8 +1226,6 @@ function processProfile(){
   localStorage.setItem("profile", JSON.stringify(profile));
 
   els.bodyPill.textContent = `TIPO: ${displayBodyTypeLabel(lastBodyType)}`;
-
-  // ✅ AQUÍ: decide JPG o GLB (arenamorena.glb)
   setTypeAssetRobust(lastBodyType, profile.hair);
 
   toggle(els.form, false);
@@ -1356,7 +1242,7 @@ function goToReco(){
   renderRecommendations(profile, bodyType);
 }
 
-/* ===== Reco + paginación ===== */
+/* ===================== RECO + PAGINACIÓN ===================== */
 const recoState = { items: [], page: 0, perPage: 2 };
 
 function escapeHtml(str){
@@ -1447,7 +1333,6 @@ function renderRecoPage(){
   els.reco.classList.toggle("is-empty", isEmpty);
   els.emptyState.classList.toggle("hidden", !isEmpty);
 
-  // cierra drawers abiertos
   els.grid.querySelectorAll(".look-drawer.open").forEach(d => d.classList.remove("open"));
 
   if(isEmpty){
@@ -1472,8 +1357,8 @@ function renderRecoPage(){
         data-desc="${escapeHtml(item.desc)}"
         data-images="${escapeHtml(imagesPacked)}">
         <div class="media">
-          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
-            <source src="${item.video}" type="video/mp4">
+          <video autoplay muted loop playsinline preload="metadata" poster="${escapeHtml(poster)}">
+            <source src="${escapeHtml(item.video)}" type="video/mp4">
           </video>
 
           <div class="overlay"><span>VER IMÁGENES</span></div>
@@ -1494,7 +1379,7 @@ function renderRecoPage(){
   els.nextBtn.disabled = recoState.page >= totalPages - 1;
 }
 
-/* Paginación */
+/* paginación */
 els.prevBtn.addEventListener("click", () => {
   recoState.page = Math.max(0, recoState.page - 1);
   renderRecoPage();
@@ -1505,7 +1390,7 @@ els.nextBtn.addEventListener("click", () => {
   renderRecoPage();
 });
 
-/* Click abre galería */
+/* ===================== CLICK GRID ===================== */
 els.grid.addEventListener("click", (e) => {
   const openDrawer = els.grid.querySelector(".look-drawer.open");
   if (openDrawer) {
@@ -1570,16 +1455,99 @@ window.addEventListener("resize", () => {
   });
 });
 
+/* ===================== MODAL (GALERÍA) ===================== */
+let lastFocusEl = null;
 
-/* ===== EVENTOS ===== */
+function setActiveThumb(index){
+  [...els.thumbs.querySelectorAll("button")].forEach((b,i)=>{
+    b.classList.toggle("active", i === index);
+  });
+}
+
+function openModal({ name, tag, desc, images }){
+  const imgs = Array.isArray(images) ? images.filter(Boolean) : [];
+  if(imgs.length === 0){
+    showToast("NO HAY IMÁGENES");
+    return;
+  }
+
+  lastFocusEl = document.activeElement;
+
+  els.modalName.textContent = name || "—";
+  els.modalTag.textContent = tag || "—";
+  els.modalDesc.textContent = desc || "—";
+  els.modalTitle.textContent = "IMÁGENES";
+
+  els.galleryMain.classList.remove("is-fading");
+  els.galleryMain.src = imgs[0];
+
+  els.thumbs.innerHTML = imgs.map((src, i) => `
+    <button type="button" data-i="${i}" aria-label="Ver imagen ${i+1}">
+      <img loading="lazy" src="${escapeHtml(src)}" alt="Miniatura ${i+1}">
+    </button>
+  `).join("");
+
+  setActiveThumb(0);
+
+  els.modal.classList.add("open");
+  els.modal.setAttribute("aria-hidden", "false");
+
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+  els.modal.classList.remove("open");
+  els.modal.setAttribute("aria-hidden", "true");
+
+  document.documentElement.style.overflow = "";
+  document.body.style.overflow = "";
+
+  if(lastFocusEl && typeof lastFocusEl.focus === "function") lastFocusEl.focus();
+}
+
+function changeMainImage(newSrc, index){
+  els.galleryMain.classList.add("is-fading");
+  setTimeout(() => {
+    els.galleryMain.src = newSrc;
+    els.galleryMain.onload = () => {
+      els.galleryMain.classList.remove("is-fading");
+      els.galleryMain.onload = null;
+    };
+  }, 90);
+  setActiveThumb(index);
+}
+
+els.closeModal.addEventListener("click", closeModal);
+els.backModalBtn.addEventListener("click", closeModal);
+els.backBelowBtn.addEventListener("click", closeModal);
+
+els.modal.addEventListener("click", (e) => {
+  const inside = e.target.closest(".modal-content") || e.target.closest(".modal-top");
+  if(!inside) closeModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if(!els.modal.classList.contains("open")) return;
+  if(e.key === "Escape") closeModal();
+});
+
+els.thumbs.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-i]");
+  if(!btn) return;
+  const i = Number(btn.dataset.i);
+  const img = btn.querySelector("img");
+  if(img?.src) changeMainImage(img.src, i);
+});
+
+/* ===================== EVENTOS INPUTS ===================== */
 els.height.addEventListener("input", updateHeightAvatar);
 els.back.addEventListener("input", scheduleMeasuresHint);
 els.waist.addEventListener("input", scheduleMeasuresHint);
 els.hips.addEventListener("input", scheduleMeasuresHint);
-
-// ✅ si cambias el pelo, recalcula el pill (y deja el tipo listo)
 els.hair.addEventListener("change", updatePillFromMeasures);
 
+/* ===================== INIT ===================== */
 (function init(){
   const saved = JSON.parse(localStorage.getItem("profile") || "null");
   if(saved?.hair && els.hair) els.hair.value = saved.hair;
@@ -1587,10 +1555,16 @@ els.hair.addEventListener("change", updatePillFromMeasures);
   els.avatar.src = `${selectedGender}.png`;
   updateHeightAvatar();
 })();
+
+/* ===================== DEBUG GLOBAL ===================== */
+window.addEventListener("error", (e) => {
+  try{ showToast("ERROR JS"); console.error(e); }catch{}
+});
 </script>
 
 </body>
 </html>
+
 
 
 
