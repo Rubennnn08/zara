@@ -8,367 +8,1891 @@
 <link rel="stylesheet" href="menu.css" />
 
 <style>
-/* ===================== VARIABLES ===================== */
-:root{
-  --bg:#fff; --text:#111; --muted:#666;
-  --hair:rgba(17,17,17,.18);
-  --shadow:0 18px 60px rgba(0,0,0,.18);
-  --letter:.14em;
-  --cardMaxH:520px;
+  :root{
+    --bg:#fff; --text:#111; --muted:#666;
+    --hair:rgba(17,17,17,.18);
+    --line:rgba(17,17,17,.55);
+    --shadow:0 18px 60px rgba(0,0,0,.18);
+    --letter:.14em;
+    --cardMaxH:520px;
 
-  --drawerW:min(260px,36vw);
-  --tabW:34px;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  padding-top:130px;
-  background:#fff;
-  color:#111;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-}
-a{text-decoration:none;color:inherit}
-.hidden{display:none}
+    /* LOOK DRAWER */
+    --drawerW: min(260px, 36vw);
+    --tabW: 34px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding-top:130px;
+    background:var(--bg);
+    color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+  .hidden{display:none}
 
-/* ===================== NAVBAR ===================== */
-.navbar1{
-  position:fixed;top:0;left:0;right:0;
-  height:130px;
-  background:#fff;
-  border-bottom:1px solid var(--hair);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 18px;
-  z-index:50;
-}
-.navbar1 #menu{width:28px;display:flex;flex-direction:column;gap:6px}
-.navbar1 .bar{height:2px;background:#111}
-.navbar1 .logo img{height:54px}
-.navbar1 .searchbar input{
-  width:min(420px,42vw);
-  border:none;border-bottom:1px solid var(--hair);
-  padding:10px 8px;font-size:12px;
-  letter-spacing:.06em;text-transform:uppercase;
-}
-.navbar1 .help{
-  display:flex;gap:14px;
-  font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;
-}
+  .container{max-width:980px;margin:0 auto;padding:18px 14px 64px;}
+  @media (min-width: 720px){ .container{padding:22px 18px 70px;} }
 
-@media(max-width:900px){
-  body{padding-top:160px}
-  .navbar1{flex-wrap:wrap;gap:10px;padding:10px 14px;height:auto}
-  .navbar1 .searchbar{flex:1 1 100%}
-  .navbar1 .searchbar input{width:100%}
-  .navbar1 .help{width:100%;overflow-x:auto}
-}
+  .title{
+    text-align:center;margin:10px 0 8px;font-weight:600;
+    letter-spacing:var(--letter);text-transform:uppercase;font-size:16px;line-height:1.25;
+  }
+  @media (min-width: 720px){ .title{font-size:18px;} }
+  .subtitle{
+    text-align:center;color:var(--muted);margin:0 auto 16px;max-width:60ch;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;line-height:1.6;
+  }
+  @media (min-width: 720px){ .subtitle{font-size:12px;margin-bottom:18px;} }
 
-/* ===================== GRID ===================== */
-.container{max-width:980px;margin:0 auto;padding:18px 14px 64px}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-@media(max-width:520px){.grid{grid-template-columns:1fr}}
+  .panel{border-top:1px solid var(--hair);padding-top:16px;margin-top:12px;}
 
-/* ===================== CARD ===================== */
-.media{
-  position:relative;
-  aspect-ratio:3/4;
-  border:1px solid var(--hair);
-  overflow:hidden;
-  background:#000;
-  cursor:pointer;
-}
-.media video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:#000;
-  pointer-events:none;
-}
-.overlay{
-  position:absolute;
-  left:10px;right:10px;bottom:10px;
-  display:flex;justify-content:center;
-}
-.overlay span{
-  background:rgba(255,255,255,.9);
-  border:1px solid rgba(0,0,0,.15);
-  padding:8px 10px;
-  font-size:11px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-}
+  .button{
+    width:100%;
+    padding:13px 12px;
+    border:1px solid #111;
+    background:#111;
+    color:#fff;
+    cursor:pointer;
+    font-size:12px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    transition:transform .12s ease;
+    touch-action:manipulation;
+  }
+  .button:active{transform:scale(.99)}
+  .button.secondary{background:#fff;color:#111;border:1px solid var(--hair);}
+  .button.exit{background:#111;color:#fff;border:1px solid #111;}
+  .btn-row{display:grid;gap:10px;max-width:420px;margin:0 auto;}
 
-.meta{
-  margin-top:6px;
-  display:flex;
-  justify-content:space-between;
-  font-size:10px;
-  color:var(--muted);
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-}
+  .form-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:12px;}
+  @media (min-width: 860px){ .form-grid{grid-template-columns:1fr 1fr;gap:22px;} }
 
-/* ===================== LOOK DRAWER ===================== */
-.look-tab{
-  position:absolute;
-  top:12px;right:12px;
-  width:var(--tabW);
-  height:92px;
-  background:rgba(17,17,17,.86);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.6);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  z-index:5;
-}
-.look-tab span{
-  writing-mode:vertical-rl;
-  transform:rotate(180deg);
-  font-size:10px;
-  letter-spacing:.22em;
-}
+  .inputs{border-top:1px solid var(--hair);padding-top:14px;}
+  .input-group{margin-bottom:14px;border-bottom:1px solid var(--hair);padding-bottom:12px;}
+  label{
+    display:block;font-size:11px;letter-spacing:var(--letter);
+    text-transform:uppercase;margin-bottom:8px;
+  }
+  input[type="number"], input[type="range"], select{width:100%}
+  input[type="number"], select{
+    border:1px solid var(--hair);
+    padding:12px 10px;
+    outline:none;
+    font-size:13px;
+    background:#fff;
+  }
+  input[type="range"]{accent-color:#111}
+  .value{display:block;margin-top:8px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;line-height:1.4;}
+  .actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+  @media (min-width: 520px){ .actions{grid-template-columns:1fr 1fr;} }
 
-.look-drawer{
-  position:absolute;
-  top:0;right:0;
-  width:var(--drawerW);
-  height:100%;
-  background:rgba(255,255,255,.97);
-  border-left:1px solid var(--hair);
-  transform:translateX(100%);
+  .side{border-top:1px solid var(--hair);padding-top:14px;}
+  .avatar-wrap{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:flex-start;}
+  .avatar{width:min(320px, 90vw);height:auto;opacity:.95;transition:transform .25s ease;will-change:transform;}
+  .pill{
+    width:100%;max-width:360px;border:1px solid var(--hair);
+    padding:10px 12px;font-size:12px;letter-spacing:var(--letter);
+    text-transform:uppercase;background:#fff;
+  }
+
+  /* Pantalla tipo cuerpo */
+  #body-screen{max-width:980px;margin:0 auto;padding:18px 14px 64px;}
+  .body-card{max-width:520px;margin:0 auto;border-top:1px solid var(--hair);padding-top:16px;text-align:center;}
+  .body-img{width:100%;border:1px solid var(--hair);border-radius:10px;background:#fafafa;overflow:hidden;margin-top:10px;}
+  .body-img img{width:100%;height:auto;display:block;}
+  .body-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
+  @media (min-width: 520px){ .body-actions{grid-template-columns:1fr 1fr;} }
+
+  /* Reco */
+  #reco-screen{height: calc(100vh - 130px);overflow:hidden;display:flex;flex-direction:column;}
+  .rec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:10px 0 12px;flex-wrap:wrap;}
+  .rec-head h1{margin:0;font-size:18px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
+  .rec-head p{margin:0;font-size:11px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;}
+  @media (min-width: 720px){ .rec-head h1{font-size:20px;} .rec-head p{font-size:12px;} }
+
+  .strip{border-top:1px solid var(--hair);padding-top:12px;display:grid;grid-template-columns:1fr;gap:10px;}
+  @media (min-width: 720px){ .strip{grid-template-columns:repeat(3, 1fr);gap:12px;} }
+
+  .grid{
+    flex:1;overflow:hidden;margin-top:12px;display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px;
+    min-height:120px;
+  }
+  @media (max-width: 520px){ .grid{grid-template-columns:1fr;} }
+
+  .card{user-select:none;background:#fff;}
+  .card:focus{outline:none;}
+
+  /* ya no hay rail lateral */
+  .card-inner{display:block;}
+
+  .media{
+    position:relative;
+    aspect-ratio:3/4;
+    overflow:hidden;
+    background:#000;
+    max-height: var(--cardMaxH);
+    border:1px solid var(--hair);
+    cursor:pointer;
+  }
+  .media video{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    background:#000;
+    pointer-events:none;
+  }
+  .overlay{
+    position:absolute;left:10px;right:10px;bottom:10px;
+    display:flex;align-items:center;justify-content:center;
+    pointer-events:none;
+    z-index:2; /* importante */
+  }
+  .overlay span{
+    background:rgba(255,255,255,.88);
+    border:1px solid rgba(0,0,0,.15);
+    padding:8px 10px;
+    font-size:11px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+  }
+
+  /* ===================== ✅ LOOK DRAWER (OPCIÓN 3) ===================== */
+
+  /* Pestaña LOOK (dentro de .media) */
+  .look-tab{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:var(--tabW);
+    height:92px;
+    border:1px solid rgba(255,255,255,.65);
+    background:rgba(17,17,17,.86);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:5;
+    user-select:none;
+  }
+  .look-tab span{
+    display:block;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    font-size:10px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+  }
+
+  /* Panel lateral */
+  .look-drawer{
+    position:absolute;
+    top:0;
+    right:0;
+    height:100%;
+    width:var(--drawerW);
+    background:rgba(255,255,255,.97);
+    border-left:1px solid var(--hair);
+  
+  /* Estado cerrado */
+  transform:translateX(100%) translateY(0);
   opacity:0;
-  transition:.25s ease;
+
+  /* Animación */
+  transition:
+    transform .28s cubic-bezier(.2,.8,.2,1),
+    opacity .22s ease;
+
   z-index:6;
   display:flex;
   flex-direction:column;
-}
-.look-drawer.open{transform:translateX(0);opacity:1}
-
-.look-items{
-  padding:10px;
-  display:grid;
-  gap:10px;
-  overflow:auto;
-}
-.look-item{
-  display:grid;
-  grid-template-columns:64px 1fr;
-  gap:10px;
-  border:1px solid var(--hair);
-  padding:8px;
-}
-.look-item img{
-  width:64px;height:82px;
-  object-fit:cover;
-  border:1px solid var(--hair);
-}
-.look-item .ref{
-  font-size:10px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-}
-.look-item .name{
-  font-size:11px;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  color:var(--muted);
+  will-change: transform, opacity;
 }
 
-/* ===================== MODAL ===================== */
-.modal{
-  position:fixed;inset:0;
-  background:rgba(255,255,255,.96);
-  display:none;
-  z-index:80;
-}
-.modal.open{display:block}
-
-.modal-top{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:14px 16px;
-  border-bottom:1px solid var(--hair);
-  background:#fff;
-}
-.modal-title{
-  flex:1;
-  text-align:center;
-  font-size:14px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-}
-.close{
-  width:40px;height:40px;
-  border:none;background:none;
-  position:relative;
-}
-.close::before,.close::after{
-  content:"";
-  position:absolute;
-  top:50%;left:50%;
-  width:18px;height:1px;
-  background:#111;
-}
-.close::before{transform:translate(-50%,-50%) rotate(45deg)}
-.close::after{transform:translate(-50%,-50%) rotate(-45deg)}
-
-.modal-content{
-  max-width:980px;
-  margin:0 auto;
-  padding:16px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
-@media(min-width:860px){
-  .modal-content{grid-template-columns:1.2fr .8fr}
-}
-.gallery-main{
-  width:100%;
-  max-height:60vh;
-  object-fit:contain;
-  box-shadow:var(--shadow);
-}
-.thumbs{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-}
-.thumbs button{
-  width:92px;height:120px;
-  border:1px solid var(--hair);
-  background:#fff;
-}
-.thumbs img{width:100%;height:100%;object-fit:cover}
-
-/* ===================== MOBILE OPTIMIZATION ===================== */
-@media(max-width:520px){
-
-  #reco-screen{height:calc(100dvh - 160px)}
-
-  .media video{
-    object-fit:contain;     /* 🔑 evita recorte feo */
+.look-drawer.open{
+  transform:translateX(0) translateY(0);
+  opacity:1;
   }
+.look-drawer:not(.open){
+  transition:
+    transform .22s cubic-bezier(.4,0,.2,1),
+    opacity .18s ease;
+}
+  .look-drawer.open{ transform:translateX(0); }
 
-  :root{
-    --drawerW:92vw;
-    --tabW:36px;
+  .look-drawer .ld-head{
+    padding:12px 12px 10px;
+    border-bottom:1px solid var(--hair);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:#fff;
   }
+  .look-drawer .ld-head .t{
+    font-size:11px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+  }
+  .look-drawer .ld-close{
+    border:1px solid transparent;
+    background:transparent;
+    width:34px;height:34px;
+    cursor:pointer;
+    position:relative;
+  }
+  .look-drawer .ld-close::before,
+  .look-drawer .ld-close::after{
+    content:"";
+    position:absolute;
+    top:50%;left:50%;
+    width:16px;height:1px;
+    background:#111;
+  }
+  .look-drawer .ld-close::before{ transform:translate(-50%,-50%) rotate(45deg); }
+  .look-drawer .ld-close::after{ transform:translate(-50%,-50%) rotate(-45deg); }
 
-  .look-drawer{
-    box-shadow:-18px 0 40px rgba(0,0,0,.12);
+  .look-items{
+    padding:10px 10px 12px;
+    overflow:auto;
+    display:grid;
+    gap:10px;
   }
+/* Animación sutil de entrada de prendas */
+.look-drawer .look-item{
+  opacity:0;
+  transform:translateY(6px);
+  transition:
+    opacity .18s ease,
+    transform .18s ease;
+}
+
+/* Cuando el drawer está abierto, aparecen */
+.look-drawer.open .look-item{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Micro-delay progresivo (efecto editorial) */
+.look-drawer.open .look-item:nth-child(1){ transition-delay:.04s; }
+.look-drawer.open .look-item:nth-child(2){ transition-delay:.07s; }
+.look-drawer.open .look-item:nth-child(3){ transition-delay:.10s; }
+.look-drawer.open .look-item:nth-child(4){ transition-delay:.13s; }
+.look-drawer.open .look-item:nth-child(5){ transition-delay:.16s; }
+.look-drawer.open .look-item:nth-child(6){ transition-delay:.19s; }
 
   .look-item{
-    grid-template-columns:76px 1fr;
-    padding:10px;
+    display:grid;
+    grid-template-columns:64px 1fr;
+    gap:10px;
+    border:1px solid var(--hair);
+    background:#fff;
+    padding:8px;
+    position:relative;
+    cursor:pointer;
+    text-align:left;
   }
   .look-item img{
-    width:76px;
-    height:96px;
+    width:64px;height:82px;
+    object-fit:cover;
+    display:block;
+    border:1px solid var(--hair);
+    background:#fafafa;
+  }
+  .look-item .ref{
+    font-size:10px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#111;
+    margin:2px 0 6px;
+  }
+  .look-item .name{
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    line-height:1.4;
+    margin:0;
   }
 
+  /* Tooltip */
+  .look-tip{
+    position:absolute;
+    left:10px;
+    right:10px;
+    bottom:10px;
+    background:rgba(17,17,17,.92);
+    color:#fff;
+    padding:10px;
+    border:1px solid rgba(255,255,255,.18);
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .16s ease, transform .16s ease;
+    pointer-events:none;
+  }
+  .look-tip .d{
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    line-height:1.45;
+    margin:0 0 8px;
+  }
+  .look-tip .btn{
+    display:inline-block;
+    border:1px solid rgba(255,255,255,.35);
+    padding:8px 10px;
+    font-size:10px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+    color:#fff;
+  }
+
+  @media (hover:hover){
+    .look-item:hover .look-tip{ opacity:1; transform:translateY(0); }
+  }
+  .look-item.show-tip .look-tip{ opacity:1; transform:translateY(0); }
+
+  @media (max-width: 520px){
+    :root{ --drawerW: 84vw; }
+    .look-tab{ top:10px; right:10px; height:84px; }
+  }
+
+  .meta{padding:8px 2px 2px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;}
+
+  .pager{border-top:1px solid var(--hair);padding-top:10px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .pager .count{font-size:10px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;}
+  .pager .nav{display:flex;gap:10px;}
+  .pager button{border:1px solid var(--hair);background:#fff;color:#111;height:40px;width:44px;cursor:pointer;letter-spacing:var(--letter);text-transform:uppercase;}
+  .pager button:disabled{opacity:.35;cursor:default;}
+
+  .note{margin-top:10px;padding-top:10px;border-top:1px solid var(--hair);color:var(--muted);font-size:10px;letter-spacing:var(--letter);text-transform:uppercase;text-align:center;}
+  .reco-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:12px auto 0;}
+  @media (max-width: 420px){ .reco-actions{grid-template-columns:1fr;} }
+
+  #reco-screen.is-empty .grid{flex:0;min-height:0;margin-top:10px;}
+  #reco-screen.is-empty .pager{display:none;}
+  .empty-state{border-top:1px solid var(--hair);padding-top:14px;margin-top:10px;text-align:left;}
+  .empty-state .t{font-size:12px;letter-spacing:var(--letter);text-transform:uppercase;margin:0 0 6px;color:#111;}
+  .empty-state .s{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted);}
+
+  /* ===================== NAVBAR ===================== */
+  .navbar1{
+    position:fixed; top:0; left:0; right:0;
+    height:130px;
+    background:#fff;
+    border-bottom:1px solid var(--hair);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    z-index:50;
+  }
+  .navbar1 #menu{ width:28px; cursor:pointer; display:flex; flex-direction:column; gap:6px; }
+  .navbar1 .bar{ height:2px; background:#111; width:100%; display:block; }
+  .navbar1 .logo img{ height:54px; display:block; }
+  .navbar1 .searchbar input{
+    width:min(420px, 42vw);
+    border:none;
+    border-bottom:1px solid var(--hair);
+    outline:none;
+    padding:10px 8px;
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .navbar1 .help{
+    display:flex;
+    gap:14px;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  @media (max-width: 900px){
+    body{ padding-top:160px; }
+    #reco-screen{ height: calc(100vh - 160px); }
+
+    .navbar1{
+      height:auto;
+      flex-wrap:wrap;
+      gap:10px;
+      padding:10px 14px;
+    }
+
+    .navbar1 #menu{ order:1; }
+    .navbar1 .logo{ order:2; }
+    .navbar1 .searchbar{ order:3; flex:1 1 100%; }
+    .navbar1 .searchbar input{ width:100%; max-width:none; }
+
+    .navbar1 .help{
+      order:4;
+      display:flex !important;
+      width:100%;
+      gap:16px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling:touch;
+    }
+    .navbar1 .help a{ flex:0 0 auto; }
+  }
+  @media (max-width: 420px){
+    .navbar1 .logo img{ height:46px; }
+    .navbar1 .help{ font-size:10px; gap:12px; }
+  }
+
+  /* ===================== MODAL GALERIA ===================== */
+  .modal{position:fixed;inset:0;background:rgba(255,255,255,.96);display:none;z-index:80;}
+  .modal.open{display:block;}
+  .modal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hair);background:#fff;position:sticky;top:0;}
+  .modal-title{flex:1;text-align:center;font-size:14px;letter-spacing:var(--letter);text-transform:uppercase;font-weight:600;}
+  .close{width:40px;height:40px;border:1px solid transparent;background:transparent;cursor:pointer;position:relative;}
+  .close::before,.close::after{content:"";position:absolute;top:50%;left:50%;width:18px;height:1px;background:#111;}
+  .close::before{transform:translate(-50%,-50%) rotate(45deg)}
+  .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
+
   .modal-content{
-    grid-template-columns:1fr !important;
-    padding:14px;
+    max-width:980px;margin:0 auto;padding:16px;
+    display:grid;grid-template-columns:1fr;gap:16px;
+    max-height:calc(100vh - 70px);
+    overflow-y:auto;
+  }
+  @media (min-width: 860px){ .modal-content{grid-template-columns:1.2fr .8fr;gap:22px;padding:18px;} }
+
+  .gallery{
+    display:flex;flex-direction:column;gap:10px;
+    max-height: calc(100vh - 140px);
+    overflow:hidden;
   }
 
   .gallery-main{
-    max-height:56dvh;
+    width:100%;
+    max-height:60vh;
+    object-fit:contain;
+    display:block;
+    box-shadow:var(--shadow);
+    background:#fff;
+    touch-action:pan-y;
+    transition:opacity .18s ease;
+  }
+  .gallery-main.is-fading{ opacity:0; }
+
+  .thumbs{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:6px;
+    max-height:120px;
+  }
+  .thumbs button{
+    border:1px solid var(--hair);
+    background:#fff;
+    padding:0;
+    cursor:pointer;
+    flex:0 0 auto;
+    width:92px;
+    height:120px;
+    overflow:hidden;
+  }
+  .thumbs button.active{
+    border-color:#111;
+    box-shadow: inset 0 0 0 1px #111;
+  }
+  .thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  .below-back{display:flex;gap:10px;}
+  .below-back .button{width:auto}
+
+  .panel-right h2{margin:0 0 8px;font-size:16px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
+  .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
+  .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
+
+  /* ===================== CHAT ASSISTANT ===================== */
+  #assistant-button{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:#111;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    z-index:999999;
   }
 
-  .thumbs button{
-    width:84px;
-    height:110px;
+  #assistant-chat{
+    position:fixed;
+    bottom:90px;
+    right:20px;
+    width:320px;
+    background:#fff;
+    border:1px solid #111;
+    z-index:999999;
+  }
+
+  .chat-header{
+    background:#111;
+    color:#fff;
+    padding:10px 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12px;
+    letter-spacing:var(--letter);
+    text-transform:uppercase;
+  }
+
+  #chat-messages{
+    height:230px;
+    padding:10px 12px;
+    overflow-y:auto;
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  #chat-input{
+    width:100%;
+    border:none;
+    border-top:1px solid #111;
+    padding:12px;
+    font-size:12px;
+    outline:none;
+  }
+
+  .msg-user{ margin:8px 0; }
+  .msg-bot{ margin:8px 0; }
+
+  #close-chat{ cursor:pointer; }
+/* ===== BUY BOX (MODAL LATERAL) ===== */
+.buy-box{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid var(--hair);
+  display:grid;
+  gap:10px;
+}
+.buy-box .button{
+  width:100%;
+}
+.buy-hint{
+  margin:0;
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  line-height:1.5;
+}
+
+/* ===== TOAST (NOTIFICACIÓN) ===== */
+.toast{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:9999999;
+  background:#111;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+  padding:12px 14px;
+  font-size:11px;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+  max-width:min(360px, calc(100vw - 36px));
+}
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ===================== FIX MOBILE: RECO + GRID + DRAWER ===================== */
+
+/* En móvil NO bloquees el scroll de la pantalla de reco */
+@media (max-width: 900px){
+  #reco-screen{
+    height:auto !important;
+    min-height: calc(100vh - 160px);
+    overflow: visible !important;
+    display:block !important;
   }
 }
+@media (min-width: 901px){
+  /* en desktop puedes mantener tu layout “app-like” */
+  #reco-screen{
+    height: calc(100vh - 130px);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+}
+
+/* El grid en móvil debe poder crecer y hacer scroll */
+.grid{
+  overflow: visible !important;   /* antes: hidden */
+  min-height: 0;
+}
+@media (max-width: 900px){
+  .grid{
+    margin-top: 12px;
+    display:grid;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+}
+
+/* Quita el max-height agresivo en móvil para que no “corte” el video */
+@media (max-width: 900px){
+  .media{
+    max-height: none !important;
+    aspect-ratio: 3/4;
+  }
+}
+
+/* Drawer: que tenga scroll y sea usable con el dedo */
+.look-drawer{
+  overflow:hidden; /* contenedor */
+}
+.look-items{
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* En móvil: drawer grande, cómodo */
+@media (max-width: 520px){
+  :root{ --drawerW: 88vw; }
+  .look-drawer{
+    border-left: 1px solid var(--hair);
+  }
+  .look-item{
+    grid-template-columns: 74px 1fr;
+  }
+  .look-item img{
+    width:74px;
+    height:92px;
+  }
+}
+
+/* Modal: en móvil, que no se recorte y que todo scrollee */
+@media (max-width: 860px){
+  .modal-content{
+    max-height: calc(100vh - 70px);
+    overflow-y:auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gallery{
+    max-height:none;
+    overflow:visible;
+  }
+  .gallery-main{
+    max-height: 56vh;
+  }
+}
+
+/* Evita “tap highlight” raro y mejora toque */
+.media, .look-tab, .look-item, .thumbs button{
+  -webkit-tap-highlight-color: transparent;
+}
+
 </style>
 </head>
 
 <body>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<!-- CHAT -->
+<div id="assistant-button" aria-label="Abrir asistente">💬</div>
+
+<div id="assistant-chat" class="hidden" role="dialog" aria-label="Zara Style Assistant">
+  <div class="chat-header">
+    ZARA STYLE ASSISTANT
+    <span id="close-chat" aria-label="Cerrar">✕</span>
+  </div>
+  <div id="chat-messages"></div>
+  <input id="chat-input" placeholder="Escribe tu pregunta..." />
+</div>
 
 <!-- NAVBAR -->
 <div class="navbar1">
-  <div id="menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
-  <div class="logo"><img src="logo.png"></div>
-  <div class="searchbar"><input placeholder="Buscar"></div>
+  <div id="menu">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <div class="logo"><a href="./index.html"><img src="logo.png" alt="Logo"></a></div>
+  <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
   <div class="help">
-    <a>INICIAR SESIÓN</a>
+    <a href="./index.html">INICIAR SESIÓN</a>
     <a>AYUDA</a>
-    <a>CESTA [0]</a>
+    <a href="#" id="cartLink">CESTA [<span id="cartCount">0</span>]</a>
+    <a href="./MYPLNAER.html">MY PLANNER</a>
+    <a href="./Agenda.html">AGENDA</a>
   </div>
 </div>
 
 <div class="container">
-  <section class="grid" id="grid"></section>
+
+  <!-- Pantalla 1 -->
+  <section id="start-screen">
+    <div class="title">CREA TU PERFIL<br>PARA UNA EXPERIENCIA PERSONALIZADA</div>
+    <p class="subtitle">Adaptamos las prendas a tu tipo de cuerpo para ayudarte a elegir mejor.</p>
+    <div class="panel">
+      <div class="btn-row">
+        <button class="button" type="button" onclick="selectGender('hombre')">Hombre</button>
+        <button class="button" type="button" onclick="selectGender('mujer')">Mujer</button>
+        <button class="button secondary" type="button" onclick="selectGender('neutro')">Género no definido</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla 2 -->
+  <section id="profile-form" class="hidden">
+    <div class="title">COMPLETA TU PERFIL</div>
+    <p class="subtitle">Introduce las medidas. El tipo se calcula con espalda, cintura y cadera.</p>
+
+    <div class="form-grid">
+      <div class="inputs">
+        <div class="input-group">
+          <label for="height">Altura</label>
+          <input type="range" id="height" min="140" max="220" value="170" />
+          <span id="height-value" class="value">170 cm</span>
+        </div>
+
+        <div class="input-group">
+          <label for="weight">Peso (opcional)</label>
+          <input type="number" id="weight" placeholder="kg" inputmode="numeric">
+        </div>
+
+        <div class="input-group">
+          <label for="hair">Tipo de pelo</label>
+          <select id="hair">
+            <option value="rubia">Rubia</option>
+            <option value="morena">Morena</option>
+          </select>
+          <span class="value">Se usará para la imagen del tipo de cuerpo</span>
+        </div>
+
+        <div class="input-group">
+          <label for="back">Espalda</label>
+          <input type="number" id="back" placeholder="cm" inputmode="numeric">
+        </div>
+
+        <div class="input-group">
+          <label for="waist">Cintura</label>
+          <input type="number" id="waist" placeholder="cm" inputmode="numeric">
+        </div>
+
+        <div class="input-group">
+          <label for="hips">Cadera</label>
+          <input type="number" id="hips" placeholder="cm" inputmode="numeric">
+          <span id="hips-hint" class="value">Introduce espalda, cintura y cadera para calcular el tipo</span>
+        </div>
+
+        <div class="input-group">
+          <label for="shoes">Talla calzado</label>
+          <input type="number" id="shoes" placeholder="Número" inputmode="numeric">
+        </div>
+
+        <div class="actions">
+          <button class="button" type="button" onclick="processProfile()">Continuar</button>
+          <button class="button secondary" type="button" onclick="backToStart()">Volver</button>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="avatar-wrap">
+          <img id="avatar" class="avatar" src="mujer.png" alt="Avatar">
+          <div class="pill" id="pill-body">TIPO DE CUERPO: —</div>
+          <div class="pill" style="max-width:360px;">
+            Sugerencia: se calcula con espalda, cintura y cadera.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Pantalla 3 -->
+  <section id="body-screen" class="hidden">
+    <div class="title">TU TIPO DE CUERPO</div>
+    <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
+
+    <div class="body-card">
+      <div class="pill" id="body-pill">TIPO: —</div>
+
+      <div class="body-img">
+        <img id="body-image-final" src="" alt="Tipo de cuerpo">
+      </div>
+
+      <div class="body-actions">
+        <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
+        <button class="button secondary" type="button" onclick="backToForm()">Editar medidas</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pantalla 4 -->
+  <section id="reco-screen" class="hidden">
+    <div class="rec-head">
+      <h1>RECOMENDACIONES</h1>
+      <p id="reco-sub">BASADO EN TU PERFIL</p>
+    </div>
+
+    <div class="strip">
+      <div class="pill" id="pill-gender">GÉNERO: —</div>
+      <div class="pill" id="pill-hips">CADERA: —</div>
+      <div class="pill" id="pill-type">TIPO: —</div>
+    </div>
+
+    <section class="grid" id="grid" aria-label="Recomendaciones"></section>
+
+    <div id="emptyState" class="empty-state hidden">
+      <p class="t">NO HAY RECOMENDACIONES DISPONIBLES</p>
+      <p class="s">PRUEBA A EDITAR EL PERFIL O CAMBIAR MEDIDAS</p>
+    </div>
+
+    <div class="pager">
+      <div class="count" id="pageInfo">1 / 1</div>
+      <div class="nav">
+        <button type="button" id="prevBtn" aria-label="Anterior">←</button>
+        <button type="button" id="nextBtn" aria-label="Siguiente">→</button>
+      </div>
+    </div>
+
+    <div class="note">PINCHA EL VIDEO PARA VER IMÁGENES · ABRE LOOK PARA VER PRENDAS</div>
+
+    <div class="reco-actions">
+      <button class="button secondary" type="button" onclick="restart()">EDITAR PERFIL</button>
+      <button class="button exit" type="button" onclick="exitApp()">SALIR</button>
+    </div>
+  </section>
+
 </div>
 
-<!-- MODAL -->
-<section class="modal" id="modal">
+<!-- Modal (galería) -->
+<section class="modal" id="modal" aria-hidden="true" role="dialog" aria-label="Imágenes relacionadas">
   <div class="modal-top">
+    <button class="button secondary" type="button" id="backModalBtn" style="width:auto;padding:10px 12px;">
+      VOLVER ATRÁS
+    </button>
     <div class="modal-title" id="modalTitle">IMÁGENES</div>
-    <button class="close" id="closeModal"></button>
+    <button class="close" type="button" aria-label="Cerrar" id="closeModal"></button>
   </div>
+
   <div class="modal-content">
-    <div>
-      <img id="galleryMain" class="gallery-main">
-      <div class="thumbs" id="thumbs"></div>
+    <div class="gallery">
+      <img id="galleryMain" class="gallery-main" src="" alt="Imagen principal">
+      <div class="below-back">
+        <button class="button secondary" type="button" id="backBelowBtn">VOLVER ATRÁS</button>
+      </div>
+      <div id="thumbs" class="thumbs" aria-label="Miniaturas"></div>
     </div>
+
+    <aside class="panel-right">
+  <h2 id="modalName">—</h2>
+  <div class="ref" id="modalTag">—</div>
+  <p class="p" id="modalDesc">—</p>
+
+  <!-- NUEVO BLOQUE: AÑADIR A LA CESTA -->
+  <div class="buy-box">
+    <button class="button" type="button" id="addToCartBtn">
+      AÑADIR A LA CESTA
+    </button>
+    <p class="buy-hint">
+    </p>
   </div>
+</aside>
+</div>
 </section>
 
 <script>
-/* ===== DEMO DATA ===== */
-const LOOKS=[{
-  name:"LOOK CENA",
-  tag:"SUGERENCIA",
-  video:"video/cena.mp4",
-  images:["img/relojarena1.jpg","img/relojarena2.jpg"]
-}];
+/* ===== RUTAS ===== */
+function imgPath(base){ return `img/${base}.jpg`; }
+function videoPath(base){ return `video/${base}.mp4`; }
 
-const grid=document.getElementById("grid");
-const modal=document.getElementById("modal");
-const galleryMain=document.getElementById("galleryMain");
-const thumbs=document.getElementById("thumbs");
-const modalTitle=document.getElementById("modalTitle");
+/* ===== PRENDAS ===== */
+function prod(imgOrImgs, ref, name, desc){
+  const imgs = Array.isArray(imgOrImgs) ? imgOrImgs : [imgOrImgs];
+  return { imgs, ref, name, desc };
+}
+/* ===== ITEMS ===== */
+const LOOKS = [
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
+    video: videoPath('triangulo3'),
+    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod(
+[
+      'img/prenda/camiseta1triangulo.png',
+'img/prenda/camiseta1triangulo_1.png'
+    ],
+'REF 6224/376/250',
+'CAMISETA DETALLE',
+'Camiseta blanca con detalle letras delanteras y texto en la parte trasea.'
+),
+      prod(
+        [
+      'img/prenda/bota2triangulo.png',
+'img/prenda/bota2triangulo_1.png',
+    ],
+'REF 3022/610/800',
+'BOTA TACÓN',
+'Bota acharolada negra con tacón fino.'
+),
+            prod(
+        [
+      'img/prenda/bolso1triangulo.png',
+'img/prenda/bolso1triangulo_1.png',
+    ],
+'REF 6466/610/800',
+'BOLSO PELO',
+'Maxi bolso de pelo negro con asa de hombro.'
+),
+      prod('img/prenda/falda1triangulo.png','REF 5919/211/922','FALDA ENCAJE','Falda negra satinada asimétrica con bajo de encaje.')
+    ]
+  },
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
+    video: videoPath('triangulo2'),
+    images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+       prod(
+        [
+      'img/prenda/vestido2triangulo.png',
+'img/prenda/vestido2triangulo_1.png',
+    ],
+'REF 9500/108/250',
+'VESTIDO LENTEJUELAS',
+'Vestido mini de lentejuelas con hombreras y escote en la espalda.'
+),
+        prod(
+        [
+      'img/prenda/tacontriangulo.png',
+'img/prenda/tacontriangulo_1.png',
+    ],
+'REF 2372/510/091',
+'SANDALIA DORADA',
+'Sandalia dorada con pulsera en el tobillo.'
+),
+    ]
+  },
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
+    video: videoPath('triangulo1'),
+  images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+       prod(
+        [
+      'img/prenda/toptriangulo.png',
+'img/prenda/toptriangulo_1.png',
+    ],
+'REF 5584/205/603',
+'TOP FLECOS',
+'Top asimétrico morado con detalle de flecos.'
+),
+        prod(
+        [
+      'img/prenda/pantalon3triangulo.png',
+'img/prenda/pantalon3triangulo_1.png',
+    ],
+'REF 8307/245/400',
+'JEANS WIDE LEG ZW',
+'Jeans wide leg tiro medio. Cierre frontal con botón y cremallera.'
+),
+       prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
+    ]
+  },
 
-grid.innerHTML=LOOKS.map(l=>`
-<article>
-  <div class="media">
-    <video autoplay muted loop playsinline>
-      <source src="${l.video}">
-    </video>
-    <div class="overlay"><span>VER IMÁGENES</span></div>
-  </div>
-  <div class="meta"><span>${l.tag}</span><span>VIDEO</span></div>
-</article>
-`).join("");
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
+    video: videoPath('relojarena1'),
+    images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
+    desc:'Altura modelo: 165 cm. Medidas: Pecho: 89 cm, Cintura: 66 cm, Cadera: 92 cm. Largo de la pierna: 75 cm',
+    products:[
+      prod(
+[
+      'img/prenda/ropa12arena.png',
+'img/prenda/ropa12arena_2.jpg',
+'img/prenda/ropa12arena_3.jpg'
+    ],
+'REF 1255/404/505',
+'FALDA CUADROS',
+'Falda midi detalle volumen.'
+),
+ prod('img/prenda/ropa11arena.png','REF 4341/736/717','BOMBER POLIPIEL','Bomber polipiel marrón.'),
+      prod('img/prenda/ropa1arena.png','REF 8372/267/716','CHAQUETA FELPA','Chaqueta marrón con gorro.'),
+      prod('img/prenda/bota1arena.png','REF 3032/610/700','BOTA MARRÓN','Bota detalle grabados con hebilla.'),
+      prod('img/prenda/bolso1arena.png','REF 6332/610/700','FALDA CUADROS','Falda midi detalle volumen.')
+  ]
+},
 
-grid.onclick=()=>{
-  modal.classList.add("open");
-  modalTitle.textContent=LOOKS[0].name;
-  galleryMain.src=LOOKS[0].images[0];
-  thumbs.innerHTML=LOOKS[0].images.map(i=>`
-    <button onclick="galleryMain.src='${i}'"><img src="${i}"></button>
-  `).join("");
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
+    video: videoPath('relojarena2'),
+    images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda9.jpg','REF 5550/120','BLAZER CORTA','Define cintura y hombro.'),
+      prod('img/prendas/prenda10.jpg','REF 8880/090','FALDA LÁPIZ','Línea limpia, elegante.')
+    ]
+  },
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 3', tag:'SUGERENCIA',
+    video: videoPath('relojarena3'),
+    images:[imgPath('relojarena3'), imgPath('relojarena31'), imgPath('relojarena32'), imgPath('relojarena33')],
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda11.jpg','REF 9001/001','TOP ESTRUCTURA','Escote favorecedor.')
+    ]
+  },
+
+  { gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
+    video: videoPath('redondo1'),
+    images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13'), imgPath('redondo14'), imgPath('redondo15')],
+    desc:'Altura modelo: 155 cm. Medidas: Pecho: 95 cm, Cintura: 105 cm, Cadera: 100 cm. Largo de la pierna: 65 cm.',
+    products:[
+      prod(
+[
+      'img/prenda/pantalon2redondo.png',
+'img/prenda/pantalon 2 redondo_1.png'
+    ],
+'REF 6840/305/800',
+'PANTALÓN NEGRO',
+'Pantalón tiro medio, ballon leg, cierre con cremallera y botón frontal.'
+),
+      prod(
+        [
+      'img/prenda/camisa2redondo.png',
+'img/prenda/camisa2redondo_1.png',
+          'img/prenda/camisa2redondo_2.png'
+    ],
+'REF 8800/240/809',
+'CAMISA CUADROS',
+'Camisa de cuadros manga larga con detalle pañuelo.'
+),
+      prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
+    ]
+  },
+  { gender:'mujer', bodyType:'redondo', name:'REDONDO 2', tag:'SUGERENCIA',
+    video: videoPath('redondo2'),
+    images:[imgPath('redondo2'), imgPath('redondo21'), imgPath('redondo22'), imgPath('redondo23'), imgPath('redondo24'), imgPath('redondo25'), imgPath('redondo26'), imgPath('redondo27')],
+    desc:'Altura modelo: 155 cm. Medidas: Pecho: 95 cm, Cintura: 105 cm, Cadera: 100 cm. Largo de la pierna: 65 cm.',
+    products:[
+       prod(
+[
+      'img/prenda/pantalon1redondo.png',
+'img/prenda/pantalon1redondo_1.png',
+  'img/prenda/pantalon1redondo_2.png'
+    ],
+'REF 8960/760/710',
+'PANTALÓN CUADROS',
+'Pantalón tiro alto ballon. Cierre con cordón interno, elástico en la cintura.'
+),
+      prod(
+        [
+      'img/prenda/cazadora1redondo.png',
+'img/prenda/cazadora1redondo_1.png',
+          'img/prenda/cazadora1redondo_2.png'
+    ],
+'REF 1255/894/716',
+'CAZADORA PAÑO',
+'Cazadora marrón de paño con abotonadura lateral.'
+),
+      prod(
+        [
+      'img/prenda/calzado1redondo.png',
+'img/prenda/calzado1redondo_1.png',
+    ],
+'REF 3595/610/700',
+'MOCASÍN ANTE',
+'Mocasín ante marrón.'
+),
+      prod(
+        [
+      'img/prenda/bolso1redondo.png',
+'img/prenda/bolso1redondo_1.png',
+    ],
+'REF 6633/610/700',
+'BOLSO ANTE',
+'Mini saca de ante con cierre metálico. Asa pequeña.'
+),
+    ]
+  },
+
+  { gender:'mujer', bodyType:'generico', name:'GENÉRICO 1', tag:'GENÉRICO',
+    video: videoPath('generico1'),
+    images:[imgPath('generico1'), imgPath('generico2')],
+    desc:'Genérico cuando no encaja en un tipo.',
+    products:[]
+  },
+  { gender:'mujer', bodyType:'generico', name:'GENÉRICO 2', tag:'GENÉRICO',
+    video: videoPath('generico2'),
+    images:[imgPath('generico2'), imgPath('generico1')],
+    desc:'Genérico cuando no encaja en un tipo.',
+    products:[]
+  },
+];
+
+const MIN_SCALE = 0.7, MAX_SCALE = 1.35;
+let selectedGender = localStorage.getItem("gender") || "mujer";
+let lastBodyType = null;
+
+const els = {
+  start: document.getElementById("start-screen"),
+  form: document.getElementById("profile-form"),
+  body: document.getElementById("body-screen"),
+  reco: document.getElementById("reco-screen"),
+
+  height: document.getElementById("height"),
+  heightValue: document.getElementById("height-value"),
+  weight: document.getElementById("weight"),
+
+  hair: document.getElementById("hair"),
+
+  back: document.getElementById("back"),
+  waist: document.getElementById("waist"),
+  hips: document.getElementById("hips"),
+  shoes: document.getElementById("shoes"),
+  hipsHint: document.getElementById("hips-hint"),
+
+  avatar: document.getElementById("avatar"),
+  pillBody: document.getElementById("pill-body"),
+
+  bodyPill: document.getElementById("body-pill"),
+  bodyFinalImg: document.getElementById("body-image-final"),
+
+  pillGender: document.getElementById("pill-gender"),
+  pillHips: document.getElementById("pill-hips"),
+  pillType: document.getElementById("pill-type"),
+  recoSub: document.getElementById("reco-sub"),
+  grid: document.getElementById("grid"),
+  emptyState: document.getElementById("emptyState"),
+
+  prevBtn: document.getElementById("prevBtn"),
+  nextBtn: document.getElementById("nextBtn"),
+  pageInfo: document.getElementById("pageInfo"),
+
+  modal: document.getElementById("modal"),
+  closeModal: document.getElementById("closeModal"),
+  backModalBtn: document.getElementById("backModalBtn"),
+  backBelowBtn: document.getElementById("backBelowBtn"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalName: document.getElementById("modalName"),
+  modalTag: document.getElementById("modalTag"),
+  modalDesc: document.getElementById("modalDesc"),
+  galleryMain: document.getElementById("galleryMain"),
+  thumbs: document.getElementById("thumbs"),
+
+  assistantBtn: document.getElementById("assistant-button"),
+  chat: document.getElementById("assistant-chat"),
+  chatClose: document.getElementById("close-chat"),
+  chatInput: document.getElementById("chat-input"),
+  chatMessages: document.getElementById("chat-messages"),
+
+cartCount: document.getElementById("cartCount"),
+  addToCartBtn: document.getElementById("addToCartBtn"),
+  toast: document.getElementById("toast"),
 };
 
-document.getElementById("closeModal").onclick=()=>modal.classList.remove("open");
-modal.onclick=e=>{if(e.target===modal)modal.classList.remove("open")};
+function toggle(el, show){ el.classList.toggle("hidden", !show); }
+
+function selectGender(gender){
+  selectedGender = gender;
+  localStorage.setItem("gender", gender);
+  els.avatar.src = `${gender}.png`;
+  toggle(els.start, false);
+  toggle(els.form, true);
+  updateHeightAvatar();
+  updatePillFromMeasures();
+}
+function backToStart(){ toggle(els.form,false); toggle(els.start,true); }
+function backToForm(){ toggle(els.body,false); toggle(els.form,true); }
+function restart(){ toggle(els.reco,false); toggle(els.form,true); }
+
+function updateHeightAvatar(){
+  const h = Number(els.height.value);
+  els.heightValue.textContent = `${h} cm`;
+  const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, h / 200));
+  els.avatar.style.transform = `scale(${scale})`;
+}
+
+function isValidNumber(v){ return v && !isNaN(v) && v > 0; }
+
+function displayBodyTypeLabel(type){
+  if(type === "triangulo_invertido") return "TRIÁNGULO INVERTIDO";
+  if(type === "reloj_arena") return "RELOJ DE ARENA";
+  if(type === "redondo") return "REDONDO";
+  return "NO DEFINIDO";
+}
+
+function getBodyTypeFromMeasures() {
+  const backValue = Number(els.back.value);
+  const waistValue = Number(els.waist.value);
+  const hipsValue = Number(els.hips.value);
+
+  if (backValue >= 90 && backValue <= 100 && waistValue >= 50 && waistValue <= 70 && hipsValue >= 70 && hipsValue <= 89)
+    return "triangulo_invertido";
+
+  if (backValue >= 80 && backValue <= 95 && waistValue >= 50 && waistValue <= 65 && hipsValue >= 80 && hipsValue <= 95)
+    return "reloj_arena";
+
+  if (backValue >= 80 && backValue <= 100 && waistValue >= 105 && waistValue <= 110 && hipsValue >= 80 && hipsValue <= 100)
+    return "redondo";
+
+  return "no_definido";
+}
+
+function bodyImageForType(type, hair){
+  const h = (hair === "morena") ? "morena" : "rubia";
+  let base;
+  if(type === "triangulo_invertido") base = "trianguloinvertido";
+  else if(type === "reloj_arena") base = "relojarena";
+  else if(type === "redondo") base = "redondo";
+  else base = "generico";
+
+  if(base !== "generico") return `img/${h}${base}.jpg`;
+  return `img/${h}_generico.jpg`;
+}
+
+function setTypeImageRobust(type, hair){
+  const candidate = bodyImageForType(type, hair);
+  els.bodyFinalImg.onerror = () => {
+    els.bodyFinalImg.onerror = null;
+    els.bodyFinalImg.src = "img/generico1.jpg";
+  };
+  els.bodyFinalImg.src = candidate;
+}
+
+let rafId = 0;
+function scheduleMeasuresHint(){
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(updatePillFromMeasures);
+}
+
+function updatePillFromMeasures(){
+  const backValue = Number(els.back.value);
+  const waistValue = Number(els.waist.value);
+  const hipsValue = Number(els.hips.value);
+
+  if(!isValidNumber(backValue) || !isValidNumber(waistValue) || !isValidNumber(hipsValue)){
+    els.hipsHint.textContent = "Introduce espalda, cintura y cadera para calcular el tipo";
+    els.pillBody.textContent = "TIPO DE CUERPO: —";
+    return;
+  }
+
+  const type = getBodyTypeFromMeasures();
+  els.pillBody.textContent = `TIPO DE CUERPO: ${displayBodyTypeLabel(type)}`;
+
+  els.hipsHint.textContent = (type === "no_definido")
+    ? `NO DEFINIDO: se mostrarán recomendaciones genéricas`
+    : `ESPALDA ${backValue} · CINTURA ${waistValue} · CADERA ${hipsValue} → ${displayBodyTypeLabel(type)}`;
+}
+
+function processProfile(){
+  const backValue = Number(els.back.value);
+  const waistValue = Number(els.waist.value);
+  const hipsValue = Number(els.hips.value);
+
+  if(!isValidNumber(backValue) || !isValidNumber(waistValue) || !isValidNumber(hipsValue)){
+    alert("Introduce ESPALDA, CINTURA y CADERA.");
+    return;
+  }
+
+  lastBodyType = getBodyTypeFromMeasures();
+  localStorage.setItem("bodyType", lastBodyType);
+
+  const profile = {
+    gender: selectedGender,
+    hair: els.hair.value,
+    height: Number(els.height.value),
+    weight: Number(els.weight.value) || null,
+    back: backValue,
+    waist: waistValue,
+    hips: hipsValue,
+    shoes: Number(els.shoes.value) || null
+  };
+  localStorage.setItem("profile", JSON.stringify(profile));
+
+  els.bodyPill.textContent = `TIPO: ${displayBodyTypeLabel(lastBodyType)}`;
+  setTypeImageRobust(lastBodyType, profile.hair);
+
+  toggle(els.form, false);
+  toggle(els.body, true);
+}
+
+function goToReco(){
+  const profile = JSON.parse(localStorage.getItem("profile") || "null");
+  const bodyType = localStorage.getItem("bodyType") || lastBodyType;
+  if(!profile || !bodyType){
+    alert("Falta información del perfil.");
+    return;
+  }
+  renderRecommendations(profile, bodyType);
+}
+
+/* ===== Reco + paginación ===== */
+const recoState = { items: [], page: 0, perPage: 2 };
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function renderLookDrawer(products){
+  const list = Array.isArray(products) ? products : [];
+  const items = list.slice(0, 6).map((p) => `
+    <div class="look-item" role="button" tabindex="0"
+        data-prod-imgs="${escapeHtml((p.imgs || []).join("|"))}"
+         data-prod-ref="${escapeHtml(p.ref || "")}"
+         data-prod-name="${escapeHtml(p.name || "")}"
+         data-prod-desc="${escapeHtml(p.desc || "")}">
+      <img src="${escapeHtml((p.imgs && p.imgs[0]) ? p.imgs[0] : "")}" alt="${escapeHtml(p.name || "Prenda")}">
+      <div>
+        <div class="ref">${escapeHtml(p.ref || "REF —")}</div>
+        <p class="name">${escapeHtml(p.name || "PRENDA")}</p>
+      </div>
+      <div class="look-tip" aria-hidden="true">
+        <p class="d">${escapeHtml(p.desc || "—")}</p>
+        <span class="btn">VER DETALLE</span>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="look-tab" data-look="toggle" aria-label="Abrir look">
+      <span>LOOK</span>
+    </div>
+
+    <aside class="look-drawer" aria-label="Look drawer">
+      <div class="ld-head">
+        <div class="t">LOOK</div>
+        <button type="button" class="ld-close" data-look="close" aria-label="Cerrar"></button>
+      </div>
+      <div class="look-items">
+        ${items || `<div class="pill" style="max-width:none;">NO HAY PRENDAS EN ESTE LOOK</div>`}
+      </div>
+    </aside>
+  `;
+}
+
+function renderRecommendations(profile, bodyType){
+  const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
+
+  els.pillGender.textContent = `GÉNERO: ${String(profile.gender).toUpperCase()}`;
+  els.pillHips.textContent = `CADERA: ${profile.hips} CM`;
+  els.pillType.textContent = `TIPO: ${displayBodyTypeLabel(bodyType)}`;
+
+  els.recoSub.textContent = (bodyType === "no_definido")
+    ? `RECOMENDACIONES GENÉRICAS (MEDIDAS NO CLASIFICADAS)`
+    : `PERSONAS CON TIPO SIMILAR (${displayBodyTypeLabel(bodyType)})`;
+
+  let matches = LOOKS.filter(x => x.bodyType === effectiveType && x.gender === profile.gender);
+  if(matches.length === 0) matches = LOOKS.filter(x => x.bodyType === effectiveType && x.gender === "neutro");
+  if(matches.length === 0) matches = [];
+
+  recoState.items = matches;
+  recoState.page = 0;
+
+  els.reco.classList.remove("is-empty");
+  toggle(els.body, false);
+  toggle(els.reco, true);
+
+  requestAnimationFrame(() => {
+    computeRecoLayout();
+    renderRecoPage();
+  });
+}
+
+function computeRecoLayout(){
+  if(els.reco.classList.contains("hidden")) return;
+
+  // En móvil dejamos altura libre (no calculamos recortes)
+  if (window.innerWidth <= 900){
+    document.documentElement.style.setProperty("--cardMaxH", `none`);
+    recoState.perPage = 2; // en móvil 1 columna y paginar de 2 en 2 (o cambia a 1 si quieres)
+    return;
+  }
+
+  if(recoState.items.length === 0){
+    document.documentElement.style.setProperty("--cardMaxH", `520px`);
+    return;
+  }
+
+  const cols = window.innerWidth <= 520 ? 1 : 2;
+  const rows = 1;
+
+  const head = els.reco.querySelector(".rec-head");
+  const strip = els.reco.querySelector(".strip");
+  const pager = els.reco.querySelector(".pager");
+  const note = els.reco.querySelector(".note");
+  const actions = els.reco.querySelector(".reco-actions");
+
+  const used =
+    (head?.offsetHeight || 0) +
+    (strip?.offsetHeight || 0) +
+    (pager?.offsetHeight || 0) +
+    (note?.offsetHeight || 0) +
+    (actions?.offsetHeight || 0) +
+    24;
+
+  const totalH = els.reco.clientHeight;
+  const availableForGrid = Math.max(240, totalH - used);
+
+  const gap = 14;
+  const cardMaxH = Math.floor((availableForGrid - gap * (rows - 1)) / rows);
+
+  document.documentElement.style.setProperty("--cardMaxH", `${cardMaxH}px`);
+
+  recoState.perPage = cols * rows;
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  recoState.page = Math.min(recoState.page, totalPages - 1);
+}
+
+function renderRecoPage(){
+  const isEmpty = recoState.items.length === 0;
+
+  els.reco.classList.toggle("is-empty", isEmpty);
+  els.emptyState.classList.toggle("hidden", !isEmpty);
+
+// Cierra cualquier drawer abierto al re-render
+els.grid.querySelectorAll(".look-drawer.open").forEach(d => d.classList.remove("open"));
+
+  if(isEmpty){
+    els.grid.innerHTML = "";
+    els.pageInfo.textContent = "1 / 1";
+    els.prevBtn.disabled = true;
+    els.nextBtn.disabled = true;
+    
+return;
+  }
+
+  const start = recoState.page * recoState.perPage;
+  const end = start + recoState.perPage;
+  const slice = recoState.items.slice(start, end);
+
+  els.grid.innerHTML = slice.map(item => {
+    const imagesPacked = (item.images || []).join("|");
+    const poster = item.images?.[0] || "";
+    return `
+      <article class="card" tabindex="0"
+        data-name="${escapeHtml(item.name)}"
+        data-tag="${escapeHtml(item.tag)}"
+        data-desc="${escapeHtml(item.desc)}"
+        data-images="${escapeHtml(imagesPacked)}">
+      <div class="media">
+  <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+    <source src="${item.video}" type="video/mp4">
+  </video>
+
+  <div class="overlay"><span>VER IMÁGENES</span></div>
+
+  ${renderLookDrawer(item.products)}
+</div>
+        <div class="meta">
+          <span>${escapeHtml(item.tag)}</span>
+          <span>VIDEO</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  els.pageInfo.textContent = `${recoState.page + 1} / ${totalPages}`;
+  els.prevBtn.disabled = recoState.page <= 0;
+  els.nextBtn.disabled = recoState.page >= totalPages - 1;
+}
+
+els.prevBtn.addEventListener("click", () => {
+  recoState.page = Math.max(0, recoState.page - 1);
+  renderRecoPage();
+});
+els.nextBtn.addEventListener("click", () => {
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  recoState.page = Math.min(totalPages - 1, recoState.page + 1);
+  renderRecoPage();
+});
+
+/* Click abre galería */
+els.grid.addEventListener("click", (e) => {
+
+// Si hay un drawer abierto y clicas fuera de él, se cierra
+const openDrawer = els.grid.querySelector(".look-drawer.open");
+if (openDrawer) {
+  const clickedInsideDrawer = e.target.closest(".look-drawer");
+  const clickedTab = e.target.closest('[data-look="toggle"]');
+  if (!clickedInsideDrawer && !clickedTab) {
+    openDrawer.classList.remove("open");
+  }
+}
+  // 1) Abrir/cerrar LOOK drawer (sin abrir galería)
+  const toggleBtn = e.target.closest('[data-look="toggle"]');
+ if (toggleBtn){
+  e.preventDefault();
+  e.stopPropagation();
+  const media = toggleBtn.closest(".media");
+  const drawer = media?.querySelector(".look-drawer");
+  if (drawer){
+    els.grid.querySelectorAll(".look-drawer.open").forEach(d => {
+      if(d !== drawer) d.classList.remove("open");
+    });
+    drawer.classList.toggle("open");
+  }
+  return;
+}
+
+  const closeBtn = e.target.closest('[data-look="close"]');
+  if (closeBtn){
+    e.preventDefault();
+    e.stopPropagation();
+    const media = closeBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer) drawer.classList.remove("open");
+    return;
+  }
+// ✅ Si clicas dentro del drawer (pero no en una prenda), NO abras la galería
+  const insideDrawer = e.target.closest(".look-drawer");
+ const lookItem = e.target.closest(".look-item");
+if (insideDrawer && !lookItem) {
+  e.preventDefault();
+  e.stopPropagation();
+  return;
+  }
+  // 2) Click en una prenda: móvil muestra tooltip / desktop abre modal con esa prenda
+  if (lookItem){
+    e.preventDefault();
+    e.stopPropagation();
+
+    // móvil: toggle tooltip
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+
+    // desktop: abre modal solo con la imagen de la prenda
+   const imgsPacked = lookItem.dataset.prodImgs || "";
+const imgs = imgsPacked.split("|").filter(Boolean);
+
+const ref = lookItem.dataset.prodRef || "REF —";
+const name = lookItem.dataset.prodName || "PRENDA";
+const desc = lookItem.dataset.prodDesc || "—";
+
+openModal({ name, tag: ref, desc, images: imgs });
+return;
+  }
+
+  // 3) Click en la tarjeta / vídeo -> abre galería del look
+  const card = e.target.closest(".card");
+  if(card){
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  }
+});
+els.grid.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+
+// ✅ BLOQUEO: si estás dentro del drawer pero NO en una prenda, no abras nada
+const insideDrawer = e.target.closest(".look-drawer");
+const lookItem = e.target.closest(".look-item");
+if (insideDrawer && !lookItem) {
+  e.preventDefault();
+  e.stopPropagation();
+  return;
+}
+  // 1) Si estás en una prenda, actúa sobre la prenda
+    if (lookItem) {
+    e.preventDefault();
+
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+
+   const packed = lookItem.dataset.prodImgs || "";
+const images = packed.split("|").filter(Boolean);
+
+const ref = lookItem.dataset.prodRef || "REF —";
+const name = lookItem.dataset.prodName || "PRENDA";
+const desc = lookItem.dataset.prodDesc || "—";
+
+openModal({ name, tag: ref, desc, images });
+return;
+  }
+
+  // 2) Si no es prenda, pero sí card, abre la galería del look
+  const card = e.target.closest(".card");
+  if (!card) return;
+
+  e.preventDefault();
+  const images = (card.dataset.images || "").split("|").filter(Boolean);
+  openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+});
+
+window.addEventListener("resize", () => {
+  requestAnimationFrame(() => {
+    computeRecoLayout();
+    renderRecoPage();
+  });
+});
+
+/* SALIR */
+function exitApp(){
+  closeModal();
+  toggle(els.reco, false);
+  toggle(els.start, true);
+}
+
+/* ===================== MODAL: ACTIVO + FADE + SWIPE ===================== */
+const modalState = { images: [], idx: 0 };
+
+/* ===== CESTA (FICTICIA) ===== */
+const cartState = {
+  count: Number(localStorage.getItem("cartCount") || 0)
+};
+
+function updateCartUI(){
+  if(els.cartCount) els.cartCount.textContent = String(cartState.count);
+}
+
+let toastTimer = null;
+function showToast(msg){
+  if(!els.toast) return;
+  els.toast.textContent = msg;
+  els.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => els.toast.classList.remove("show"), 1600);
+}
+
+function addToCartFromModal(){
+  // Usamos lo que esté abierto en el modal (ficticio)
+  const name = (els.modalName?.textContent || "PRENDA").trim();
+  const ref = (els.modalTag?.textContent || "REF —").trim();
+
+  cartState.count += 1;
+  localStorage.setItem("cartCount", String(cartState.count));
+  updateCartUI();
+
+  showToast(`AÑADIDA A LA CESTA · ${ref} · ${name}`);
+}
+
+function setActiveThumb(){
+  const buttons = els.thumbs.querySelectorAll("button");
+  buttons.forEach((b, i) => b.classList.toggle("active", i === modalState.idx));
+  const active = buttons[modalState.idx];
+  if(active) active.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+}
+
+function setMainImage(index){
+  const total = modalState.images.length;
+  if(!total) return;
+
+  modalState.idx = (index + total) % total;
+
+  els.galleryMain.classList.add("is-fading");
+  const nextSrc = modalState.images[modalState.idx];
+
+  setTimeout(() => { els.galleryMain.src = nextSrc; }, 120);
+  els.galleryMain.onload = () => els.galleryMain.classList.remove("is-fading");
+
+  setActiveThumb();
+}
+
+function openModal({name, tag, desc, images}){
+  els.modal.classList.add("open");
+  els.modal.setAttribute("aria-hidden","false");
+  els.modalTitle.textContent = String(name).toUpperCase();
+  els.modalName.textContent = String(name).toUpperCase();
+  els.modalTag.textContent = String(tag).toUpperCase();
+  els.modalDesc.textContent = desc;
+
+  modalState.images = Array.isArray(images) ? images : [];
+  modalState.idx = 0;
+
+  els.thumbs.innerHTML = modalState.images.map((src, idx) => `
+    <button type="button" data-idx="${idx}" aria-label="Imagen ${idx+1}">
+      <img src="${src}" alt="Miniatura ${idx+1}">
+    </button>
+  `).join("");
+
+  els.thumbs.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => setMainImage(Number(btn.dataset.idx)));
+  });
+
+  els.galleryMain.src = modalState.images[0] || "";
+  setActiveThumb();
+
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+  els.modal.classList.remove("open");
+  els.modal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+
+els.closeModal.addEventListener("click", closeModal);
+els.backModalBtn.addEventListener("click", closeModal);
+els.backBelowBtn.addEventListener("click", closeModal);
+els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeModal(); });
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
+});
+
+if (els.addToCartBtn){
+  els.addToCartBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    addToCartFromModal();
+});
+}
+
+/* Swipe móvil (izq/der) */
+let startX = 0, startY = 0, touching = false;
+
+els.galleryMain.addEventListener("touchstart", (e) => {
+  if(!els.modal.classList.contains("open")) return;
+  const t = e.touches[0];
+  startX = t.clientX;
+  startY = t.clientY;
+  touching = true;
+}, {passive:true});
+
+els.galleryMain.addEventListener("touchend", (e) => {
+  if(!touching) return;
+  touching = false;
+
+  const t = e.changedTouches[0];
+  const dx = t.clientX - startX;
+  const dy = t.clientY - startY;
+
+  if(Math.abs(dy) > 60) return;
+
+  if(dx < -50) setMainImage(modalState.idx + 1);
+  if(dx > 50)  setMainImage(modalState.idx - 1);
+}, {passive:true});
+
+/* Eventos */
+els.height.addEventListener("input", updateHeightAvatar);
+els.back.addEventListener("input", scheduleMeasuresHint);
+els.waist.addEventListener("input", scheduleMeasuresHint);
+els.hips.addEventListener("input", scheduleMeasuresHint);
+els.hair.addEventListener("change", updatePillFromMeasures);
+
+(function init(){
+  const saved = JSON.parse(localStorage.getItem("profile") || "null");
+  if(saved?.hair && els.hair) els.hair.value = saved.hair;
+  els.avatar.src = `${selectedGender}.png`;
+  updateHeightAvatar();
+
+  updateCartUI(); // ✅ AÑADE ESTO
+})();
+
+// ===================== JS ASISTENTE =====================
+
+const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
+
+let chatHistory = [];
+
+function addMsg(type, text){
+  const div = document.createElement("div");
+  div.className = type === "user" ? "msg-user" : "msg-bot";
+  div.innerHTML =
+    type === "user"
+      ? `<strong>Tú:</strong> ${text}`
+      : `<strong>Asistente:</strong> ${text}`;
+ els.chatMessages.appendChild(div);
+  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
+}
+
+els.assistantBtn.addEventListener("click", () => {
+  els.chat.classList.toggle("hidden");
+  setTimeout(()=>els.chatInput.focus(),50);
+});
+
+els.chatClose.addEventListener("click", () => {
+  els.chat.classList.add("hidden");
+});
+
+els.chatInput.addEventListener("keydown", async (e) => {
+  if(e.key !== "Enter") return;
+
+  const text = els.chatInput.value.trim();
+  if(!text) return;
+
+  els.chatInput.value = "";
+  addMsg("user", text);
+  chatHistory.push({ role:"user", content:text });
+
+  const typing = document.createElement("div");
+  typing.className = "msg-bot";
+  typing.innerHTML = "<strong>Asistente:</strong> …";
+  els.chatMessages.appendChild(typing);
+
+  try{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ message:text, messages:chatHistory })
+    });
+
+    typing.remove();
+
+    if(!res.ok){
+      addMsg("bot","No puedo responder ahora mismo.");
+      return;
+    }
+
+    const data = await res.json();
+    addMsg("bot", data.reply);
+    chatHistory.push({ role:"assistant", content:data.reply });
+
+  }catch{
+    typing.remove();
+    addMsg("bot","Error de conexión con el asistente.");
+  }
+});
+/* ===================== NOTIFICACIÓN CESTA ===================== */
+function showCartNotification(){
+  const note = document.createElement("div");
+  note.className = "cart-note";
+  note.textContent = "La prenda ha sido añadida a la cesta";
+
+  document.body.appendChild(note);
+
+  setTimeout(() => note.classList.add("show"), 10);
+  setTimeout(() => {
+    note.classList.remove("show");
+    setTimeout(() => note.remove(), 300);
+  }, 2200);
+}
+
+// Si una imagen no existe, ocultarla para que no “rompa” el layout
+document.addEventListener("error", (e) => {
+  const t = e.target;
+  if(t && t.tagName === "IMG"){
+    // evita loops
+    if(t.dataset.fallbackDone) return;
+    t.dataset.fallbackDone = "1";
+    // oculta miniatura rota
+    t.style.display = "none";
+  }
+}, true);
+
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
