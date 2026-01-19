@@ -905,7 +905,218 @@ function prod(imgOrImgs, ref, name, desc){
 
 /* ===== ITEMS ===== */
 const LOOKS = [
-  /* ... TU ARRAY LOOKS COMPLETO AQUÍ (NO lo cambies) ... */
+ { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 1', tag:'SUGERENCIA',
+    video: videoPath('triangulo3'),
+    images:[imgPath('triangulo3'), imgPath('triangulo31'), imgPath('triangulo32'), imgPath('triangulo33'), imgPath('triangulo34'), imgPath('triangulo35'), imgPath('triangulo36'), imgPath('triangulo37')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod(
+        [
+          'img/prenda/camiseta1triangulo.png',
+          'img/prenda/camiseta1triangulo_1.png'
+        ],
+        'REF 6224/376/250',
+        'CAMISETA DETALLE',
+        'Camiseta blanca con detalle letras delanteras y texto en la parte trasea.'
+      ),
+      prod(
+        [
+          'img/prenda/bota2triangulo.png',
+          'img/prenda/bota2triangulo_1.png',
+        ],
+        'REF 3022/610/800',
+        'BOTA TACÓN',
+        'Bota acharolada negra con tacón fino.'
+      ),
+      prod(
+        [
+          'img/prenda/bolso1triangulo.png',
+          'img/prenda/bolso1triangulo_1.png',
+        ],
+        'REF 6466/610/800',
+        'BOLSO PELO',
+        'Maxi bolso de pelo negro con asa de hombro.'
+      ),
+      prod('img/prenda/falda1triangulo.png','REF 5919/211/922','FALDA ENCAJE','Falda negra satinada asimétrica con bajo de encaje.')
+    ]
+  },
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 2', tag:'SUGERENCIA',
+    video: videoPath('triangulo2'),
+    images:[imgPath('triangulo2'), imgPath('triangulo21'), imgPath('triangulo22'), imgPath('triangulo23'), imgPath('triangulo24')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod(
+        [
+          'img/prenda/vestido2triangulo.png',
+          'img/prenda/vestido2triangulo_1.png',
+        ],
+        'REF 9500/108/250',
+        'VESTIDO LENTEJUELAS',
+        'Vestido mini de lentejuelas con hombreras y escote en la espalda.'
+      ),
+      prod(
+        [
+          'img/prenda/tacontriangulo.png',
+          'img/prenda/tacontriangulo_1.png',
+        ],
+        'REF 2372/510/091',
+        'SANDALIA DORADA',
+        'Sandalia dorada con pulsera en el tobillo.'
+      ),
+    ]
+  },
+  { gender:'mujer', bodyType:'triangulo_invertido', name:'TRIÁNGULO INVERTIDO 3', tag:'SUGERENCIA',
+    video: videoPath('triangulo1'),
+    images:[imgPath('triangulo1'), imgPath('triangulo11'),imgPath('triangulo12'), imgPath('triangulo13')],
+    desc:'Video + imágenes relacionadas (triángulo invertido).',
+    products:[
+      prod(
+        [
+          'img/prenda/toptriangulo.png',
+          'img/prenda/toptriangulo_1.png',
+        ],
+        'REF 5584/205/603',
+        'TOP FLECOS',
+        'Top asimétrico morado con detalle de flecos.'
+      ),
+      prod(
+        [
+          'img/prenda/pantalon3triangulo.png',
+          'img/prenda/pantalon3triangulo_1.png',
+        ],
+        'REF 8307/245/400',
+        'JEANS WIDE LEG ZW',
+        'Jeans wide leg tiro medio. Cierre frontal con botón y cremallera.'
+      ),
+      prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
+    ]
+  },
+
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 1', tag:'SUGERENCIA',
+    video: videoPath('relojarena1'),
+    images:[imgPath('relojarena1'),imgPath('relojarena12'), imgPath('relojarena13'), imgPath('relojarena14'), imgPath('relojarena15')],
+    desc:'Altura modelo: 165 cm. Medidas: Pecho: 89 cm, Cintura: 66 cm, Cadera: 92 cm. Largo de la pierna: 75 cm',
+    products:[
+      prod(
+        [
+          'img/prenda/ropa12arena.png',
+          'img/prenda/ropa12arena_2.jpg',
+          'img/prenda/ropa12arena_3.jpg'
+        ],
+        'REF 1255/404/505',
+        'FALDA CUADROS',
+        'Falda midi detalle volumen.'
+      ),
+      prod('img/prenda/ropa11arena.png','REF 4341/736/717','BOMBER POLIPIEL','Bomber polipiel marrón.'),
+      prod('img/prenda/ropa1arena.png','REF 8372/267/716','CHAQUETA FELPA','Chaqueta marrón con gorro.'),
+      prod('img/prenda/bota1arena.png','REF 3032/610/700','BOTA MARRÓN','Bota detalle grabados con hebilla.'),
+      prod('img/prenda/bolso1arena.png','REF 6332/610/700','FALDA CUADROS','Falda midi detalle volumen.')
+    ]
+  },
+
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 2', tag:'SUGERENCIA',
+    video: videoPath('relojarena2'),
+    images:[imgPath('relojarena2'), imgPath('relojarena21'), imgPath('relojarena22'), imgPath('relojarena23'), imgPath('relojarena24'), imgPath('relojarena25')],
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda9.jpg','REF 5550/120','BLAZER CORTA','Define cintura y hombro.'),
+      prod('img/prendas/prenda10.jpg','REF 8880/090','FALDA LÁPIZ','Línea limpia, elegante.')
+    ]
+  },
+  { gender:'mujer', bodyType:'reloj_arena', name:'RELOJ DE ARENA 3', tag:'SUGERENCIA',
+    video: videoPath('relojarena3'),
+    images:[imgPath('relojarena3'), imgPath('relojarena31'), imgPath('relojarena32'), imgPath('relojarena33')],
+    desc:'Video + imágenes relacionadas (reloj de arena).',
+    products:[
+      prod('img/prendas/prenda11.jpg','REF 9001/001','TOP ESTRUCTURA','Escote favorecedor.')
+    ]
+  },
+
+  { gender:'mujer', bodyType:'redondo', name:'REDONDO 1', tag:'SUGERENCIA',
+    video: videoPath('redondo1'),
+    images:[imgPath('redondo1'), imgPath('redondo12'), imgPath('redondo13'), imgPath('redondo14'), imgPath('redondo15')],
+    desc:'Altura modelo: 155 cm. Medidas: Pecho: 95 cm, Cintura: 105 cm, Cadera: 100 cm. Largo de la pierna: 65 cm.',
+    products:[
+      prod(
+        [
+          'img/prenda/pantalon2redondo.png',
+          'img/prenda/pantalon 2 redondo_1.png'
+        ],
+        'REF 6840/305/800',
+        'PANTALÓN NEGRO',
+        'Pantalón tiro medio, ballon leg, cierre con cremallera y botón frontal.'
+      ),
+      prod(
+        [
+          'img/prenda/camisa2redondo.png',
+          'img/prenda/camisa2redondo_1.png',
+          'img/prenda/camisa2redondo_2.png'
+        ],
+        'REF 8800/240/809',
+        'CAMISA CUADROS',
+        'Camisa de cuadros manga larga con detalle pañuelo.'
+      ),
+      prod('img/prenda/zapatonegroarena-triangulo.png','REF 1563/610/800','MULLET PIEL','Mullet destalonado negro de piel.')
+    ]
+  },
+  { gender:'mujer', bodyType:'redondo', name:'REDONDO 2', tag:'SUGERENCIA',
+    video: videoPath('redondo2'),
+    images:[imgPath('redondo2'), imgPath('redondo21'), imgPath('redondo22'), imgPath('redondo23'), imgPath('redondo24'), imgPath('redondo25'), imgPath('redondo26'), imgPath('redondo27')],
+    desc:'Altura modelo: 155 cm. Medidas: Pecho: 95 cm, Cintura: 105 cm, Cadera: 100 cm. Largo de la pierna: 65 cm.',
+    products:[
+      prod(
+        [
+          'img/prenda/pantalon1redondo.png',
+          'img/prenda/pantalon1redondo_1.png',
+          'img/prenda/pantalon1redondo_2.png'
+        ],
+        'REF 8960/760/710',
+        'PANTALÓN CUADROS',
+        'Pantalón tiro alto ballon. Cierre con cordón interno, elástico en la cintura.'
+      ),
+      prod(
+        [
+          'img/prenda/cazadora1redondo.png',
+          'img/prenda/cazadora1redondo_1.png',
+          'img/prenda/cazadora1redondo_2.png'
+        ],
+        'REF 1255/894/716',
+        'CAZADORA PAÑO',
+        'Cazadora marrón de paño con abotonadura lateral.'
+      ),
+      prod(
+        [
+          'img/prenda/calzado1redondo.png',
+          'img/prenda/calzado1redondo_1.png',
+        ],
+        'REF 3595/610/700',
+        'MOCASÍN ANTE',
+        'Mocasín ante marrón.'
+      ),
+      prod(
+        [
+          'img/prenda/bolso1redondo.png',
+          'img/prenda/bolso1redondo_1.png',
+        ],
+        'REF 6633/610/700',
+        'BOLSO ANTE',
+        'Mini saca de ante con cierre metálico. Asa pequeña.'
+      ),
+    ]
+  },
+
+  { gender:'mujer', bodyType:'generico', name:'GENÉRICO 1', tag:'GENÉRICO',
+    video: videoPath('generico1'),
+    images:[imgPath('generico1'), imgPath('generico2')],
+    desc:'Genérico cuando no encaja en un tipo.',
+    products:[]
+  },
+  { gender:'mujer', bodyType:'generico', name:'GENÉRICO 2', tag:'GENÉRICO',
+    video: videoPath('generico2'),
+    images:[imgPath('generico2'), imgPath('generico1')],
+    desc:'Genérico cuando no encaja en un tipo.',
+    products:[]
+  },
 ];
 
 /* ===================== ESTADO ===================== */
@@ -1184,6 +1395,7 @@ els.hair.addEventListener("change", updatePillFromMeasures);
 
 </body>
 </html>
+
 
 
 
