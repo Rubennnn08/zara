@@ -1368,12 +1368,208 @@ function escapeHtml(str){
     .replaceAll("'","&#039;");
 }
 
-/* ====== TODO: AQUÍ SIGUE TU CÓDIGO ORIGINAL ======
-   - renderLookDrawer
-   - renderRecommendations
-   - computeRecoLayout, renderRecoPage, listeners, modal, cesta, chat...
-   No lo he tocado. Pega desde aquí el resto EXACTO que ya tenías.
-*/
+function renderLookDrawer(products){
+  const list = Array.isArray(products) ? products : [];
+  const items = list.slice(0, 6).map((p) => `
+    <div class="look-item" role="button" tabindex="0"
+      data-prod-imgs="${escapeHtml((p.imgs || []).join("|"))}"
+      data-prod-ref="${escapeHtml(p.ref || "")}"
+      data-prod-name="${escapeHtml(p.name || "")}"
+      data-prod-desc="${escapeHtml(p.desc || "")}">
+      <img loading="lazy" src="${escapeHtml((p.imgs && p.imgs[0]) ? p.imgs[0] : "")}" alt="${escapeHtml(p.name || "Prenda")}">
+      <div>
+        <div class="ref">${escapeHtml(p.ref || "REF —")}</div>
+        <p class="name">${escapeHtml(p.name || "PRENDA")}</p>
+      </div>
+      <div class="look-tip" aria-hidden="true">
+        <p class="d">${escapeHtml(p.desc || "—")}</p>
+        <span class="btn">VER DETALLE</span>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="look-tab" data-look="toggle" aria-label="Abrir look">
+      <span>LOOK</span>
+    </div>
+
+    <aside class="look-drawer" aria-label="Look drawer">
+      <div class="ld-head">
+        <div class="t">LOOK</div>
+        <button type="button" class="ld-close" data-look="close" aria-label="Cerrar"></button>
+      </div>
+      <div class="look-items">
+        ${items || `<div class="pill" style="max-width:none;">NO HAY PRENDAS EN ESTE LOOK</div>`}
+      </div>
+    </aside>
+  `;
+}
+
+function renderRecommendations(profile, bodyType){
+  const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
+
+  els.pillGender.textContent = `GÉNERO: ${String(profile.gender).toUpperCase()}`;
+  els.pillHips.textContent = `CADERA: ${profile.hips} CM`;
+  els.pillType.textContent = `TIPO: ${displayBodyTypeLabel(bodyType)}`;
+
+  els.recoSub.textContent = (bodyType === "no_definido")
+    ? `RECOMENDACIONES GENÉRICAS (MEDIDAS NO CLASIFICADAS)`
+    : `PERSONAS CON TIPO SIMILAR (${displayBodyTypeLabel(bodyType)})`;
+
+  let matches = LOOKS.filter(x => x.bodyType === effectiveType && x.gender === profile.gender);
+  if(matches.length === 0) matches = LOOKS.filter(x => x.bodyType === effectiveType && x.gender === "neutro");
+
+  recoState.items = matches;
+  recoState.page = 0;
+
+  els.reco.classList.remove("is-empty");
+  toggle(els.body, false);
+  toggle(els.reco, true);
+
+  requestAnimationFrame(() => {
+    computeRecoLayout();
+    renderRecoPage();
+  });
+}
+
+function computeRecoLayout(){
+  if(els.reco.classList.contains("hidden")) return;
+  const cols = window.innerWidth <= 520 ? 1 : 2;
+  const rows = 1;
+  recoState.perPage = cols * rows;
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  recoState.page = Math.min(recoState.page, totalPages - 1);
+}
+
+function renderRecoPage(){
+  const isEmpty = recoState.items.length === 0;
+
+  els.reco.classList.toggle("is-empty", isEmpty);
+  els.emptyState.classList.toggle("hidden", !isEmpty);
+
+  // cierra drawers abiertos
+  els.grid.querySelectorAll(".look-drawer.open").forEach(d => d.classList.remove("open"));
+
+  if(isEmpty){
+    els.grid.innerHTML = "";
+    els.pageInfo.textContent = "1 / 1";
+    els.prevBtn.disabled = true;
+    els.nextBtn.disabled = true;
+    return;
+  }
+
+  const start = recoState.page * recoState.perPage;
+  const end = start + recoState.perPage;
+  const slice = recoState.items.slice(start, end);
+
+  els.grid.innerHTML = slice.map(item => {
+    const imagesPacked = (item.images || []).join("|");
+    const poster = item.images?.[0] || "";
+    return `
+      <article class="card" tabindex="0"
+        data-name="${escapeHtml(item.name)}"
+        data-tag="${escapeHtml(item.tag)}"
+        data-desc="${escapeHtml(item.desc)}"
+        data-images="${escapeHtml(imagesPacked)}">
+        <div class="media">
+          <video autoplay muted loop playsinline preload="metadata" poster="${poster}">
+            <source src="${item.video}" type="video/mp4">
+          </video>
+
+          <div class="overlay"><span>VER IMÁGENES</span></div>
+
+          ${renderLookDrawer(item.products)}
+        </div>
+        <div class="meta">
+          <span>${escapeHtml(item.tag)}</span>
+          <span>VIDEO</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  els.pageInfo.textContent = `${recoState.page + 1} / ${totalPages}`;
+  els.prevBtn.disabled = recoState.page <= 0;
+  els.nextBtn.disabled = recoState.page >= totalPages - 1;
+}
+
+/* Paginación */
+els.prevBtn.addEventListener("click", () => {
+  recoState.page = Math.max(0, recoState.page - 1);
+  renderRecoPage();
+});
+els.nextBtn.addEventListener("click", () => {
+  const totalPages = Math.max(1, Math.ceil(recoState.items.length / recoState.perPage));
+  recoState.page = Math.min(totalPages - 1, recoState.page + 1);
+  renderRecoPage();
+});
+
+/* Click abre galería */
+els.grid.addEventListener("click", (e) => {
+  const openDrawer = els.grid.querySelector(".look-drawer.open");
+  if (openDrawer) {
+    const clickedInsideDrawer = e.target.closest(".look-drawer");
+    const clickedTab = e.target.closest('[data-look="toggle"]');
+    if (!clickedInsideDrawer && !clickedTab) {
+      openDrawer.classList.remove("open");
+    }
+  }
+
+  const toggleBtn = e.target.closest('[data-look="toggle"]');
+  if (toggleBtn){
+    e.preventDefault(); e.stopPropagation();
+    const media = toggleBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer){
+      els.grid.querySelectorAll(".look-drawer.open").forEach(d => { if(d !== drawer) d.classList.remove("open"); });
+      drawer.classList.toggle("open");
+    }
+    return;
+  }
+
+  const closeBtn = e.target.closest('[data-look="close"]');
+  if (closeBtn){
+    e.preventDefault(); e.stopPropagation();
+    const media = closeBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer) drawer.classList.remove("open");
+    return;
+  }
+
+  const insideDrawer = e.target.closest(".look-drawer");
+  const lookItem = e.target.closest(".look-item");
+  if (insideDrawer && !lookItem) { e.preventDefault(); e.stopPropagation(); return; }
+
+  if (lookItem){
+    e.preventDefault(); e.stopPropagation();
+    if (window.matchMedia("(hover: none)").matches){
+      lookItem.classList.toggle("show-tip");
+      return;
+    }
+    const imgsPacked = lookItem.dataset.prodImgs || "";
+    const imgs = imgsPacked.split("|").filter(Boolean);
+    const ref = lookItem.dataset.prodRef || "REF —";
+    const name = lookItem.dataset.prodName || "PRENDA";
+    const desc = lookItem.dataset.prodDesc || "—";
+    openModal({ name, tag: ref, desc, images: imgs });
+    return;
+  }
+
+  const card = e.target.closest(".card");
+  if(card){
+    const images = (card.dataset.images || "").split("|").filter(Boolean);
+    openModal({ name: card.dataset.name, tag: card.dataset.tag, desc: card.dataset.desc, images });
+  }
+});
+
+window.addEventListener("resize", () => {
+  requestAnimationFrame(() => {
+    computeRecoLayout();
+    renderRecoPage();
+  });
+});
+
 
 /* ===== EVENTOS ===== */
 els.height.addEventListener("input", updateHeightAvatar);
