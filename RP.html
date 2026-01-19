@@ -665,6 +665,7 @@
 }
 </style>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
 </head>
 
 <body>
@@ -1715,16 +1716,39 @@ function closeModal(){
 }
 /* ===================== MODAL 3D ===================== */
 
-const MODEL_SRC = "models/avatarmorena.glb"; // ruta a tu modelo
+const MODEL_SRC = "./models/avatarmorena.glb"; // ✅ mejor con ./ para GitHub Pages
 
-function open3D(){
+async function open3D(){
   els.modal3d.classList.add("open");
   els.modal3d.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
 
+  // 1) Comprobar si el archivo existe (así sabemos si es 404)
+  const abs = new URL(MODEL_SRC, window.location.href).toString();
+
+  try{
+    const head = await fetch(abs, { method: "HEAD" });
+    if(!head.ok){
+      els.viewer3d.innerHTML = `
+        <div class="pill" style="max-width:none;">
+          NO SE ENCUENTRA EL MODELO (ERROR ${head.status})<br>
+          RUTA: ${abs}
+        </div>`;
+      return;
+    }
+  }catch(err){
+    els.viewer3d.innerHTML = `
+      <div class="pill" style="max-width:none;">
+        NO PUEDO ACCEDER AL MODELO (FETCH ERROR)<br>
+        RUTA: ${abs}
+      </div>`;
+    return;
+  }
+
+  // 2) Cargar visor
   els.viewer3d.innerHTML = `
     <model-viewer
-      src="${MODEL_SRC}"
+      src="${abs}"
       camera-controls
       auto-rotate
       rotation-per-second="20deg"
@@ -1733,6 +1757,16 @@ function open3D(){
       style="width:100%;height:100%;background:#fff;">
     </model-viewer>
   `;
+
+  // 3) Si el modelo falla por formato/texturas, lo verás en consola y aquí
+  const mv = els.viewer3d.querySelector("model-viewer");
+  mv.addEventListener("error", () => {
+    els.viewer3d.innerHTML = `
+      <div class="pill" style="max-width:none;">
+        EL MODELO EXISTE PERO NO SE PUEDE RENDERIZAR.<br>
+        (Suele ser por exportación/compresión del GLB)
+      </div>`;
+  });
 }
 
 function close3D(){
