@@ -14,24 +14,35 @@ body {
   overflow-x: hidden;
 }
 
-/* Contenedor principal */
+/* Contenedor principal: 50/50 real */
 .container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
 }
 
-/* Parte izquierda: Formulario */
+/* Parte izquierda: Formulario (50%) */
 .left {
-  flex: 1;
+  width: 50%;
   padding: clamp(20px, 6vw, 60px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 560px;
-  width: 100%;
-  margin: 0 auto;
+
+  /* IMPORTANTE: quitamos el max-width para que sea 50% real */
+  max-width: none;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  background: #fff;
 }
 
+/* Opcional: si quieres el contenido centrado y no “muy estirado” */
+.left > * {
+  max-width: 560px;
+}
+
+/* Logo */
 .logo img {
   margin-bottom: 30px;
   max-width: 140px;
@@ -49,6 +60,7 @@ form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  max-width: 560px;
 }
 
 input {
@@ -58,6 +70,7 @@ input {
   font-size: 14px;
   outline: none;
   width: 100%;
+  background: transparent;
 }
 
 .forgot {
@@ -106,6 +119,7 @@ input {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-width: 560px;
 }
 
 .social-login p {
@@ -133,6 +147,7 @@ input {
   color: #888;
   margin-top: 15px;
   line-height: 1.4;
+  max-width: 560px;
 }
 
 .privacy a {
@@ -140,11 +155,13 @@ input {
   color: #888;
 }
 
-/* Parte derecha: Imagen */
+/* Parte derecha: Imagen (50%) */
 .right {
-  flex: 1;
+  width: 50%;
   overflow: hidden;
   min-height: 100vh;
+  position: relative;
+  background: #000;
 }
 
 .right img {
@@ -154,17 +171,54 @@ input {
   display: block;
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive: móvil -> imagen detrás + oscura ===== */
+@media (max-width: 900px) {
 
-/* Ocultar imagen solo en móvil vertical */
-@media (max-width: 900px) and (orientation: portrait) {
-  .right {
-    display: none;
+  .container {
+    position: relative;
+    display: block;   /* apilamos para poder poner imagen de fondo */
+    min-height: 100vh;
   }
 
+  /* Imagen pasa a fondo (NO se oculta) */
+  .right {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .right img {
+    height: 100%;
+    filter: brightness(0.35) contrast(1.05);
+    transform: scale(1.02);
+  }
+
+  /* Formulario encima */
   .left {
+    width: 100%;
+    min-height: 100vh;
+    background: transparent;
     padding: 24px 18px;
-    max-width: 100%;
+    z-index: 2;
+  }
+
+  /* Panel claro para que se lea perfecto */
+  .left::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+  }
+
+  .left > * ,
+  form,
+  .social-login,
+  .privacy {
+    max-width: 520px;
   }
 
   input {
