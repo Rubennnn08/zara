@@ -465,13 +465,7 @@
     max-height:calc(100vh - 70px);
     overflow-y:auto;
   }
-  @media (min-width: 860px){
-  #modal3d .modal-content{
-    grid-template-columns: 1fr;
-    padding:18px;
-    gap:16px;
-  }
-}
+  @media (min-width: 860px){ .modal-content{grid-template-columns:1.2fr .8fr;gap:22px;padding:18px;} }
 
   .gallery{
     display:flex;flex-direction:column;gap:10px;
@@ -521,43 +515,6 @@
   .panel-right h2{margin:0 0 8px;font-size:16px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;}
   .panel-right .ref{font-size:12px;color:var(--muted);letter-spacing:var(--letter);text-transform:uppercase;margin-bottom:12px;}
   .panel-right .p{font-size:13px;line-height:1.55;color:#222;max-width:42ch;margin:0;}
-
-/* ===================== MODAL 3D (2.B) ===================== */
-
-/* Reutiliza .modal y .modal-top que ya tienes, pero afinamos el contenido del 3D */
-#modal3d .modal-content{
-  max-width:980px;
-  margin:0 auto;
-  padding:16px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:14px;
-  max-height:calc(100vh - 70px);
-  overflow-y:auto;
-}
-
-@media (min-width: 860px){
-  #modal3d .modal-content{
-    padding:18px;
-    gap:16px;
-  }
-}
-
-/* Caja del visor 3D */
-#viewer3d{
-  width:100%;
-  height:min(72vh, 620px);
-  border:1px solid var(--hair);
-  background:#fff;
-  overflow:hidden;
-  position:relative;
-}
-
-/* Mensaje debajo del visor (si usas el <p class="subtitle">) */
-#modal3d .subtitle{
-  margin:0 auto;
-  text-align:center;
-}
 
   /* ===================== CHAT ASSISTANT ===================== */
   #assistant-button{
@@ -664,8 +621,6 @@
   transform:translateY(0);
 }
 </style>
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
 </head>
 
 <body>
@@ -780,42 +735,25 @@
       </aside>
     </div>
   </section>
-<!-- Modal 3D -->
-<section class="modal" id="modal3d" aria-hidden="true" role="dialog" aria-label="Modelo 3D">
-  <div class="modal-top">
-    <button class="button secondary" type="button" id="close3dBtn" style="width:auto;padding:10px 12px;">
-      VOLVER ATRÁS
-    </button>
-    <div class="modal-title">MODELO 3D</div>
-    <button class="close" type="button" aria-label="Cerrar" id="close3dX"></button>
-  </div>
 
-  <div class="modal-content">
-    <div id="viewer3d"></div>
-    <p class="subtitle">MODELO 3D FICTICIO · PROTOTIPO</p>
-  </div>
-</section>
+  <!-- Pantalla 3 -->
+  <section id="body-screen" class="hidden">
+    <div class="title">TU TIPO DE CUERPO</div>
+    <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
 
-<!-- Pantalla 3 -->
-<section id="body-screen" class="hidden">
-  <div class="title">TU TIPO DE CUERPO</div>
-  <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
+    <div class="body-card">
+      <div class="pill" id="body-pill">TIPO: —</div>
 
-  <div class="body-card">
-    <div class="pill" id="body-pill">TIPO: —</div>
+      <div class="body-img">
+        <img id="body-image-final" src="" alt="Tipo de cuerpo">
+      </div>
 
-    <div class="body-img">
-      <img id="body-image-final" src="" alt="Tipo de cuerpo">
+      <div class="body-actions">
+        <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
+        <button class="button secondary" type="button" onclick="backToForm()">Editar medidas</button>
+      </div>
     </div>
-
-    <!-- BOTONES -->
-  <div class="body-actions">
-  <button class="button" type="button" onclick="open3D()">VER MI MODELO 3D</button>
-  <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
-  <button class="button secondary" type="button" onclick="backToForm()">Editar medidas</button>
-</div>
-  </div>
-</section>
+  </section>
 
   <!-- Pantalla 4 -->
   <section id="reco-screen" class="hidden">
@@ -1172,11 +1110,6 @@ const els = {
   chatClose: document.getElementById("close-chat"),
   chatInput: document.getElementById("chat-input"),
   chatMessages: document.getElementById("chat-messages"),
-
-modal3d: document.getElementById("modal3d"),
-  viewer3d: document.getElementById("viewer3d"),
-  close3dBtn: document.getElementById("close3dBtn"),
-  close3dX: document.getElementById("close3dX"),
 
 cartCount: document.getElementById("cartCount"),
   addToCartBtn: document.getElementById("addToCartBtn"),
@@ -1714,67 +1647,6 @@ function closeModal(){
   els.modal.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
 }
-/* ===================== MODAL 3D ===================== */
-
-const MODEL_SRC = "./models/avatarmorena.glb"; // ✅ mejor con ./ para GitHub Pages
-
-async function open3D(){
-  els.modal3d.classList.add("open");
-  els.modal3d.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden";
-
-  // 1) Comprobar si el archivo existe (así sabemos si es 404)
-  const abs = new URL(MODEL_SRC, window.location.href).toString();
-
-  try{
-    const head = await fetch(abs, { method: "HEAD" });
-    if(!head.ok){
-      els.viewer3d.innerHTML = `
-        <div class="pill" style="max-width:none;">
-          NO SE ENCUENTRA EL MODELO (ERROR ${head.status})<br>
-          RUTA: ${abs}
-        </div>`;
-      return;
-    }
-  }catch(err){
-    els.viewer3d.innerHTML = `
-      <div class="pill" style="max-width:none;">
-        NO PUEDO ACCEDER AL MODELO (FETCH ERROR)<br>
-        RUTA: ${abs}
-      </div>`;
-    return;
-  }
-
-  // 2) Cargar visor
-  els.viewer3d.innerHTML = `
-    <model-viewer
-      src="${abs}"
-      camera-controls
-      auto-rotate
-      rotation-per-second="20deg"
-      exposure="1"
-      shadow-intensity="0.8"
-      style="width:100%;height:100%;background:#fff;">
-    </model-viewer>
-  `;
-
-  // 3) Si el modelo falla por formato/texturas, lo verás en consola y aquí
-  const mv = els.viewer3d.querySelector("model-viewer");
-  mv.addEventListener("error", () => {
-    els.viewer3d.innerHTML = `
-      <div class="pill" style="max-width:none;">
-        EL MODELO EXISTE PERO NO SE PUEDE RENDERIZAR.<br>
-        (Suele ser por exportación/compresión del GLB)
-      </div>`;
-  });
-}
-
-function close3D(){
-  els.modal3d.classList.remove("open");
-  els.modal3d.setAttribute("aria-hidden","true");
-  document.body.style.overflow = "";
-  els.viewer3d.innerHTML = "";
-}
 
 els.closeModal.addEventListener("click", closeModal);
 els.backModalBtn.addEventListener("click", closeModal);
@@ -1783,12 +1655,7 @@ els.modal.addEventListener("click", (e) => { if(e.target === els.modal) closeMod
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.modal.classList.contains("open")) closeModal();
 });
-els.close3dBtn.addEventListener("click", close3D);
-els.close3dX.addEventListener("click", close3D);
-els.modal3d.addEventListener("click", (e) => {
-  if(e.target === els.modal3d) close3D();
 
-});
 if (els.addToCartBtn){
   els.addToCartBtn.addEventListener("click", (e) => {
     e.preventDefault();
