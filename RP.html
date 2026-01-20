@@ -557,7 +557,7 @@
   /* ===================== CHAT ASSISTANT ===================== */
   #assistant-button{
     position:fixed;
-    bottom:calc(20px + var(--safeBottom));
+    bottom:20px;
     right:20px;
     width:56px;
     height:56px;
@@ -570,28 +570,16 @@
     font-size:22px;
     cursor:pointer;
     z-index:999999;
-    touch-action:manipulation;
   }
 
   #assistant-chat{
     position:fixed;
-    bottom:calc(90px + var(--safeBottom));
+    bottom:90px;
     right:20px;
     width:320px;
     background:#fff;
     border:1px solid #111;
     z-index:999999;
-  }
-
-  @media (max-width: 520px){
-    #assistant-chat{
-      right:12px;
-      left:12px;
-      width:auto;
-      bottom:calc(86px + var(--safeBottom));
-      max-height:70dvh;
-    }
-    #chat-messages{ height: min(46dvh, 360px); }
   }
 
   .chat-header{
@@ -612,7 +600,6 @@
     overflow-y:auto;
     font-size:12px;
     line-height:1.5;
-    -webkit-overflow-scrolling:touch;
   }
 
   #chat-input{
@@ -648,7 +635,7 @@
 
   .toast{
     position:fixed;
-    top:calc(18px + var(--safeTop));
+    top:18px;
     right:18px;
     z-index:9999999;
     background:#111;
@@ -1111,36 +1098,71 @@ function toggle(el, show){ el.classList.toggle("hidden", !show); }
   });
 })();
 
-/* ===================== CHAT: ENVIAR (SOLO TEXTO) ===================== */
-function addChatMsg(className, text){
+// ===================== JS ASISTENTE =====================
+
+const API_URL = "https://zara-style-assistant-api-7fvc.vercel.app/api/chat";
+
+let chatHistory = [];
+
+function addMsg(type, text){
   const div = document.createElement("div");
-  div.className = className;
-  div.textContent = text;
-  els.chatMessages.appendChild(div);
+  div.className = type === "user" ? "msg-user" : "msg-bot";
+  div.innerHTML =
+    type === "user"
+      ? `<strong>Tú:</strong> ${text}`
+      : `<strong>Asistente:</strong> ${text}`;
+ els.chatMessages.appendChild(div);
   els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
 }
 
-function getChatReply(userText){
-  const t = (userText || "").toLowerCase();
-  if(t.includes("cena")) return "PARA CENA: TE RECOMIENDO UN LOOK LIMPIO Y ELEGANTE. ¿QUIERES ALGO MÁS FORMAL O MÁS CASUAL?";
-  if(t.includes("oficina") || t.includes("trabajo")) return "PARA OFICINA: BLAZER + PANTALÓN RECTO O FALDA LÁPIZ. ¿PREFIERES NEGRO, BLANCO O TONO TIERRA?";
-  if(t.includes("cita")) return "PARA CITA: UNA PRENDA PROTAGONISTA Y COMPLEMENTOS MINIMAL. ¿DE DÍA O DE NOCHE?";
-  if(t.includes("viaje")) return "PARA VIAJE: CAPAS Y PRENDAS VERSÁTILES. ¿DESTINO FRÍO O CÁLIDO?";
-  return "DIME LA OCASIÓN (CENA, OFICINA, CITA, VIAJE) Y EL ESTILO (CASUAL / ELEGANTE).";
-}
+els.assistantBtn.addEventListener("click", () => {
+  els.chat.classList.toggle("hidden");
+  setTimeout(()=>els.chatInput.focus(),50);
+});
 
-els.chatInput.addEventListener("keydown", (e) => {
+els.chatClose.addEventListener("click", () => {
+  els.chat.classList.add("hidden");
+});
+
+els.chatInput.addEventListener("keydown", async (e) => {
   if(e.key !== "Enter") return;
-  e.preventDefault();
 
-  const msg = els.chatInput.value.trim();
-  if(!msg) return;
-
-  addChatMsg("msg-user", "TÚ: " + msg);
-  addChatMsg("msg-bot", "ZARA: " + getChatReply(msg));
+  const text = els.chatInput.value.trim();
+  if(!text) return;
 
   els.chatInput.value = "";
+  addMsg("user", text);
+  chatHistory.push({ role:"user", content:text });
+
+  const typing = document.createElement("div");
+  typing.className = "msg-bot";
+  typing.innerHTML = "<strong>Asistente:</strong> …";
+  els.chatMessages.appendChild(typing);
+
+  try{
+    const res = await fetch(API_URL,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ message:text, messages:chatHistory })
+    });
+
+    typing.remove();
+
+    if(!res.ok){
+      addMsg("bot","No puedo responder ahora mismo.");
+      return;
+    }
+
+    const data = await res.json();
+    addMsg("bot", data.reply);
+    chatHistory.push({ role:"assistant", content:data.reply });
+
+  }catch{
+    typing.remove();
+    addMsg("bot","Error de conexión con el asistente.");
+  }
 });
+
 
 /* ===================== UI HELPERS ===================== */
 let toastTimer = null;
@@ -1641,4 +1663,5 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
