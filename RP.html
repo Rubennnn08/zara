@@ -1104,7 +1104,7 @@ function toggle(el, show){ el.classList.toggle("hidden", !show); }
     if(!els.chat.classList.contains("hidden")){
       const div = document.createElement("div");
       div.className = "msg-bot";
-      div.textContent = "ZARA: ¿EN QUÉ PUEDO AYUDARTE? (CENA, OFICINA, CITA, VIAJE)";
+      div.textContent = "ZARA: ¿EN QUÉ PUEDO AYUDARTE?";
       els.chatMessages.appendChild(div);
       greeted = true;
     }
@@ -1641,3 +1641,4 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
