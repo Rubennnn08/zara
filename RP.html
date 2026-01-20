@@ -7,7 +7,6 @@
 
 <link rel="stylesheet" href="menu.css" />
 
-
 <!-- ✅ GLB Viewer -->
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
@@ -656,40 +655,6 @@
     opacity:1;
     transform:translateY(0);
   }
-/* ===================== CARA SOBRE MODELO 3D ===================== */
-
-.body-model-wrap{
-  position: relative;
-  width: 100%;
-  height: 420px;
-}
-
-.face-overlay{
-  position: absolute;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgba(17,17,17,.18);
-  background: #fff;
-
-  /* posición sobre la cabeza */
-  left: 50%;
-  top: 88px;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-/* en móvil un poco más pequeño */
-@media (max-width: 520px){
-  .body-model-wrap{ height: 360px; }
-  .face-overlay{
-    width: 76px;
-    height: 76px;
-    top: 72px;
-  }
-}
-
 </style>
 </head>
 
@@ -818,20 +783,9 @@
       <div class="body-img">
 
         <div class="body-img">
-
-
-     <div class="face-tools">
-  <label class="face-upload">
-    <input type="file" id="faceInput" accept="image/*">
-    <span>AÑADIR FOTO</span>
-  </label>
-  <button type="button" class="face-remove" id="faceRemove">ELIMINAR</button>
-</div>
-
-         <!-- ✅ JPG fallback -->
-        <img id="body-image-final" src="" alt="hidden">
+        <!-- ✅ JPG fallback -->
+        <img id="body-image-final" src="" alt="Tipo de cuerpo">
         
-
 
         <!-- ✅ GLB (solo para reloj de arena + morena) -->
         <model-viewer
@@ -848,12 +802,6 @@
           shadow-intensity="0.15">
         </model-viewer>
       </div>
-
-    <!-- Cara del usuario (overlay) -->
-    <img id="faceOverlay" class="face-overlay hidden" alt="">
-  </div>
-
-</div>
 
       <div class="body-actions">
         <button class="button" type="button" onclick="goToReco()">Ver recomendaciones</button>
@@ -1285,9 +1233,8 @@ function setTypeAssetRobust(type, hair){
   const hasModel = !!els.bodyFinalModel;
 
   if(hasModel){
-   document.getElementById("body-model-wrap")?.classList.add("hidden");
-els.bodyFinalModel.removeAttribute("src");
-
+    els.bodyFinalModel.classList.add("hidden");
+    els.bodyFinalModel.removeAttribute("src");
   }
 
   if(asset.kind === "glb" && hasModel){
@@ -1703,7 +1650,5 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
-
-
 
 
