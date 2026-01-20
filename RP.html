@@ -1071,19 +1071,6 @@ function toggle(el, show){ el.classList.toggle("hidden", !show); }
     return;
   }
 
-  // Abrir/cerrar al pulsar el botón 💬
-  els.assistantBtn.addEventListener("click", () => {
-    els.chat.classList.toggle("hidden");
-    if(!els.chat.classList.contains("hidden")) {
-      els.chatInput.focus();
-    }
-  });
-
-  // Cerrar al pulsar ✕
-  els.chatClose.addEventListener("click", () => {
-    els.chat.classList.add("hidden");
-  });
-
   // (Opcional) mensaje inicial la primera vez que se abre
   let greeted = false;
   els.assistantBtn.addEventListener("click", () => {
@@ -1091,7 +1078,7 @@ function toggle(el, show){ el.classList.toggle("hidden", !show); }
     if(!els.chat.classList.contains("hidden")){
       const div = document.createElement("div");
       div.className = "msg-bot";
-      div.textContent = "ZARA: ¿EN QUÉ PUEDO AYUDARTE?";
+      div.textContent = "¿EN QUÉ PUEDO AYUDARTE?";
       els.chatMessages.appendChild(div);
       greeted = true;
     }
@@ -1663,5 +1650,6 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
