@@ -655,74 +655,6 @@
     opacity:1;
     transform:translateY(0);
   }
-/* ✅ tools del chat (toggle) */
-.chat-tools{
-  padding:10px 12px;
-  border-bottom:1px solid rgba(17,17,17,.18);
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-}
-
-.chat-toggle{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:10px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-  color:#111;
-  user-select:none;
-}
-
-.chat-toggle input{
-  width:16px;
-  height:16px;
-  accent-color:#111;
-}
-
-/* ✅ prendas dentro del chat */
-.chat-prods{
-  display:grid;
-  gap:10px;
-  margin-top:10px;
-}
-
-.chat-prod{
-  display:grid;
-  grid-template-columns:56px 1fr;
-  gap:10px;
-  border:1px solid rgba(17,17,17,.18);
-  padding:8px;
-  background:#fff;
-  cursor:pointer;
-}
-
-.chat-prod img{
-  width:56px;
-  height:74px;
-  object-fit:cover;
-  border:1px solid rgba(17,17,17,.18);
-  background:#fafafa;
-}
-
-.chat-prod .ref{
-  font-size:10px;
-  letter-spacing:var(--letter);
-  text-transform:uppercase;
-  color:#111;
-  margin:0 0 4px;
-}
-
-.chat-prod .name{
-  font-size:11px;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin:0;
-  line-height:1.35;
-}
-
 </style>
 </head>
 
@@ -737,14 +669,6 @@
     ZARA STYLE ASSISTANT
     <span id="close-chat" aria-label="Cerrar">✕</span>
   </div>
-  <!-- ✅ OPCIÓN: MOSTRAR PRENDAS -->
-  <div class="chat-tools">
-    <label class="chat-toggle">
-      <input type="checkbox" id="chatShowProducts">
-      <span>MOSTRAR PRENDAS</span>
-    </label>
-  </div>
-
   <div id="chat-messages"></div>
   <input id="chat-input" placeholder="Escribe tu pregunta..." />
 </div>
@@ -1126,7 +1050,6 @@ const els = {
   chatClose: document.getElementById("close-chat"),
   chatInput: document.getElementById("chat-input"),
   chatMessages: document.getElementById("chat-messages"),
-chatShowProducts: document.getElementById("chatShowProducts"),
 
   cartCount: document.getElementById("cartCount"),
   addToCartBtn: document.getElementById("addToCartBtn"),
@@ -1134,18 +1057,6 @@ chatShowProducts: document.getElementById("chatShowProducts"),
 };
 
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
-
-/* ===================== CHAT: PREFERENCIA PRENDAS ===================== */
-(function initChatProductsPref(){
-  if(!els.chatShowProducts) return;
-
-  const saved = localStorage.getItem("chatShowProducts");
-  if(saved === "1") els.chatShowProducts.checked = true;
-
-  els.chatShowProducts.addEventListener("change", () => {
-    localStorage.setItem("chatShowProducts", els.chatShowProducts.checked ? "1" : "0");
-  });
-})();
 
 /* ===================== CHAT: ABRIR / CERRAR ===================== */
 (function initAssistantChat(){
@@ -1160,30 +1071,17 @@ function toggle(el, show){ el.classList.toggle("hidden", !show); }
     return;
   }
 
+  // (Opcional) mensaje inicial la primera vez que se abre
   let greeted = false;
-
-  // ✅ ABRIR / CERRAR
   els.assistantBtn.addEventListener("click", () => {
-    els.chat.classList.toggle("hidden");
-
-    // si se abrió, foco
+    if(greeted) return;
     if(!els.chat.classList.contains("hidden")){
-      setTimeout(()=>els.chatInput.focus(), 50);
-
-      // saludo 1 vez (sin cambiar tu texto)
-      if(!greeted){
-        const div = document.createElement("div");
-        div.className = "msg-bot";
-        div.textContent = "¿EN QUÉ PUEDO AYUDARTE?";
-        els.chatMessages.appendChild(div);
-        greeted = true;
-      }
+      const div = document.createElement("div");
+      div.className = "msg-bot";
+      div.textContent = "¿EN QUÉ PUEDO AYUDARTE?";
+      els.chatMessages.appendChild(div);
+      greeted = true;
     }
-  });
-
-  // ✅ CERRAR con X
-  els.chatClose.addEventListener("click", () => {
-    els.chat.classList.add("hidden");
   });
 })();
 
@@ -1201,93 +1099,6 @@ function addMsg(type, text){
       ? `<strong>Tú:</strong> ${text}`
       : `<strong>Asistente:</strong> ${text}`;
  els.chatMessages.appendChild(div);
-  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
-}
-/* ===================== CHAT: PRENDAS (FOTOS) ===================== */
-function escapeHtmlLite(str){
-  return String(str || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function pickProductsForChat(userText){
-  const profile = JSON.parse(localStorage.getItem("profile") || "null");
-  const bodyType = localStorage.getItem("bodyType") || lastBodyType || "no_definido";
-  const effectiveType = (bodyType === "no_definido") ? "generico" : bodyType;
-
-  const gender = profile?.gender || selectedGender || "mujer";
-  const text = (userText || "").toLowerCase();
-
-  let candidates = LOOKS.filter(
-    l => l.gender === gender &&
-         l.bodyType === effectiveType &&
-         Array.isArray(l.products) &&
-         l.products.length
-  );
-
-  if(candidates.length === 0){
-    candidates = LOOKS.filter(l => Array.isArray(l.products) && l.products.length);
-  }
-  if(candidates.length === 0) return [];
-
-  const chosen = candidates[0];
-
-  const prods = (chosen.products || []).slice();
-
-  const scoreProd = (p) => {
-    const joined = ((p.name||"") + " " + (p.desc||"")).toLowerCase();
-    let s = 0;
-    if(text.includes("frio") || text.includes("frío")){
-      if(joined.includes("bota") || joined.includes("chaqueta") || joined.includes("abrigo")) s += 3;
-    }
-    if(text.includes("pantalon") || text.includes("pantalón")){
-      if(joined.includes("pantal")) s += 3;
-    }
-    return s;
-  };
-
-  prods.sort((a,b) => scoreProd(b) - scoreProd(a));
-  return prods.slice(0,3);
-}
-
-function addProductsUnderLastBotMessage(products){
-  if(!products || !products.length) return;
-
-  const botMsgs = els.chatMessages.querySelectorAll(".msg-bot");
-  const lastBot = botMsgs[botMsgs.length - 1];
-  if(!lastBot) return;
-
-  const list = document.createElement("div");
-  list.className = "chat-prods";
-
-  products.forEach(p => {
-    const img = p.imgs?.[0] || "";
-    const ref = p.ref || "REF —";
-    const name = p.name || "PRENDA";
-    const desc = p.desc || "—";
-    const images = p.imgs || [];
-
-    const item = document.createElement("div");
-    item.className = "chat-prod";
-    item.innerHTML = `
-      <img src="${escapeHtmlLite(img)}">
-      <div>
-        <p class="ref">${escapeHtmlLite(ref)}</p>
-        <p class="name">${escapeHtmlLite(name)}</p>
-      </div>
-    `;
-
-    item.addEventListener("click", () => {
-      openModal({ name, tag: ref, desc, images });
-    });
-
-    list.appendChild(item);
-  });
-
-  lastBot.appendChild(list);
   els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
 }
 
@@ -1332,12 +1143,6 @@ els.chatInput.addEventListener("keydown", async (e) => {
     const data = await res.json();
     addMsg("bot", data.reply);
     chatHistory.push({ role:"assistant", content:data.reply });
-
-// ✅ si está activada la opción, añadimos prendas (fotos) debajo del mensaje del bot
-if(els.chatShowProducts?.checked){
-  const selected = pickProductsForChat(text);
-  addProductsUnderLastBotMessage(selected);
-}
 
   }catch{
     typing.remove();
@@ -1845,4 +1650,5 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
