@@ -1160,17 +1160,30 @@ function toggle(el, show){ el.classList.toggle("hidden", !show); }
     return;
   }
 
-  // (Opcional) mensaje inicial la primera vez que se abre
   let greeted = false;
+
+  // ✅ ABRIR / CERRAR
   els.assistantBtn.addEventListener("click", () => {
-    if(greeted) return;
+    els.chat.classList.toggle("hidden");
+
+    // si se abrió, foco
     if(!els.chat.classList.contains("hidden")){
-      const div = document.createElement("div");
-      div.className = "msg-bot";
-      div.textContent = "¿EN QUÉ PUEDO AYUDARTE?";
-      els.chatMessages.appendChild(div);
-      greeted = true;
+      setTimeout(()=>els.chatInput.focus(), 50);
+
+      // saludo 1 vez (sin cambiar tu texto)
+      if(!greeted){
+        const div = document.createElement("div");
+        div.className = "msg-bot";
+        div.textContent = "¿EN QUÉ PUEDO AYUDARTE?";
+        els.chatMessages.appendChild(div);
+        greeted = true;
+      }
     }
+  });
+
+  // ✅ CERRAR con X
+  els.chatClose.addEventListener("click", () => {
+    els.chat.classList.add("hidden");
   });
 })();
 
