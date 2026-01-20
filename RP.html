@@ -1071,6 +1071,77 @@ const els = {
 
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
 
+/* ===================== CHAT: ABRIR / CERRAR ===================== */
+(function initAssistantChat(){
+  if(!els.assistantBtn || !els.chat || !els.chatClose || !els.chatInput || !els.chatMessages){
+    console.warn("CHAT: faltan elementos", {
+      assistantBtn: !!els.assistantBtn,
+      chat: !!els.chat,
+      chatClose: !!els.chatClose,
+      chatInput: !!els.chatInput,
+      chatMessages: !!els.chatMessages
+    });
+    return;
+  }
+
+  // Abrir/cerrar al pulsar el botón 💬
+  els.assistantBtn.addEventListener("click", () => {
+    els.chat.classList.toggle("hidden");
+    if(!els.chat.classList.contains("hidden")) {
+      els.chatInput.focus();
+    }
+  });
+
+  // Cerrar al pulsar ✕
+  els.chatClose.addEventListener("click", () => {
+    els.chat.classList.add("hidden");
+  });
+
+  // (Opcional) mensaje inicial la primera vez que se abre
+  let greeted = false;
+  els.assistantBtn.addEventListener("click", () => {
+    if(greeted) return;
+    if(!els.chat.classList.contains("hidden")){
+      const div = document.createElement("div");
+      div.className = "msg-bot";
+      div.textContent = "ZARA: ¿EN QUÉ PUEDO AYUDARTE? (CENA, OFICINA, CITA, VIAJE)";
+      els.chatMessages.appendChild(div);
+      greeted = true;
+    }
+  });
+})();
+
+/* ===================== CHAT: ENVIAR (SOLO TEXTO) ===================== */
+function addChatMsg(className, text){
+  const div = document.createElement("div");
+  div.className = className;
+  div.textContent = text;
+  els.chatMessages.appendChild(div);
+  els.chatMessages.scrollTop = els.chatMessages.scrollHeight;
+}
+
+function getChatReply(userText){
+  const t = (userText || "").toLowerCase();
+  if(t.includes("cena")) return "PARA CENA: TE RECOMIENDO UN LOOK LIMPIO Y ELEGANTE. ¿QUIERES ALGO MÁS FORMAL O MÁS CASUAL?";
+  if(t.includes("oficina") || t.includes("trabajo")) return "PARA OFICINA: BLAZER + PANTALÓN RECTO O FALDA LÁPIZ. ¿PREFIERES NEGRO, BLANCO O TONO TIERRA?";
+  if(t.includes("cita")) return "PARA CITA: UNA PRENDA PROTAGONISTA Y COMPLEMENTOS MINIMAL. ¿DE DÍA O DE NOCHE?";
+  if(t.includes("viaje")) return "PARA VIAJE: CAPAS Y PRENDAS VERSÁTILES. ¿DESTINO FRÍO O CÁLIDO?";
+  return "DIME LA OCASIÓN (CENA, OFICINA, CITA, VIAJE) Y EL ESTILO (CASUAL / ELEGANTE).";
+}
+
+els.chatInput.addEventListener("keydown", (e) => {
+  if(e.key !== "Enter") return;
+  e.preventDefault();
+
+  const msg = els.chatInput.value.trim();
+  if(!msg) return;
+
+  addChatMsg("msg-user", "TÚ: " + msg);
+  addChatMsg("msg-bot", "ZARA: " + getChatReply(msg));
+
+  els.chatInput.value = "";
+});
+
 /* ===================== UI HELPERS ===================== */
 let toastTimer = null;
 function showToast(msg){
