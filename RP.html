@@ -655,6 +655,16 @@
     opacity:1;
     transform:translateY(0);
   }
+  /* ✅ MICRO-POP CESTA (Zara-clean) */
+@keyframes cartPop{
+  0%{ transform:scale(1); }
+  40%{ transform:scale(1.18); }
+  100%{ transform:scale(1); }
+}
+#cartCount.pop{
+  display:inline-block;
+  animation: cartPop .22s ease-out;
+}
 </style>
 </head>
 
@@ -1078,8 +1088,17 @@ const cartState = {
 // Guardamos qué prenda está abierta en el modal (para añadirla)
 const modalProductState = { name: "", ref: "" };
 
-function updateCartUI(){
-  if(els.cartCount) els.cartCount.textContent = String(cartState.count);
+function updateCartUI(pop=false){
+  if(!els.cartCount) return;
+
+  els.cartCount.textContent = String(cartState.count);
+
+  // Micro-animación del contador (opcional)
+  if(pop){
+    els.cartCount.classList.remove("pop"); // reinicia animación
+    void els.cartCount.offsetWidth;        // fuerza reflow
+    els.cartCount.classList.add("pop");    // lanza animación
+  }
 }
 
 function addToCartCurrent(){
@@ -1093,7 +1112,7 @@ function addToCartCurrent(){
   localStorage.setItem("cartCount", String(cartState.count));
   localStorage.setItem("cartItems", JSON.stringify(cartState.items));
 
-  updateCartUI();
+  updateCartUI(true);
   showToast("PRENDA AÑADIDA CON ÉXITO");
 }
   
@@ -1704,6 +1723,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
