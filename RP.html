@@ -1069,7 +1069,34 @@ const els = {
   addToCartBtn: document.getElementById("addToCartBtn"),
   toast: document.getElementById("toast"),
 };
+/* ===================== ✅ CESTA (CONTADOR + LOCALSTORAGE) ===================== */
+const cartState = {
+  count: Number(localStorage.getItem("cartCount") || 0),
+  items: JSON.parse(localStorage.getItem("cartItems") || "[]")
+};
 
+// Guardamos qué prenda está abierta en el modal (para añadirla)
+const modalProductState = { name: "", ref: "" };
+
+function updateCartUI(){
+  if(els.cartCount) els.cartCount.textContent = String(cartState.count);
+}
+
+function addToCartCurrent(){
+  // Info de lo que está viendo el usuario en el modal
+  const name = (modalProductState.name || els.modalName?.textContent || "PRENDA").trim();
+  const ref  = (modalProductState.ref  || els.modalTag?.textContent  || "REF —").trim();
+
+  cartState.count += 1;
+  cartState.items.push({ name, ref, ts: Date.now() });
+
+  localStorage.setItem("cartCount", String(cartState.count));
+  localStorage.setItem("cartItems", JSON.stringify(cartState.items));
+
+  updateCartUI();
+  showToast("PRENDA AÑADIDA CON ÉXITO");
+}
+  
 function toggle(el, show){ el.classList.toggle("hidden", !show); }
 
 /* ===================== CHAT: ABRIR / CERRAR ===================== */
@@ -1578,6 +1605,10 @@ function openModal({ name, tag, desc, images }){
   els.modalDesc.textContent = desc || "—";
   els.modalTitle.textContent = "IMÁGENES";
 
+  // ✅ Guardamos la prenda actual para el botón "AÑADIR A LA CESTA"
+  modalProductState.name = String(name || "").toUpperCase();
+  modalProductState.ref  = String(tag  || "").toUpperCase();
+  
   els.galleryMain.classList.remove("is-fading");
   els.galleryMain.src = imgs[0];
 
@@ -1626,7 +1657,15 @@ els.modal.addEventListener("click", (e) => {
   const inside = e.target.closest(".modal-content") || e.target.closest(".modal-top");
   if(!inside) closeModal();
 });
-
+  
+/* ===================== ✅ BOTÓN AÑADIR A LA CESTA ===================== */
+if (els.addToCartBtn){
+  els.addToCartBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    addToCartCurrent();
+  });
+}
+  
 document.addEventListener("keydown", (e) => {
   if(!els.modal.classList.contains("open")) return;
   if(e.key === "Escape") closeModal();
@@ -1654,6 +1693,7 @@ els.hair.addEventListener("change", updatePillFromMeasures);
 
   els.avatar.src = `${selectedGender}.png`;
   updateHeightAvatar();
+  updateCartUI();
 })();
 
 /* ===================== DEBUG GLOBAL ===================== */
@@ -1664,6 +1704,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
