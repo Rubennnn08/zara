@@ -924,7 +924,7 @@
   <div class="searchbar"><input type="text" placeholder="Buscar" id="search"></div>
   <div class="help">
     <a href="./index.html">INICIAR SESIÓN</a>
-    <a>AYUDA</a>
+    <a href="#" id="privacyLink">PRIVACIDAD</a>
     <a href="#" id="cartLink">CESTA [<span id="cartCount">0</span>]</a>
     <a href="./MYPLNAER.html">MY PLANNER</a>
     <a href="./Agenda.html">AGENDA</a>
@@ -1011,6 +1011,7 @@
   </label>
 
   <div class="uploadNote" id="photoStatus">NO HAY IMAGEN CARGADA</div>
+  <button class="uploadBtn" type="button" id="removePhotoBtn">BORRAR IMAGEN</button>
 </div>
       </div>
 
@@ -1180,11 +1181,41 @@
 
   <div class="reviewsList hidden" id="reviewsList"></div>
 </div>
+<!-- ✅ PRIVACIDAD (MODAL) -->
+<section class="modal" id="privacyModal" aria-hidden="true" role="dialog" aria-label="Privacidad">
+  <div class="modal-top">
+    <button class="button secondary" type="button" id="closePrivacyTop" style="width:auto;padding:10px 12px;">
+      VOLVER ATRÁS
+    </button>
+    <div class="modal-title">PRIVACIDAD</div>
+    <button class="close" type="button" aria-label="Cerrar" id="closePrivacyX"></button>
+  </div>
 
+  <div class="modal-content" style="grid-template-columns:1fr;max-width:720px;">
+    <div class="panel-right" style="border:none;">
+      <h2 style="margin:0 0 10px;font-size:16px;font-weight:600;letter-spacing:var(--letter);text-transform:uppercase;">
+        USO DE LA IMAGEN
+      </h2>
 
-    </aside>
+      <div class="pill" style="max-width:none;margin-bottom:10px;">
+        TU IMAGEN SE UTILIZA PARA PERSONALIZAR LA EXPERIENCIA
+      </div>
+
+      <div class="pill" style="max-width:none;margin-bottom:10px;">
+        PUEDES BORRARLA EN CUALQUIER MOMENTO
+      </div>
+
+      <div class="pill" style="max-width:none;">
+        NO SE COMPARTE CON TERCEROS
+      </div>
+
+      <div class="buy-box" style="margin-top:16px;">
+        <button class="button secondary" type="button" id="closePrivacyBottom">CERRAR</button>
+      </div>
+    </div>
   </div>
 </section>
+
 
 <script>
 /* ===================== RUTAS ===================== */
@@ -1373,6 +1404,44 @@ const els = {
   addToCartBtn: document.getElementById("addToCartBtn"),
   toast: document.getElementById("toast"),
 };
+/* ===================== ✅ PRIVACIDAD MODAL ===================== */
+(function initPrivacyModal(){
+  const link = document.getElementById("privacyLink");
+  const modal = document.getElementById("privacyModal");
+  const closeTop = document.getElementById("closePrivacyTop");
+  const closeX = document.getElementById("closePrivacyX");
+  const closeBottom = document.getElementById("closePrivacyBottom");
+
+  if(!link || !modal) return;
+
+  function open(){
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
+  function close(){
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }
+
+  link.addEventListener("click",(e)=>{ e.preventDefault(); open(); });
+  closeTop?.addEventListener("click", close);
+  closeX?.addEventListener("click", close);
+  closeBottom?.addEventListener("click", close);
+
+  modal.addEventListener("click",(e)=>{
+    const inside = e.target.closest(".modal-content") || e.target.closest(".modal-top");
+    if(!inside) close();
+  });
+
+  document.addEventListener("keydown",(e)=>{
+    if(modal.classList.contains("open") && e.key === "Escape") close();
+  });
+})();
+
 /* ===================== ✅ CESTA (CONTADOR + LOCALSTORAGE) ===================== */
 const cartState = {
   count: Number(localStorage.getItem("cartCount") || 0),
@@ -1665,17 +1734,25 @@ function processProfile(){
   lastBodyType = getBodyTypeFromMeasures();
   localStorage.setItem("bodyType", lastBodyType);
 
-  const profile = {
-    gender: selectedGender,
-    hair: els.hair.value,
-    height: Number(els.height.value),
-    weight: Number(els.weight.value) || null,
-    back: backValue,
-    waist: waistValue,
-    hips: hipsValue,
-    shoes: Number(els.shoes.value) || null
-  };
-  localStorage.setItem("profile", JSON.stringify(profile));
+ // ✅ Conserva si se añadió foto antes de pulsar continuar
+const prev = JSON.parse(localStorage.getItem("profile") || "{}");
+
+const profile = {
+  gender: selectedGender,
+  hair: els.hair.value,
+  height: Number(els.height.value),
+  weight: Number(els.weight.value) || null,
+  back: backValue,
+  waist: waistValue,
+  hips: hipsValue,
+  shoes: Number(els.shoes.value) || null,
+
+  // ✅ clave importante
+  profilePhotoAdded: !!prev.profilePhotoAdded
+};
+
+localStorage.setItem("profile", JSON.stringify(profile));
+
 
   els.bodyPill.textContent = `TIPO: ${displayBodyTypeLabel(lastBodyType)}`;
   setTypeAssetRobust(lastBodyType, profile.hair);
@@ -2298,29 +2375,71 @@ els.thumbs.addEventListener("click", (e) => {
   const img = btn.querySelector("img");
   if(img?.src) changeMainImage(img.src, i);
 });
-/* ===================== FOTO (SIMULADO) ===================== */
-(function initPhotoSim(){
-  const input = document.getElementById("photoInput");
+/* ===================== FOTO (UPLOAD UI) ===================== */
+(function initPhotoUpload(){
+  const input  = document.getElementById("photoInput");
   const status = document.getElementById("photoStatus");
   if(!input || !status) return;
 
-  // si ya había “foto” guardada
-  const saved = JSON.parse(localStorage.getItem("profile") || "null");
-  if(saved?.profilePhotoAdded){
-    status.textContent = "FOTO CARGADA ✓ · SE GENERARÁ TU MODELO 3D (SIMULADO)";
-    status.classList.add("ok");
+  function setStatus(added){
+    if(added){
+      status.textContent = "FOTO CARGADA ✓ · SE GENERARÁ TU MODELO 3D";
+      status.classList.add("ok");
+    }else{
+      status.textContent = "NO HAY IMAGEN CARGADA";
+      status.classList.remove("ok");
+    }
   }
 
-  input.addEventListener("change", ()=>{
-    // no necesitamos guardar la imagen real, solo simular
-    const profile = JSON.parse(localStorage.getItem("profile") || "{}");
-    profile.profilePhotoAdded = true;
-    localStorage.setItem("profile", JSON.stringify(profile));
+  // Si ya estaba marcado
+  const saved = JSON.parse(localStorage.getItem("profile") || "null");
+  setStatus(!!saved?.profilePhotoAdded);
 
-    status.textContent = "FOTO CARGADA ✓ · SE GENERARÁ TU MODELO 3D (SIMULADO)";
-    status.classList.add("ok");
+  input.addEventListener("change", ()=>{
+    if(!input.files || !input.files.length){
+      // si cancelan el selector
+      const p = JSON.parse(localStorage.getItem("profile") || "{}");
+      p.profilePhotoAdded = false;
+      localStorage.setItem("profile", JSON.stringify(p));
+      setStatus(false);
+      return;
+    }
+
+    // No guardamos la imagen real: solo guardamos el hecho de que se añadió
+    const p = JSON.parse(localStorage.getItem("profile") || "{}");
+    p.profilePhotoAdded = true;
+    localStorage.setItem("profile", JSON.stringify(p));
+    setStatus(true);
   });
 })();
+  /* ===================== FOTO (BORRAR) ===================== */
+(function initRemovePhoto(){
+  const btn    = document.getElementById("removePhotoBtn");
+  const input  = document.getElementById("photoInput");
+  const status = document.getElementById("photoStatus");
+  if(!btn || !input || !status) return;
+
+  function setStatus(added){
+    if(added){
+      status.textContent = "FOTO CARGADA ✓ · SE GENERARÁ TU MODELO 3D";
+      status.classList.add("ok");
+    }else{
+      status.textContent = "NO HAY IMAGEN CARGADA";
+      status.classList.remove("ok");
+    }
+  }
+
+  btn.addEventListener("click", ()=>{
+    const p = JSON.parse(localStorage.getItem("profile") || "{}");
+    p.profilePhotoAdded = false;
+    localStorage.setItem("profile", JSON.stringify(p));
+
+    input.value = "";      // limpia el input
+    setStatus(false);      // actualiza el texto
+    showToast("IMAGEN BORRADA");
+  });
+})();
+
 
 /* ===================== EVENTOS INPUTS ===================== */
 els.height.addEventListener("input", updateHeightAvatar);
@@ -2347,6 +2466,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
