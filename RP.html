@@ -108,6 +108,62 @@
     padding:10px 12px;font-size:12px;letter-spacing:var(--letter);
     text-transform:uppercase;background:#fff;
   }
+/* ✅ FOTO (SIMULADO) */
+.uploadSim{
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--hair);
+  display:grid;
+  gap:10px;
+}
+.uploadSimHead{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.uploadSimTitle{
+  font-size:12px;
+  letter-spacing:var(--letter);
+  text-transform:uppercase;
+  color:#111;
+}
+.uploadSimHint{
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(17,17,17,.55);
+}
+
+.uploadBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(17,17,17,.22);
+  background:#fff;
+  color:#111;
+  padding:12px 14px;
+  font-size:12px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  border-radius:999px;
+  cursor:pointer;
+  width:100%;
+  max-width:420px;
+}
+.uploadBtn input{
+  display:none;
+}
+.uploadNote{
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(17,17,17,.6);
+}
+.uploadNote.ok{
+  color:#111;
+}
 
   /* Pantalla tipo cuerpo */
   #body-screen{max-width:980px;margin:0 auto;padding:18px 14px 64px;}
@@ -942,6 +998,20 @@
           <button class="button" type="button" onclick="processProfile()">Continuar</button>
           <button class="button secondary" type="button" onclick="backToStart()">Volver</button>
         </div>
+        <!-- ✅ FOTO (SIMULADO) -->
+<div class="uploadSim">
+  <div class="uploadSimHead">
+    <div class="uploadSimTitle">AÑADIR FOTO</div>
+    <div class="uploadSimHint">PARA GENERAR TU MODELO 3D</div>
+  </div>
+
+  <label class="uploadBtn">
+    <input type="file" id="photoInput" accept="image/*">
+    SUBIR IMAGEN
+  </label>
+
+  <div class="uploadNote" id="photoStatus">NO HAY IMAGEN CARGADA</div>
+</div>
       </div>
 
       <aside class="side">
@@ -960,6 +1030,9 @@
   <section id="body-screen" class="hidden">
     <div class="title">TU TIPO DE CUERPO</div>
     <p class="subtitle">Basado en tus medidas y tipo de pelo</p>
+<p class="subtitle" id="photo3dMsg" style="display:none;">
+  MODELO 3D GENERADO A PARTIR DE TU FOTO (SIMULADO)
+</p>
 
     <div class="body-card">
       <div class="pill" id="body-pill">TIPO: —</div>
@@ -1607,6 +1680,11 @@ function processProfile(){
   els.bodyPill.textContent = `TIPO: ${displayBodyTypeLabel(lastBodyType)}`;
   setTypeAssetRobust(lastBodyType, profile.hair);
 
+  const msg = document.getElementById("photo3dMsg");
+if(msg){
+  msg.style.display = profile.profilePhotoAdded ? "block" : "none";
+}
+
   toggle(els.form, false);
   toggle(els.body, true);
 }
@@ -2220,6 +2298,29 @@ els.thumbs.addEventListener("click", (e) => {
   const img = btn.querySelector("img");
   if(img?.src) changeMainImage(img.src, i);
 });
+/* ===================== FOTO (SIMULADO) ===================== */
+(function initPhotoSim(){
+  const input = document.getElementById("photoInput");
+  const status = document.getElementById("photoStatus");
+  if(!input || !status) return;
+
+  // si ya había “foto” guardada
+  const saved = JSON.parse(localStorage.getItem("profile") || "null");
+  if(saved?.profilePhotoAdded){
+    status.textContent = "FOTO CARGADA ✓ · SE GENERARÁ TU MODELO 3D (SIMULADO)";
+    status.classList.add("ok");
+  }
+
+  input.addEventListener("change", ()=>{
+    // no necesitamos guardar la imagen real, solo simular
+    const profile = JSON.parse(localStorage.getItem("profile") || "{}");
+    profile.profilePhotoAdded = true;
+    localStorage.setItem("profile", JSON.stringify(profile));
+
+    status.textContent = "FOTO CARGADA ✓ · SE GENERARÁ TU MODELO 3D (SIMULADO)";
+    status.classList.add("ok");
+  });
+})();
 
 /* ===================== EVENTOS INPUTS ===================== */
 els.height.addEventListener("input", updateHeightAvatar);
@@ -2246,6 +2347,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
