@@ -2042,10 +2042,33 @@ function renderRatingStats(ref){
 function reviewsKey(ref){
   return `zara_reviews_${String(ref || "").replaceAll(" ", "_")}`;
 }
+/* ===================== RESEÑAS POR PRENDA (MANUAL) ===================== */
+const REVIEWS_BY_REF = {
+  "REF 1255/404/505": [
+    { stars: 5, text: "El algodón es buenísimo y queda perfecta.", ts: Date.now() - 3*86400000 },
+    { stars: 4, text: "Sienta bien y la talla es bastante fiel.", ts: Date.now() - 7*86400000 },
+    { stars: 5, text: "Me gustó más en persona que en foto.", ts: Date.now() - 12*86400000 }
+  ],
+  "REF 3022/610/800": [
+    { stars: 4, text: "Muy elegantes, el tacón es cómodo.", ts: Date.now() - 2*86400000 },
+    { stars: 3, text: "Son preciosas pero recomiendo media talla más.", ts: Date.now() - 9*86400000 }
+  ],
+  "REF 5919/211/922": [
+    { stars: 5, text: "La caída y el encaje son espectaculares.", ts: Date.now() - 5*86400000 },
+    { stars: 4, text: "Queda súper bien con botas.", ts: Date.now() - 11*86400000 }
+  ]
+};
 
 // reseñas simuladas “base” (estables por producto)
 function ensureSimulatedReviews(ref){
   const key = reviewsKey(ref);
+    // ✅ Si hay reseñas manuales para esta REF, usar esas
+  const manual = REVIEWS_BY_REF[String(ref || "").toUpperCase()];
+  if(manual && Array.isArray(manual) && manual.length){
+    localStorage.setItem(key, JSON.stringify(manual));
+    return manual;
+  }
+
   const raw = localStorage.getItem(key);
   if(raw){
     try{
@@ -2466,6 +2489,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
