@@ -1995,6 +1995,8 @@ function ratingLoadForRef(ref){
 
 // listeners (una sola vez)
 (function initRatingListeners(){
+
+  // ⭐ Click en estrellas (delegado)
   document.addEventListener("click", (e)=>{
     const star = e.target.closest(".star");
     if(!star) return;
@@ -2004,65 +2006,64 @@ function ratingLoadForRef(ref){
 
     const hint = document.getElementById("ratingHint");
     if(hint) hint.textContent = `${ratingState.stars}/5`;
-    document.getElementById("reviewsToggle")?.addEventListener("click", ()=>{
-  const list = document.getElementById("reviewsList");
-  const btn  = document.getElementById("reviewsToggle");
-  if(!list || !btn) return;
+  });
 
-  const willShow = list.classList.contains("hidden");
-  list.classList.toggle("hidden", !willShow);
-  btn.textContent = willShow ? "OCULTAR" : "VER";
-});
+  // 👁️ Toggle reseñas (UNA SOLA VEZ)
+  document.getElementById("reviewsToggle")?.addEventListener("click", ()=>{
+    const list = document.getElementById("reviewsList");
+    const btn  = document.getElementById("reviewsToggle");
+    if(!list || !btn) return;
 
+    const willShow = list.classList.contains("hidden");
+    list.classList.toggle("hidden", !willShow);
+    btn.textContent = willShow ? "OCULTAR" : "VER";
+  });
+
+  // 💾 Guardar valoración
   document.getElementById("saveRatingBtn")?.addEventListener("click", ()=>{
     if(!ratingState.key){
       const savedMsg = document.getElementById("ratingSaved");
       if(savedMsg) savedMsg.textContent = "No se detectó el producto.";
       return;
     }
+
+    // ⚠️ IMPORTANTE: leer el voto previo ANTES de sobrescribir
+    const prevRaw = localStorage.getItem(ratingState.key);
+    let prevStars = 0;
+    if(prevRaw){
+      try{ prevStars = Number(JSON.parse(prevRaw).stars || 0); }catch{}
+    }
+
     const comment = (document.getElementById("ratingComment")?.value || "").trim();
     const data = { stars: ratingState.stars, comment, date: new Date().toISOString() };
     localStorage.setItem(ratingState.key, JSON.stringify(data));
-      // ✅ AÑADIR COMENTARIO COMO RESEÑA (si hay texto)
-  if(comment){
+
+    // ✅ AÑADIR COMENTARIO COMO RESEÑA (si hay texto)
+    if(comment){
+      const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
+      const key = reviewsKey(ref);
+      const reviews = ensureSimulatedReviews(ref);
+
+      reviews.unshift({ stars: ratingState.stars, text: comment, ts: Date.now() });
+      localStorage.setItem(key, JSON.stringify(reviews));
+      renderReviews(ref);
+    }
+
+    // ✅ actualizar stats (media + nº reseñas)
     const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
-    const key = reviewsKey(ref);
-    const reviews = ensureSimulatedReviews(ref);
+    const statsKey = ratingStatsKey(ref);
+    const stats = ensureSimulatedStats(ref);
 
-    // añadimos la reseña arriba del todo
-    reviews.unshift({
-      stars: ratingState.stars,
-      text: comment,
-      ts: Date.now()
-    });
+    if(prevStars > 0){
+      stats.sum = (Number(stats.sum) || 0) - prevStars + ratingState.stars;
+    } else {
+      stats.count = (Number(stats.count) || 0) + 1;
+      stats.sum = (Number(stats.sum) || 0) + ratingState.stars;
+    }
 
-    localStorage.setItem(key, JSON.stringify(reviews));
-    renderReviews(ref);
-  }
-
-// ✅ actualiza stats (media + nº reseñas) con tu voto
-const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
-const statsKey = ratingStatsKey(ref);
-const stats = ensureSimulatedStats(ref);
-
-// si ya había una valoración previa, ajustamos sin sumar reseña
-const prevRaw = localStorage.getItem(ratingState.key);
-let prevStars = 0;
-if(prevRaw){
-  try{ prevStars = Number(JSON.parse(prevRaw).stars || 0); }catch{}
-}
-
-if(prevStars > 0){
-  stats.sum = (Number(stats.sum) || 0) - prevStars + ratingState.stars;
-} else {
-  stats.count = (Number(stats.count) || 0) + 1;
-  stats.sum = (Number(stats.sum) || 0) + ratingState.stars;
-}
-
-stats.avg = stats.count ? Math.round((stats.sum / stats.count) * 10) / 10 : 0;
-
-localStorage.setItem(statsKey, JSON.stringify(stats));
-renderRatingStats(ref);
+    stats.avg = stats.count ? Math.round((stats.sum / stats.count) * 10) / 10 : 0;
+    localStorage.setItem(statsKey, JSON.stringify(stats));
+    renderRatingStats(ref);
 
     const savedMsg = document.getElementById("ratingSaved");
     if(savedMsg){
@@ -2071,26 +2072,26 @@ renderRatingStats(ref);
     }
   });
 
+  // 🧹 Borrar valoración
   document.getElementById("clearRatingBtn")?.addEventListener("click", ()=>{
     if(!ratingState.key) return;
-    // ✅ si había voto, lo quitamos de la media
-const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
-const statsKey = ratingStatsKey(ref);
-const stats = ensureSimulatedStats(ref);
 
-const prevRaw = localStorage.getItem(ratingState.key);
-let prevStars = 0;
-if(prevRaw){
-  try{ prevStars = Number(JSON.parse(prevRaw).stars || 0); }catch{}
-}
+    const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
+    const statsKey = ratingStatsKey(ref);
+    const stats = ensureSimulatedStats(ref);
 
-if(prevStars > 0){
-  stats.count = Math.max(0, (Number(stats.count) || 0) - 1);
-  stats.sum = Math.max(0, (Number(stats.sum) || 0) - prevStars);
-  stats.avg = stats.count ? Math.round((stats.sum / stats.count) * 10) / 10 : 0;
+    const prevRaw = localStorage.getItem(ratingState.key);
+    let prevStars = 0;
+    if(prevRaw){
+      try{ prevStars = Number(JSON.parse(prevRaw).stars || 0); }catch{}
+    }
 
-  localStorage.setItem(statsKey, JSON.stringify(stats));
-}
+    if(prevStars > 0){
+      stats.count = Math.max(0, (Number(stats.count) || 0) - 1);
+      stats.sum = Math.max(0, (Number(stats.sum) || 0) - prevStars);
+      stats.avg = stats.count ? Math.round((stats.sum / stats.count) * 10) / 10 : 0;
+      localStorage.setItem(statsKey, JSON.stringify(stats));
+    }
 
     localStorage.removeItem(ratingState.key);
     ratingState.stars = 0;
@@ -2106,8 +2107,10 @@ if(prevStars > 0){
       savedMsg.textContent = "Borrado ✓";
       setTimeout(()=> savedMsg.textContent = "", 1200);
     }
-      renderRatingStats(ref);
+
+    renderRatingStats(ref);
   });
+
 })();
 
 /* ===================== MODAL (GALERÍA) ===================== */
@@ -2243,6 +2246,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
