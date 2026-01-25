@@ -648,6 +648,22 @@
   font-size:11px;
   color:rgba(17,17,17,.55);
 }
+.ratingStats{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(17,17,17,.55);
+}
+.ratingStats .avg{
+  color:#111;
+}
+.ratingStats .sep{
+  opacity:.6;
+}
 
 .stars{
   display:flex;
@@ -991,6 +1007,12 @@
       <div class="ratingTitle">VALORAR EL PRODUCTO</div>
       <div class="ratingHint" id="ratingHint">Selecciona una valoración</div>
     </div>
+    <!-- ✅ Media + nº reseñas (simulado) -->
+<div class="ratingStats">
+  <span class="avg" id="ratingAvg">—</span>
+  <span class="sep">·</span>
+  <span class="count" id="ratingCount">—</span>
+</div>
 
     <div class="stars" role="radiogroup" aria-label="Valoración del producto">
       <button class="star" type="button" data-star="1" aria-label="1 estrella">★</button>
@@ -1745,6 +1767,51 @@ const ratingState = { key:null, stars:0 };
 function ratingStorageKey(ref){
   return `zara_rating_${String(ref || "").replaceAll(" ", "_")}`;
 }
+function ratingStatsKey(ref){
+  return `zara_rating_stats_${String(ref || "").replaceAll(" ", "_")}`;
+}
+
+// hash simple para que sea "estable" por REF (sin random real)
+function hashFromString(str){
+  str = String(str || "");
+  let h = 0;
+  for(let i=0; i<str.length; i++){
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+}
+
+// crea stats simulados la primera vez (y los guarda)
+function ensureSimulatedStats(ref){
+  const key = ratingStatsKey(ref);
+  const existing = localStorage.getItem(key);
+  if(existing){
+    try{ return JSON.parse(existing); }catch{}
+  }
+
+  const h = hashFromString(ref);
+  const count = 12 + (h % 420);               // 12..431 reseñas
+  const avgBase = 3.6 + ((h % 120) / 100);    // 3.60..4.79
+  const avg = Math.round(avgBase * 10) / 10;  // 1 decimal
+
+  // guardamos también "sum" para poder actualizar con tu voto
+  const sum = avg * count;
+
+  const data = { count, avg, sum };
+  localStorage.setItem(key, JSON.stringify(data));
+  return data;
+}
+
+function renderRatingStats(ref){
+  const avgEl = document.getElementById("ratingAvg");
+  const countEl = document.getElementById("ratingCount");
+  if(!avgEl || !countEl) return;
+
+  const stats = ensureSimulatedStats(ref);
+  avgEl.textContent = `${Number(stats.avg).toFixed(1)} / 5`;
+  countEl.textContent = `${stats.count} RESEÑAS`;
+}
 
 function paintStars(val){
   document.querySelectorAll(".star").forEach(btn=>{
@@ -1811,6 +1878,29 @@ function ratingLoadForRef(ref){
     const comment = (document.getElementById("ratingComment")?.value || "").trim();
     const data = { stars: ratingState.stars, comment, date: new Date().toISOString() };
     localStorage.setItem(ratingState.key, JSON.stringify(data));
+// ✅ actualiza stats (media + nº reseñas) con tu voto
+const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
+const statsKey = ratingStatsKey(ref);
+const stats = ensureSimulatedStats(ref);
+
+// si ya había una valoración previa, ajustamos sin sumar reseña
+const prevRaw = localStorage.getItem(ratingState.key);
+let prevStars = 0;
+if(prevRaw){
+  try{ prevStars = Number(JSON.parse(prevRaw).stars || 0); }catch{}
+}
+
+if(prevStars > 0){
+  stats.sum = (Number(stats.sum) || 0) - prevStars + ratingState.stars;
+} else {
+  stats.count = (Number(stats.count) || 0) + 1;
+  stats.sum = (Number(stats.sum) || 0) + ratingState.stars;
+}
+
+stats.avg = stats.count ? Math.round((stats.sum / stats.count) * 10) / 10 : 0;
+
+localStorage.setItem(statsKey, JSON.stringify(stats));
+renderRatingStats(ref);
 
     const savedMsg = document.getElementById("ratingSaved");
     if(savedMsg){
@@ -1821,6 +1911,25 @@ function ratingLoadForRef(ref){
 
   document.getElementById("clearRatingBtn")?.addEventListener("click", ()=>{
     if(!ratingState.key) return;
+    // ✅ si había voto, lo quitamos de la media
+const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
+const statsKey = ratingStatsKey(ref);
+const stats = ensureSimulatedStats(ref);
+
+const prevRaw = localStorage.getItem(ratingState.key);
+let prevStars = 0;
+if(prevRaw){
+  try{ prevStars = Number(JSON.parse(prevRaw).stars || 0); }catch{}
+}
+
+if(prevStars > 0){
+  stats.count = Math.max(0, (Number(stats.count) || 0) - 1);
+  stats.sum = Math.max(0, (Number(stats.sum) || 0) - prevStars);
+  stats.avg = stats.count ? Math.round((stats.sum / stats.count) * 10) / 10 : 0;
+
+  localStorage.setItem(statsKey, JSON.stringify(stats));
+}
+
     localStorage.removeItem(ratingState.key);
     ratingState.stars = 0;
     paintStars(0);
@@ -1835,6 +1944,7 @@ function ratingLoadForRef(ref){
       savedMsg.textContent = "Borrado ✓";
       setTimeout(()=> savedMsg.textContent = "", 1200);
     }
+      renderRatingStats(ref);
   });
 })();
 
@@ -1872,6 +1982,7 @@ function openModal({ name, tag, desc, images }){
   if(isProduct){
     // usamos la REF como ID único
     ratingLoadForRef(modalProductState.ref);
+     renderRatingStats(modalProductState.ref);
   }
 
   els.galleryMain.classList.remove("is-fading");
@@ -1969,6 +2080,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
