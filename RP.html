@@ -735,6 +735,67 @@
   font-size:12px;
   color:rgba(17,17,17,.65);
 }
+/* ✅ REVIEWS (Zara style) */
+.reviewsBlock{ margin-top:14px; }
+.reviewsHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.reviewsTitle{
+  font-size:12px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#111;
+}
+.reviewsToggle{
+  border:1px solid rgba(17,17,17,.22);
+  background:#fff;
+  color:#111;
+  padding:8px 10px;
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.reviewsList{
+  margin-top:10px;
+  border-top:1px solid rgba(17,17,17,.18);
+  padding-top:10px;
+  display:grid;
+  gap:10px;
+}
+.reviewItem{
+  border:1px solid rgba(17,17,17,.18);
+  border-radius:12px;
+  padding:10px 12px;
+  background:#fff;
+}
+.reviewMeta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(17,17,17,.55);
+  margin-bottom:6px;
+}
+.reviewStars{
+  font-size:12px;
+  letter-spacing:.06em;
+  color:#111;
+}
+.reviewText{
+  margin:0;
+  font-size:12px;
+  line-height:1.55;
+  color:#222;
+}
 
   .buy-box .button{ width:100%; }
   .buy-hint{
@@ -1036,6 +1097,17 @@
 
     <div class="ratingSaved" id="ratingSaved" aria-live="polite"></div>
   </div>
+      
+      <!-- ✅ LISTA DE RESEÑAS -->
+<div class="reviewsBlock" id="reviewsBlock">
+  <div class="reviewsHead">
+    <div class="reviewsTitle">RESEÑAS</div>
+    <button type="button" class="reviewsToggle" id="reviewsToggle">VER</button>
+  </div>
+
+  <div class="reviewsList hidden" id="reviewsList"></div>
+</div>
+
 
     </aside>
   </div>
@@ -1812,6 +1884,71 @@ function renderRatingStats(ref){
   avgEl.textContent = `${Number(stats.avg).toFixed(1)} / 5`;
   countEl.textContent = `${stats.count} RESEÑAS`;
 }
+function reviewsKey(ref){
+  return `zara_reviews_${String(ref || "").replaceAll(" ", "_")}`;
+}
+
+// reseñas simuladas “base” (estables por producto)
+function ensureSimulatedReviews(ref){
+  const key = reviewsKey(ref);
+  const raw = localStorage.getItem(key);
+  if(raw){
+    try{
+      const arr = JSON.parse(raw);
+      if(Array.isArray(arr) && arr.length) return arr;
+    }catch{}
+  }
+
+  const h = hashFromString(ref);
+  const samples = [
+    "Queda mejor de lo que esperaba.",
+    "Buena calidad y caída.",
+    "Tallaje correcto. Muy cómoda.",
+    "El tejido es precioso.",
+    "Me encanta para diario.",
+    "Muy favorecedora."
+  ];
+
+  // 2-4 reseñas iniciales
+  const n = 2 + (h % 3);
+  const out = [];
+  for(let i=0;i<n;i++){
+    const stars = 3 + ((h + i) % 3); // 3..5
+    out.push({
+      stars,
+      text: samples[(h + i) % samples.length],
+      ts: Date.now() - (i+1)*86400000
+    });
+  }
+
+  localStorage.setItem(key, JSON.stringify(out));
+  return out;
+}
+
+function renderReviews(ref){
+  const listEl = document.getElementById("reviewsList");
+  if(!listEl) return;
+
+  const reviews = ensureSimulatedReviews(ref);
+  listEl.innerHTML = reviews
+    .slice(0, 6)
+    .map(r=>{
+      const s = Number(r.stars || 0);
+      const starsTxt = "★".repeat(s) + "☆".repeat(Math.max(0, 5 - s));
+      const date = new Date(r.ts || Date.now());
+      const dateTxt = date.toLocaleDateString("es-ES", { day:"2-digit", month:"2-digit", year:"numeric" });
+      return `
+        <div class="reviewItem">
+          <div class="reviewMeta">
+            <span>${dateTxt}</span>
+            <span class="reviewStars">${starsTxt}</span>
+          </div>
+          <p class="reviewText">${escapeHtml(r.text || "")}</p>
+        </div>
+      `;
+    })
+    .join("");
+}
 
 function paintStars(val){
   document.querySelectorAll(".star").forEach(btn=>{
@@ -1867,7 +2004,15 @@ function ratingLoadForRef(ref){
 
     const hint = document.getElementById("ratingHint");
     if(hint) hint.textContent = `${ratingState.stars}/5`;
-  });
+    document.getElementById("reviewsToggle")?.addEventListener("click", ()=>{
+  const list = document.getElementById("reviewsList");
+  const btn  = document.getElementById("reviewsToggle");
+  if(!list || !btn) return;
+
+  const willShow = list.classList.contains("hidden");
+  list.classList.toggle("hidden", !willShow);
+  btn.textContent = willShow ? "OCULTAR" : "VER";
+});
 
   document.getElementById("saveRatingBtn")?.addEventListener("click", ()=>{
     if(!ratingState.key){
@@ -1878,6 +2023,23 @@ function ratingLoadForRef(ref){
     const comment = (document.getElementById("ratingComment")?.value || "").trim();
     const data = { stars: ratingState.stars, comment, date: new Date().toISOString() };
     localStorage.setItem(ratingState.key, JSON.stringify(data));
+      // ✅ AÑADIR COMENTARIO COMO RESEÑA (si hay texto)
+  if(comment){
+    const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
+    const key = reviewsKey(ref);
+    const reviews = ensureSimulatedReviews(ref);
+
+    // añadimos la reseña arriba del todo
+    reviews.unshift({
+      stars: ratingState.stars,
+      text: comment,
+      ts: Date.now()
+    });
+
+    localStorage.setItem(key, JSON.stringify(reviews));
+    renderReviews(ref);
+  }
+
 // ✅ actualiza stats (media + nº reseñas) con tu voto
 const ref = ratingState.key.replace("zara_rating_", "").replaceAll("_", " ");
 const statsKey = ratingStatsKey(ref);
@@ -1983,6 +2145,7 @@ function openModal({ name, tag, desc, images }){
     // usamos la REF como ID único
     ratingLoadForRef(modalProductState.ref);
      renderRatingStats(modalProductState.ref);
+      renderReviews(modalProductState.ref);
   }
 
   els.galleryMain.classList.remove("is-fading");
@@ -2080,6 +2243,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
