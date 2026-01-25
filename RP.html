@@ -152,6 +152,16 @@
   width:100%;
   max-width:420px;
 }
+  /* 🔹 BORRAR IMAGEN — secundario */
+.uploadBtn.remove{
+  padding:8px 12px;                 /* más pequeño */
+  font-size:10px;                   /* texto más fino */
+  letter-spacing:.14em;
+  color:rgba(17,17,17,.6);          /* gris */
+  border-color:rgba(17,17,17,.18);
+  background:#fff;
+}
+
 .uploadBtn input{
   display:none;
 }
@@ -1011,7 +1021,7 @@
   </label>
 
   <div class="uploadNote" id="photoStatus">NO HAY IMAGEN CARGADA</div>
-  <button class="uploadBtn" type="button" id="removePhotoBtn">BORRAR IMAGEN</button>
+  <button class="uploadBtn remove" type="button" id="removePhotoBtn">BORRAR IMAGEN</button>
 </div>
       </div>
 
@@ -2489,6 +2499,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
