@@ -282,7 +282,7 @@
     z-index:5;
     user-select:none;
     touch-action:manipulation;
-      
+    pointer-events:auto;
     border-radius:0;
   padding:0;
   outline:none;
@@ -1970,38 +1970,6 @@ function handleGridTap(e){
   return false;
 }
 
-/* ===================== CLICK GRID ===================== */
-function handleGridTap(e){
-  // TOGGLE LOOK
-  const toggleBtn = e.target.closest('[data-look="toggle"]');
-  if (toggleBtn){
-    e.preventDefault();
-    e.stopPropagation();
-
-    const media = toggleBtn.closest(".media");
-    const drawer = media?.querySelector(".look-drawer");
-    if (drawer){
-      els.grid.querySelectorAll(".look-drawer.open").forEach(d => { if(d !== drawer) d.classList.remove("open"); });
-      drawer.classList.toggle("open");
-    }
-    return true;
-  }
-
-  // CLOSE LOOK
-  const closeBtn = e.target.closest('[data-look="close"]');
-  if (closeBtn){
-    e.preventDefault();
-    e.stopPropagation();
-
-    const media = closeBtn.closest(".media");
-    const drawer = media?.querySelector(".look-drawer");
-    if (drawer) drawer.classList.remove("open");
-    return true;
-  }
-
-  return false;
-}
-
 /* ===================== CLICK GRID (MÓVIL + DESKTOP) ===================== */
 
 // ✅ iOS / móvil: usa pointerup (más fiable que touchstart)
@@ -2686,6 +2654,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
