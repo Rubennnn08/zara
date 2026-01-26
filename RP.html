@@ -1971,39 +1971,56 @@ function handleGridTap(e){
 }
 
 /* ===================== CLICK GRID ===================== */
-els.grid.addEventListener("touchstart", (e) => {
-  handleGridTap(e);
-}, { passive:false });
-  els.grid.addEventListener("click", (e) => {
-     if(handleGridTap(e)) return;   // 👈 ESTA LÍNEA
-  const openDrawer = els.grid.querySelector(".look-drawer.open");
-  if (openDrawer) {
-    const clickedInsideDrawer = e.target.closest(".look-drawer");
-    const clickedTab = e.target.closest('[data-look="toggle"]');
-    if (!clickedInsideDrawer && !clickedTab) {
-      openDrawer.classList.remove("open");
-    }
-  }
-
+function handleGridTap(e){
+  // TOGGLE LOOK
   const toggleBtn = e.target.closest('[data-look="toggle"]');
   if (toggleBtn){
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
+
     const media = toggleBtn.closest(".media");
     const drawer = media?.querySelector(".look-drawer");
     if (drawer){
       els.grid.querySelectorAll(".look-drawer.open").forEach(d => { if(d !== drawer) d.classList.remove("open"); });
       drawer.classList.toggle("open");
     }
-    return;
+    return true;
   }
 
+  // CLOSE LOOK
   const closeBtn = e.target.closest('[data-look="close"]');
   if (closeBtn){
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
+
     const media = closeBtn.closest(".media");
     const drawer = media?.querySelector(".look-drawer");
     if (drawer) drawer.classList.remove("open");
-    return;
+    return true;
+  }
+
+  return false;
+}
+
+/* ===================== CLICK GRID (MÓVIL + DESKTOP) ===================== */
+
+// ✅ iOS / móvil: usa pointerup (más fiable que touchstart)
+els.grid.addEventListener("pointerup", (e) => {
+  if(e.pointerType === "touch"){
+    if(handleGridTap(e)) return;
+  }
+}, { passive:false });
+
+// ✅ Desktop + fallback
+els.grid.addEventListener("click", (e) => {
+  if(handleGridTap(e)) return;
+
+  // cerrar drawer si click fuera
+  const openDrawer = els.grid.querySelector(".look-drawer.open");
+  if (openDrawer) {
+    const clickedInsideDrawer = e.target.closest(".look-drawer");
+    const clickedTab = e.target.closest('[data-look="toggle"]');
+    if (!clickedInsideDrawer && !clickedTab) openDrawer.classList.remove("open");
   }
 
   const insideDrawer = e.target.closest(".look-drawer");
@@ -2032,12 +2049,6 @@ els.grid.addEventListener("touchstart", (e) => {
   }
 });
 
-window.addEventListener("resize", () => {
-  requestAnimationFrame(() => {
-    computeRecoLayout();
-    renderRecoPage();
-  });
-});
 /* ===================== ✅ RATING (LOCALSTORAGE) ===================== */
 const ratingState = { key:null, stars:0 };
 
@@ -2675,6 +2686,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
