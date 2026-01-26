@@ -282,6 +282,12 @@
     z-index:5;
     user-select:none;
     touch-action:manipulation;
+      
+    border-radius:0;
+  padding:0;
+  outline:none;
+  -webkit-tap-highlight-color: transparent;
+
   }
   .look-tab span{
     display:block;
@@ -1818,10 +1824,10 @@ function renderLookDrawer(products){
     </div>
   `).join("");
 
-  return `
-    <div class="look-tab" data-look="toggle" aria-label="Abrir look">
+ return `
+    <button type="button" class="look-tab" data-look="toggle" aria-label="Abrir look">
       <span>LOOK</span>
-    </div>
+    </button>
 
     <aside class="look-drawer" aria-label="Look drawer">
       <div class="ld-head">
@@ -1933,9 +1939,43 @@ els.nextBtn.addEventListener("click", () => {
   recoState.page = Math.min(totalPages - 1, recoState.page + 1);
   renderRecoPage();
 });
+function handleGridTap(e){
+  // TOGGLE LOOK
+  const toggleBtn = e.target.closest('[data-look="toggle"]');
+  if (toggleBtn){
+    e.preventDefault();
+    e.stopPropagation();
+
+    const media = toggleBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer){
+      els.grid.querySelectorAll(".look-drawer.open").forEach(d => { if(d !== drawer) d.classList.remove("open"); });
+      drawer.classList.toggle("open");
+    }
+    return true;
+  }
+
+  // CLOSE LOOK
+  const closeBtn = e.target.closest('[data-look="close"]');
+  if (closeBtn){
+    e.preventDefault();
+    e.stopPropagation();
+
+    const media = closeBtn.closest(".media");
+    const drawer = media?.querySelector(".look-drawer");
+    if (drawer) drawer.classList.remove("open");
+    return true;
+  }
+
+  return false;
+}
 
 /* ===================== CLICK GRID ===================== */
-els.grid.addEventListener("click", (e) => {
+els.grid.addEventListener("touchstart", (e) => {
+  handleGridTap(e);
+}, { passive:false });
+  els.grid.addEventListener("click", (e) => {
+     if(handleGridTap(e)) return;   // 👈 ESTA LÍNEA
   const openDrawer = els.grid.querySelector(".look-drawer.open");
   if (openDrawer) {
     const clickedInsideDrawer = e.target.closest(".look-drawer");
@@ -2635,6 +2675,7 @@ window.addEventListener("error", (e) => {
 
 </body>
 </html>
+
 
 
 
